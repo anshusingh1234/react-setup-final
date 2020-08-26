@@ -1,0 +1,57 @@
+{
+    "development": {
+        "config_id": "development",
+        "app_name": "build_socialMedia",
+        "app_desc": "build_socialMedia",
+        "node_port": 1800,
+        "json_indentation": 4,  
+        "host": "localhost",
+        "basicAuthUser": "",
+        "basicAuthKey": "",
+        "database": "build-socialMedia-dev",
+        "url":"http://172.16.6.14:4200/reset-password",
+        "swaggerURL":"localhost:1800",
+        "nodemailer": {
+            "user": "node-trainee@mobiloitte.com",
+            "pass": "Mobiloitte1"
+        },
+        "cloudinary": {
+            "cloud_name": "dl2d0v5hy",
+            "api_key": "841684319665911",
+            "api_secret": "kG5j1sXJT3eeNAp5CtpZgIdfQzM"
+        }
+    },
+    "staging": {
+        "config_id": "staging",
+        "node_port": 1509,
+        "database": "build-socialMedia-stag",
+        "swaggerURL":"ec2-35-176-66-190.eu-west-2.compute.amazonaws.com:1509",
+        "host": "localhost",
+        "basicAuthUser": "",
+        "nodemailer": {
+            "user": "node-trainee@mobiloitte.com",
+            "pass": "Mobiloitte1"
+        },
+        "basicAuthKey": "",
+        "cloudinary": {
+            "cloud_name": "dl2d0v5hy",
+            "api_key": "841684319665911",
+            "api_secret": "kG5j1sXJT3eeNAp5CtpZgIdfQzM"
+        }
+    },
+    "production": {
+        "config_id": "production",
+        "node_port": 1801,
+        "database": "build-socialMedia-web",
+        "host": "localhost",
+        "basicAuthUser": "",
+        "user": "node-trainee@mobiloitte.com",
+        "pass": "Mobiloitte1",
+        "basicAuthKey": "",
+        "cloudinary": {
+            "cloud_name": "",
+            "api_key": "",
+            "api_secret": ""
+        }
+    }
+}
