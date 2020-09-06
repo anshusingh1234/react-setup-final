@@ -1,3 +1,8 @@
+// Add this to the VERY top of the first file loaded in your app
+require("string-format").extend(String.prototype);
+const __initEnvSettings = require("./setting/loadSetting").initializeEnvironmentSettings();
+const jConfig = require("./config/jigrrConfig").getConfig();
+
 const express = require('express')
 const bodyParser = require("body-parser");
 const config = require('./config/config')
@@ -47,11 +52,6 @@ app.all("/api/v1/*", auth);
 
 app.use('/api/v1', index)
 
-app.listen(global.gConfig.node_port, function () {
-
+app.listen(jConfig.PORT, function () {
   console.log("Server is listening on", global.gConfig.node_port)
-
 })
-
-
-
