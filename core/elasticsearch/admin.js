@@ -24,7 +24,7 @@ const _createNewIndex = (indexName, callback) => {
     url: `http://${config.ES_CONFIG.CONNECTION_STRING.toString().split(",")[0]}/${indexName}?pretty`,
     method: 'PUT',
     headers: headers,
-    json: require("./templates/index/posts/v1").MAPPING
+    json: require("./templates/index/feeds/v1").MAPPING
   };
   function cb(error, response, body) {
     if (error) {
