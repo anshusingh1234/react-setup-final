@@ -1,0 +1,55 @@
+curl -X PUT \
+  'http://localhost:9200/feeds-2020-37?pretty=' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: a58d0062-641e-46a7-87af-6bd34b052b02' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "settings": {
+        "number_of_shards": 5,
+        "number_of_replicas": 2
+    },
+    "mappings": {
+        "properties": {
+            "post_id": {
+                "type": "keyword"
+            },
+            "type": {
+                "type": "keyword"
+            },
+            "created_at": {
+                "type": "date",
+                "format": "epoch_second"
+            },
+            "content": {
+                "type": "keyword"
+            },
+            "tagged_users": {
+                "type": "keyword"
+            },
+            "feelings": {
+                "type": "keyword"
+            },
+            "check_in_text": {
+                "type": "keyword"
+            },
+            "check_in_geo_points": {
+                "type": "geo_point"
+            },
+            "author": {
+                "type": "keyword"
+            },
+            "privacy": {
+                "type": "integer"
+            },
+            "private_to": {
+                "type": "keyword"
+            },
+            "comments_count": {
+                "type": "integer"
+            },
+            "reactions_count": {
+                "type": "integer"
+            }
+        }
+    }
+}'

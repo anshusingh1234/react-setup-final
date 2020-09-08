@@ -53,5 +53,5 @@ app.all("/api/v1/*", auth);
 app.use('/api/v1', index)
 
 app.listen(jConfig.PORT, function () {
-  console.log("Server is listening on", global.gConfig.node_port)
+  console.log("Server is listening on", jConfig.PORT)
 })
