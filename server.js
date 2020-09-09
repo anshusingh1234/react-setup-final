@@ -55,3 +55,18 @@ app.use('/api/v1', index)
 app.listen(jConfig.PORT, function () {
   console.log("Server is listening on", jConfig.PORT)
 })
+
+const instance = require("./core/elasticsearch/feeds").forDate("2020-09-10");
+instance.indexDoc({
+  feed_id: 'cdndskjnkmkasdkndsnjknsdk',
+  type: 'post',
+  content: 'This is my first es post',
+  tagged_users: ["njdnjkndskjnjkdsnjkdsn", "ajknjknjkdnkjdsnjh"],
+  check_in_text: 'Ambience Mall, Gurgaon, Haryana',
+  check_in_geo_points: [24.555, 54.878],
+  author: 'dkjnsjknjsdknjksdnsjkd',
+  privacy: 2
+}, (error, result) => {
+  console.log(error)
+  console.log(result)
+})

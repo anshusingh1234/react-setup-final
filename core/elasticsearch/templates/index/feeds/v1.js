@@ -1,8 +1,8 @@
 const FIELDS = {
-  POST_ID: 'post_id',
+  FEED_ID: 'feed_id',
   TYPE: 'type',
   CREATED_AT: 'created_at',
-  UPDATED_AT: 'created_at',
+  UPDATED_AT: 'updated_at',
   CONTENT: 'content',
   TAGGED_USERS: 'tagged_users',
   FEELINGS: 'feelings',
@@ -34,7 +34,7 @@ const MAPPING = {
   },
   "mappings": {
     "properties": {
-      [FIELDS.POST_ID]: {
+      [FIELDS.FEED_ID]: {
         type: "keyword"
       },
       [FIELDS.TYPE]: {
