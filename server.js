@@ -48,10 +48,10 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "50mb",parameterLimit: 10
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(morgan('dev'))
 
-app.all("/api/v1/*", auth);
+// app.all("/api/v1/*", auth);
 
 app.use('/api/v1', index)
 
 app.listen(jConfig.PORT, function () {
-  console.log("Server is listening on", global.gConfig.node_port)
+  console.log("Server is listening on", jConfig.PORT)
 })
