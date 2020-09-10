@@ -2,7 +2,8 @@ const moment = require('moment');
 const {dateTime} = require('../../util');
 const AbstractElasticsearch = require('./abstract');
 const config = require("../../config/jigrrConfig").getConfig();
-const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES} = require('./templates/index/feeds/v1')
+const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES} = require('./templates/index/feeds/v1');
+const {feeds: FEEDS_QUERY} = require("./queries");
 
 const getNextWeekIndexName = () => `feeds-${dateTime.buildWeekIdForDate(moment().add(1, 'week').format('YYYY-MM-DD'))}`;
 
@@ -37,10 +38,10 @@ class FeedsElasticsearch extends AbstractElasticsearch {
 
     if(data[FEEDS_FIELDS.CHECK_IN_TEXT] && typeof data[FEEDS_FIELDS.CHECK_IN_TEXT] !== 'string') return callback("invalid check-in text", null);
     if(data[FEEDS_FIELDS.CHECK_IN_GEO_POINTS] && (!Array.isArray(data[FEEDS_FIELDS.CHECK_IN_GEO_POINTS]) || data[FEEDS_FIELDS.CHECK_IN_GEO_POINTS].length !== 2)) return callback("invalid geo-points", null);
-    data[FEEDS_FIELDS.CHECK_IN_GEO_POINTS] = {
+    data[FEEDS_FIELDS.CHECK_IN_GEO_POINTS] && (data[FEEDS_FIELDS.CHECK_IN_GEO_POINTS] = {
       "lat": data[FEEDS_FIELDS.CHECK_IN_GEO_POINTS][0],
       "lon": data[FEEDS_FIELDS.CHECK_IN_GEO_POINTS][1]
-    }
+    })
 
     !data[FEEDS_FIELDS.PRIVATE_TO] && (data[FEEDS_FIELDS.PRIVATE_TO] = []);
 
@@ -53,8 +54,20 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     const _id = `${data[FEEDS_FIELDS.FEED_ID]}:${this.dateTag}`;
     data[FEEDS_FIELDS.FEED_ID] = _id;
 
-    console.log(JSON.stringify(data, null, 2))
     super.indexDoc(_id, data, callback);
+  }
+
+  searchFeed(userId, friends = []){
+    const query = FEEDS_QUERY.searchFeeds(userId, {
+      friends
+    });
+    console.log(JSON.stringify(query, null, 2))
+    const _body = {
+      size: 100,
+      query,
+      sort: [{[FEEDS_FIELDS.UPDATED_AT]: "desc"}]
+    };
+    return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }
 
 }
@@ -62,4 +75,13 @@ class FeedsElasticsearch extends AbstractElasticsearch {
 module.exports = {
   forDate,
   getNextWeekIndexName
+}
+
+function _fulfillPromiseCallback(resolve, reject) {
+  return (err, response) => {
+    if(err) {
+      return reject(err);
+    }
+    resolve(response);
+  };
 }
