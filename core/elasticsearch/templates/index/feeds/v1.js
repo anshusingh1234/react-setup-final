@@ -11,6 +11,8 @@ const FIELDS = {
   AUTHOR: 'author',
   PRIVACY: 'privacy',
   PRIVATE_TO: 'private_to',
+  COMMENTED_BY: 'commented_by',
+  REACTION_BY: 'reaction_by',
   COMMENTS_COUNT: 'comments_count',
   REACTIONS_COUNT: 'reactions_count'
 }
@@ -20,7 +22,8 @@ const FIELDS_VALUES = {
     PUBLIC: 0,
     PRIVATE: 1,
     FRIENDS: 2,
-    CUSTOM: 3
+    CUSTOM: 3,
+    ADMIN: 4
   },
   [FIELDS.TYPE]: {
     MOMENTS: 'moments'
@@ -77,6 +80,12 @@ const MAPPING = {
       },
       [FIELDS.REACTIONS_COUNT]: {
         type: "integer"
+      },
+      [FIELDS.COMMENTED_BY]: {
+        type: "keyword"
+      },
+      [FIELDS.REACTION_BY]: {
+        type: "keyword"
       }
     }
   }
