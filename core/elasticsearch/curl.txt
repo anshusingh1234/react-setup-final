@@ -1,7 +1,7 @@
 curl -X PUT \
-  'http://localhost:9200/feeds-2020-37?pretty=' \
+  'http://localhost:9200/feeds-2020-42?pretty=' \
   -H 'Content-Type: application/json' \
-  -H 'Postman-Token: a58d0062-641e-46a7-87af-6bd34b052b02' \
+  -H 'Postman-Token: feb7e294-c5a2-40ec-a661-01ab249c3485' \
   -H 'cache-control: no-cache' \
   -d '{
     "settings": {
@@ -10,13 +10,17 @@ curl -X PUT \
     },
     "mappings": {
         "properties": {
-            "post_id": {
+            "feed_id": {
                 "type": "keyword"
             },
             "type": {
                 "type": "keyword"
             },
             "created_at": {
+                "type": "date",
+                "format": "epoch_second"
+            },
+            "updated_at": {
                 "type": "date",
                 "format": "epoch_second"
             },
@@ -49,6 +53,12 @@ curl -X PUT \
             },
             "reactions_count": {
                 "type": "integer"
+            },
+            "commented_by": {
+                "type": "keyword"
+            },
+            "reaction_by": {
+                "type": "keyword"
             }
         }
     }
