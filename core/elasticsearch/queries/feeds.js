@@ -41,6 +41,14 @@ query.searchFeeds = (userId, options) => {
             "terms": {
               [FEEDS_FIELDS.COMMENTED_BY]: options.friends || []
             }
+          },{
+            "terms": {
+              [FEEDS_FIELDS.AUTHOR]: options.friends || []
+            }
+          },{
+            "terms": {
+              [FEEDS_FIELDS.AUTHOR]: options.following || []
+            }
           }]
         }
       }]
