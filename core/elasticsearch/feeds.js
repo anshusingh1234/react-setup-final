@@ -4,6 +4,7 @@ const AbstractElasticsearch = require('./abstract');
 const config = require("../../config/jigrrConfig").getConfig();
 const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES} = require('./templates/index/feeds/v1');
 const {feeds: FEEDS_QUERY} = require("./queries");
+const {feeds: FEEDS_SCRIPT} = require("./scripts");
 
 const getNextWeekIndexName = () => `feeds-${dateTime.buildWeekIdForDate(moment().add(1, 'week').format('YYYY-MM-DD'))}`;
 
@@ -30,6 +31,14 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     this.dateTag = dateTag;
   }
 
+  /**
+  * adding a new document in the feed
+  * @param {String} data[FEEDS_FIELDS.FEED_ID] [Mandatory] feed id to create in the format => <_id>:<date>
+  * @param {String} data[FEEDS_FIELDS.TYPE] [Mandatory]
+  * @param {String} data[FEEDS_FIELDS.AUTHOR] [Mandatory] author of the post
+  * @param {String} data[FEEDS_FIELDS.PRIVACY] [Mandatory] privacy of the post
+  * @param {*} callback
+  */
   indexDoc(data, callback){
     if(!data[FEEDS_FIELDS.FEED_ID] || !data[FEEDS_FIELDS.TYPE] || !data[FEEDS_FIELDS.AUTHOR] || !Object.values(FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY]).includes(data[FEEDS_FIELDS.PRIVACY])) return callback("Invalid params", null);
 
@@ -57,6 +66,11 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     super.indexDoc(_id, data, callback);
   }
 
+  /**
+  * fetching feed for the user
+  * @param {*} userId
+  * @param {*} friends
+  */
   searchFeed(userId, friends = []){
     const query = FEEDS_QUERY.searchFeeds(userId, {
       friends
@@ -70,6 +84,61 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }
 
+  /**
+  * incrementing reaction count by some value
+  * @param {*} feedId feed id to update
+  * @param {*} incrementBy value to increase by
+  */
+  incrementReactionCount(feedId, incrementBy){
+    if (!feedId || !incrementBy) {
+      throw new Error('Invalid argument(s)');
+    }
+    return new Promise((resolve, reject) => {
+      super.update(feedId, FEEDS_SCRIPT.incrementReactionCount(incrementBy), _fulfillPromiseCallback(resolve, reject));
+    })
+  }
+
+  /**
+  * incrementing comment count by some value
+  * @param {*} feedId feed id to update
+  * @param {*} incrementBy value to increase by
+  */
+  incrementCommentCount(feedId, incrementBy){
+    if (!feedId || !incrementBy) {
+      throw new Error('Invalid argument(s)');
+    }
+    return new Promise((resolve, reject) => {
+      super.update(feedId, FEEDS_SCRIPT.incrementCommentCount(incrementBy), _fulfillPromiseCallback(resolve, reject));
+    })
+  }
+
+  /**
+  * decrementing reaction count by some value
+  * @param {*} feedId feed id to update
+  * @param {*} decrementBy value to decrease by
+  */
+  decrementReactionCount(feedId, decrementBy){
+    if (!feedId || !decrementBy) {
+      throw new Error('Invalid argument(s)');
+    }
+    return new Promise((resolve, reject) => {
+      super.update(feedId, FEEDS_SCRIPT.decrementReactionCount(decrementBy), _fulfillPromiseCallback(resolve, reject));
+    })
+  }
+
+  /**
+  * decrementing comment count by some value
+  * @param {*} feedId feed id to update
+  * @param {*} decrementBy value to decrease by
+  */
+  decrementCommentCount(feedId, decrementBy){
+    if (!feedId || !decrementBy) {
+      throw new Error('Invalid argument(s)');
+    }
+    return new Promise((resolve, reject) => {
+      super.update(feedId, FEEDS_SCRIPT.decrementCommentCount(decrementBy), _fulfillPromiseCallback(resolve, reject));
+    })
+  }
 }
 
 module.exports = {
