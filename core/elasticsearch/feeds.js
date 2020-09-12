@@ -139,6 +139,35 @@ class FeedsElasticsearch extends AbstractElasticsearch {
       super.update(feedId, FEEDS_SCRIPT.decrementCommentCount(decrementBy), _fulfillPromiseCallback(resolve, reject));
     })
   }
+
+  /**
+   * Adding user id if commented on a post
+   * @param {*} feedId
+   * @param {*} userId
+   */
+  commentedBy(feedId, userId){
+    if (!feedId || !userId) {
+      throw new Error('Invalid argument(s)');
+    }
+    return new Promise((resolve, reject) => {
+      super.addToken(feedId, FEEDS_FIELDS.COMMENTED_BY, userId, _fulfillPromiseCallback(resolve, reject));
+    })
+  }
+
+  /**
+   * Adding user id if reacted on a post
+   * @param {*} feedId
+   * @param {*} userId
+   */
+  reactedBy(feedId, userId){
+    if (!feedId || !userId) {
+      throw new Error('Invalid argument(s)');
+    }
+    return new Promise((resolve, reject) => {
+      super.addToken(feedId, FEEDS_FIELDS.REACTION_BY, userId, _fulfillPromiseCallback(resolve, reject));
+    })
+  }
+
 }
 
 module.exports = {

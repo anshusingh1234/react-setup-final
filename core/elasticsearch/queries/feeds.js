@@ -32,8 +32,16 @@ query.searchFeeds = (userId, options) => {
           [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].PUBLIC
         }
       },{
-        "term": {
-          [FEEDS_FIELDS.PRIVATE_TO]: userId
+        "bool": {
+          "should": [{
+            "terms": {
+              [FEEDS_FIELDS.REACTION_BY]: options.friends || []
+            }
+          },{
+            "terms": {
+              [FEEDS_FIELDS.COMMENTED_BY]: options.friends || []
+            }
+          }]
         }
       }]
     }
@@ -48,11 +56,6 @@ query.searchFeeds = (userId, options) => {
       },{
         "terms": {
           [FEEDS_FIELDS.AUTHOR]: options.friends || []
-        }
-      }],
-      "must_not": [{
-        "term": {
-          [FEEDS_FIELDS.PRIVATE_TO]: userId
         }
       }]
     }
@@ -75,6 +78,16 @@ query.searchFeeds = (userId, options) => {
       }]
     }
   });
+
+  shouldArray.push({
+    "bool": {
+      "must": [{
+        "term": {
+          [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].ADMIN
+        }
+      }]
+    }
+  })
 
   return {
     "bool": {
