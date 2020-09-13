@@ -1,5 +1,5 @@
-import { MongoClient, ObjectID} from "mongodb";
-const jConfig = require("./config/jigrrConfig").getConfig();
+const { MongoClient, ObjectID} = require("../../node_modules/mongodb");
+const jConfig = require("../../config/jigrrConfig").getConfig();
 
 const host = jConfig.MONGO.HOST || "0.0.0.0";
 const dbName = jConfig.MONGO.DB_NAME || "jigrr";
@@ -9,23 +9,25 @@ const port = jConfig.MONGO.PORT || "27017"
 const replicaSet = jConfig.MONGO.REPLICA_SET;
 
 class MongoDB {
-  static db = null;
-  static dbName = dbName;
-  static dbReady = false;
-
-  static getDBName() {
-    return MongoDB.dbName;
+  constructor(){
+    this.db = null;
+    this.dbName = dbName;
+    this.dbReady = false;
   }
 
-  static async getDBInstance() {
-    if(!MongoDB.db) return MongoDB.connect();
-    return MongoDB.db;
+  getDBName() {
+    return this.dbName;
   }
 
-  static connect() {
+  async getDBInstance() {
+    if(!this.db) return this.connect();
+    return this.db;
+  }
+
+  connect() {
     return new Promise((resolve) => {
       console.log("Starting conn");
-      if(MongoDB.db) return resolve(MongoDB.db);
+      if(this.db) return resolve(this.db);
 
       const authString = `${user}:${pass}@`
       let url=`mongodb://`;
@@ -45,17 +47,29 @@ class MongoDB {
           process.exit(1);
         }
         console.log("Connected successfully to mongo");
-        MongoDB.db = client.db(MongoDB.dbName);
-        MongoDB.dbReady = true;
-        resolve(MongoDB.db);
+        this.db = client.db(this.dbName);
+        this.dbReady = true;
+        resolve(this.db);
       });
     })
   }
 
-  static getNewObjectId() {
+  getNewObjectId() {
     const objectId = new ObjectID();
     return objectId.toHexString();
   }
+
+  getStringFromObjectId(objectId){
+    return objectId.toHexString()
+  }
+
+  getObjectIdFromString(stringId) {
+    const objectId = new ObjectID(stringId);
+    return objectId;
+  }
 }
 
-module.exports = MongoDB;
+module.exports = {
+  MongoDB,
+  instance: new MongoDB()
+};

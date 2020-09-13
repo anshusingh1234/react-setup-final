@@ -52,6 +52,12 @@ jConfig.ENV !== 'local' && app.all("/api/v1/*", auth);
 
 app.use('/api/v1', index)
 
-app.listen(jConfig.PORT, function () {
-  console.log("Server is listening on", jConfig.PORT)
+const mongo = require("./core/mongo/index");
+mongo.initMongoDB().then(() => {
+  app.listen(jConfig.PORT, function () {
+    console.log("Server is listening on", jConfig.PORT)
+  })
+}).catch(err=> {
+  console.log("Error while initializing mongo", err);
+  process.exit(1);
 })
