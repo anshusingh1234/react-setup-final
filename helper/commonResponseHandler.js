@@ -1,6 +1,6 @@
 
 module.exports = {
-  commonResponse:(res,statusCode,result,message)=>{
+  commonResponse:(res, statusCode, result, message)=>{
     return res.status(statusCode).json({
       result:result || "",
       response_message:message || "",
