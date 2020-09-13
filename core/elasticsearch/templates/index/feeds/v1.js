@@ -3,7 +3,7 @@ const FIELDS = {
   TYPE: 'type',
   CREATED_AT: 'created_at',
   UPDATED_AT: 'updated_at',
-  CONTENT: 'content',
+  DATA: 'data',
   TAGGED_USERS: 'tagged_users',
   FEELINGS: 'feelings',
   CHECK_IN_TEXT: 'check_in_text',
@@ -51,8 +51,8 @@ const MAPPING = {
         "type": "date",
         "format": "epoch_second"
       },
-      [FIELDS.CONTENT]: {
-        type: "keyword"
+      [FIELDS.DATA]: {
+        enabled: false
       },
       [FIELDS.TAGGED_USERS]: {
         type: "keyword"

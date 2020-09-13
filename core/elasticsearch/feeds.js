@@ -42,7 +42,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   indexDoc(data, callback){
     if(!data[FEEDS_FIELDS.FEED_ID] || !data[FEEDS_FIELDS.TYPE] || !data[FEEDS_FIELDS.AUTHOR] || !Object.values(FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY]).includes(data[FEEDS_FIELDS.PRIVACY])) return callback("Invalid params", null);
 
-    if(typeof data[FEEDS_FIELDS.CONTENT] !== 'string') return callback("invalid feed content type", null);
+    if(typeof data[FEEDS_FIELDS.DATA] !== 'object') return callback("invalid feed data type", null);
     if(!Array.isArray(data[FEEDS_FIELDS.TAGGED_USERS])) data[FEEDS_FIELDS.TAGGED_USERS] = [];
 
     if(data[FEEDS_FIELDS.CHECK_IN_TEXT] && typeof data[FEEDS_FIELDS.CHECK_IN_TEXT] !== 'string') return callback("invalid check-in text", null);
@@ -62,18 +62,18 @@ class FeedsElasticsearch extends AbstractElasticsearch {
 
     const _id = `${data[FEEDS_FIELDS.FEED_ID]}:${this.dateTag}`;
     data[FEEDS_FIELDS.FEED_ID] = _id;
-
     super.indexDoc(_id, data, callback);
   }
 
   /**
   * fetching feed for the user
-  * @param {*} userId
-  * @param {*} friends
+  * @param {*} userId user whose feeds are getting fetched
+  * @param {*} friends friends of the user
+  * @param {*} following following list of the user
   */
-  searchFeed(userId, friends = []){
+  searchFeed(userId, friends = [], following = []){
     const query = FEEDS_QUERY.searchFeeds(userId, {
-      friends
+      friends, following
     });
     console.log(JSON.stringify(query, null, 2))
     const _body = {

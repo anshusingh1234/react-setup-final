@@ -1,10 +1,13 @@
-const mongoDB = require("./db");
+const {instance: MongoDBInstance} = require("./db");
+const feeds = require("./feeds");
 
-const initMongoDB = async () => {
-  await mongoDB.connect();
+const mongo = {};
+
+mongo.initMongoDB = async() => {
+  await MongoDBInstance.connect();
+  await feeds.instance.init();
 }
 
-export {
-  initMongoDB,
-  mongoDB
-};
+mongo.feeds = feeds;
+
+module.exports = mongo;
