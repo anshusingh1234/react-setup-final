@@ -25,6 +25,22 @@ const forDate = (date) => {
   return CACHED_FEEDS_ELASTICSEARCH[date];
 };
 
+/**
+* @param {*} feedId string representing date in YYYY-MM-DD format
+*/
+const forId = (feedId) => {
+  if(!feedId || feedId.indexOf(':') <= -1) {
+    throw new TypeError('Invalid param feedId');
+  }
+  const [_id, date] = feedId.split(":");
+  if(!CACHED_FEEDS_ELASTICSEARCH[date]) {
+    // TODO: check if index exists
+    const weekId = dateTime.buildWeekIdForDate(date);
+    CACHED_FEEDS_ELASTICSEARCH[date] = new FeedsElasticsearch(`feeds-${weekId}`, date);
+  }
+  return CACHED_FEEDS_ELASTICSEARCH[date];
+};
+
 class FeedsElasticsearch extends AbstractElasticsearch {
   constructor(indexName, dateTag) {
     super(indexName);
@@ -172,6 +188,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
 
 module.exports = {
   forDate,
+  forId,
   getNextWeekIndexName
 }
 
