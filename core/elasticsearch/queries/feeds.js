@@ -104,4 +104,66 @@ query.searchFeeds = (userId, options) => {
   }
 }
 
+query.timeline = (author, userId, isFriend) => {
+  let shouldArray = [];
+  let mustArray = [];
+
+  mustArray.push({
+    "term": {
+      [FEEDS_FIELDS.AUTHOR]: author
+    }
+  });
+
+  (userId === author) && shouldArray.push({
+    "bool": {
+      "must": [{
+        "term": {
+          [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].PRIVATE
+        }
+      }]
+    }
+  });
+
+  shouldArray.push({
+    "bool": {
+      "must": [{
+        "term": {
+          [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].PUBLIC
+        }
+      }]
+    }
+  });
+
+  isFriend && shouldArray.push({
+    "bool": {
+      "must": [{
+        "term": {
+          [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].FRIENDS
+        }
+      }]
+    }
+  })
+
+  shouldArray.push({
+    "bool": {
+      "must": [{
+        "term": {
+          [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].CUSTOM
+        }
+      },{
+        "term": {
+          [FEEDS_FIELDS.PRIVATE_TO]: userId
+        }
+      }]
+    }
+  });
+
+  return {
+    "bool": {
+      "should": shouldArray,
+      "must": mustArray
+    }
+  }
+}
+
 module.exports = query;

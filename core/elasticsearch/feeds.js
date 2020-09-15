@@ -5,6 +5,7 @@ const config = require("../../config/jigrrConfig").getConfig();
 const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES} = require('./templates/index/feeds/v1');
 const {feeds: FEEDS_QUERY} = require("./queries");
 const {feeds: FEEDS_SCRIPT} = require("./scripts");
+const C = require("../../constants");
 
 const getNextWeekIndexName = () => `feeds-${dateTime.buildWeekIdForDate(moment().add(1, 'week').format('YYYY-MM-DD'))}`;
 
@@ -55,7 +56,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   * @param {String} data[FEEDS_FIELDS.PRIVACY] [Mandatory] privacy of the post
   * @param {*} callback
   */
-  indexDoc(data, callback){
+  indexDoc({...data}, callback){
     if(!data[FEEDS_FIELDS.FEED_ID] || !data[FEEDS_FIELDS.TYPE] || !data[FEEDS_FIELDS.AUTHOR] || !Object.values(FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY]).includes(data[FEEDS_FIELDS.PRIVACY])) return callback("Invalid params", null);
 
     if(typeof data[FEEDS_FIELDS.DATA] !== 'object') return callback("invalid feed data type", null);
@@ -70,11 +71,15 @@ class FeedsElasticsearch extends AbstractElasticsearch {
 
     !data[FEEDS_FIELDS.PRIVATE_TO] && (data[FEEDS_FIELDS.PRIVATE_TO] = []);
 
-    data[FEEDS_FIELDS.CREATED_AT] = moment().unix();
-    data[FEEDS_FIELDS.UPDATED_AT] = moment().unix();
+    data[FEEDS_FIELDS.UPDATED_AT] = data[FEEDS_FIELDS.CREATED_AT];
 
     data[FEEDS_FIELDS.COMMENTS_COUNT] = 0;
     data[FEEDS_FIELDS.REACTIONS_COUNT] = 0;
+
+    if(data[FEEDS_FIELDS.DATA] && Array.isArray(data[FEEDS_FIELDS.DATA].media)){
+      data[FEEDS_FIELDS.MEDIA] = data[FEEDS_FIELDS.DATA].media;
+      delete data[FEEDS_FIELDS.DATA].media;
+    }
 
     const _id = `${data[FEEDS_FIELDS.FEED_ID]}:${this.dateTag}`;
     data[FEEDS_FIELDS.FEED_ID] = _id;
@@ -157,10 +162,10 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   }
 
   /**
-   * Adding user id if commented on a post
-   * @param {*} feedId
-   * @param {*} userId
-   */
+  * Adding user id if commented on a post
+  * @param {*} feedId
+  * @param {*} userId
+  */
   commentedBy(feedId, userId){
     if (!feedId || !userId) {
       throw new Error('Invalid argument(s)');
@@ -171,10 +176,10 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   }
 
   /**
-   * Adding user id if reacted on a post
-   * @param {*} feedId
-   * @param {*} userId
-   */
+  * Adding user id if reacted on a post
+  * @param {*} feedId
+  * @param {*} userId
+  */
   reactedBy(feedId, userId){
     if (!feedId || !userId) {
       throw new Error('Invalid argument(s)');
@@ -182,6 +187,23 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     return new Promise((resolve, reject) => {
       super.addToken(feedId, FEEDS_FIELDS.REACTION_BY, userId, _fulfillPromiseCallback(resolve, reject));
     })
+  }
+
+  /**
+  * fetching timeline for the user
+  * @param {*} userId user whose feeds are getting fetched
+  */
+  timeline(author, userId, isFriend, type){
+    const query = FEEDS_QUERY.timeline(author, userId, isFriend);
+    const _body = {
+      size: 100,
+      query,
+      sort: [{[FEEDS_FIELDS.UPDATED_AT]: "desc"}]
+    };
+    if(type === C.TIMELINE.TYPES_ALLOWED.GALLERY || type === C.TIMELINE.TYPES_ALLOWED.GALLERY_SET){
+      _body._source = [FEEDS_FIELDS.MEDIA, FEEDS_FIELDS.CREATED_AT];
+    }
+    return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }
 
 }

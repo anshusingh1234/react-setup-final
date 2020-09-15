@@ -8,6 +8,7 @@ feedsSearch.search = async (req, res, next) => {
   const searchResult  = await feedsInstance.searchFeed(req.headers._id, ["dkjnsjknjsdknjksdnsjkd"], []);
   res.status(200).send(searchResult);
   next();
+  
 }
 
 feedsSearch.fetchDetails = async(req, res, next) => {
