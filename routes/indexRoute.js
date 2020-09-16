@@ -5,7 +5,7 @@ const admin= require('./adminRoute/adminRoute');
 const user= require('./userRoute/userRoute');
 const staticContent=require('./staticRoute/staticContentRoute')
 const event= require('./eventRoute/eventRoute');
-const feeds = require('./feeds');
+const feeds = require('./v2/feeds');
 
 router.use('/admin', admin)
 router.use('/user',user)

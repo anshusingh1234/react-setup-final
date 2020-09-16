@@ -1,9 +1,9 @@
-const {feeds} = require("../../core/elasticsearch");
+const {feeds} = require("../../../core/elasticsearch");
 const moment = require("moment");
-const { commonResponse: response } = require('../../helper/commonResponseHandler')
-const C = require("../../constants");
+const C = require("../../../constants");
 const TYPES_ALLOWED = Object.values(C.TIMELINE.TYPES_ALLOWED);
-const {FIELDS: ES_FEEDS_FIELDS} = require("../../core/elasticsearch/templates/index/feeds/v1");
+const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
+const ApiError = require("../ApiError");
 
 const timeline = {};
 
@@ -13,7 +13,7 @@ timeline.validate = (req, res, next) => {
   const type = req.query.type;
 
   req._userToFetch = other || userId;
-  if(!TYPES_ALLOWED.includes(type)) return response(res, 400, null, "invalid/missing types");
+  if(!TYPES_ALLOWED.includes(type)) return next(new ApiError(400, 'E0010009'));
   next();
 }
 

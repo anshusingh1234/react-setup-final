@@ -1,8 +1,8 @@
 const moment = require("moment");
-const {feeds} = require("../../core/elasticsearch");
-const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FIELDS_VALUES} = require("../../core/elasticsearch/templates/index/feeds/v1");
-const {feeds: feedsMongo} = require("../../core/mongo");
-const { commonResponse: response } = require('../../helper/commonResponseHandler')
+const {feeds} = require("../../../core/elasticsearch");
+const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FIELDS_VALUES} = require("../../../core/elasticsearch/templates/index/feeds/v1");
+const {feeds: feedsMongo} = require("../../../core/mongo");
+const ApiError = require("../ApiError");
 
 const createPost = {};
 
@@ -14,9 +14,9 @@ const createPost = {};
 */
 createPost.validateBody = (req, res, next) => {
   const {privacy, data} = req.body;
-  if(!Object.values(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY]).includes(privacy)) return response(res, 400, null, "Invalid JSON Body");
+  if(!Object.values(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY]).includes(privacy)) return next(new ApiError(400, 'E0010004'));
 
-  if(!data || (!data.content && (!Array.isArray(data.media) || !data.media.length))) return response(res, 400, null, "Invalid JSON Body");
+  if(!data || (!data.content && (!Array.isArray(data.media) || !data.media.length))) return next(new ApiError(400, 'E0010004'));
 
   req.body.createdAt = moment().unix();
   next();
@@ -48,7 +48,7 @@ createPost.saveInMongo = async (req, res, next) => {
   };
   const mongoResult = await feedsMongo.instance.insertPost(toAdd);
   mongoResult && mongoResult.originalData && (req._groupId = feedsMongo.instance.getStringFromObjectId(mongoResult.originalData._id));
-  if(!req._groupId) return response(res, 400, null, "Something went wrong");
+  if(!req._groupId) return next(new ApiError(400, 'E0010002'));
   next();
 }
 
