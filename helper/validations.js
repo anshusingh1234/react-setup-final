@@ -11,7 +11,7 @@ const validations = {
     },
 
     //WE WILL USE THIS FUNCTION TO FILTER ABUSIVE/SPAM WORDS
-    isAbusiveContent = (comment) =>{
+    isAbusiveContent : (comment) =>{
         return false;
     }
 

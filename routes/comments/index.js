@@ -14,17 +14,18 @@ router.post(`/add`,
 
 router.put(`/edit`,
     editComment.validateBody,
-    editComment.saveInMongo,
-    editComment.saveInES,
+    editComment.verifyOwner,
+    editComment.updateInMongo,
 )
 
 router.get(`/list`,
-    getComment.validate,
+    getComment.validateBody,
     getComment.list
 )
 
 router.delete(`/delete`,
-    deleteComment.validate,
+    deleteComment.validateBody,
+    deleteComment.verifyOwner,
     deleteComment.inMongo,
     deleteComment.inElastic
 )

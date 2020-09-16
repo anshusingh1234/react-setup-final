@@ -1,7 +1,6 @@
 const moment = require("moment");
 const {feeds} = require("../../core/elasticsearch");
-const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FIELDS_VALUES} = require("../../core/elasticsearch/templates/index/feeds/v1");
-const {feeds: feedsMongo} = require("../../core/mongo");
+const {comments: commentMongo} = require("../../core/mongo");
 const { commonResponse: response } = require('../../helper/commonResponseHandler')
 const validations  = require('./../../helper/validations');
 
@@ -20,7 +19,7 @@ add.validateBody = (req, res, next) => {
   if(!feedId) return response(res, 400, null, "invalid/missing feedId");
   if(!userId) return response(res, 400, null, "invalid/missing userId");
   if(!comment) return response(res, 400, null, "invalid/missing comment");
-  if(!validations.isAbusiveContent(comment)) return response(res, 400, null, "Restricted Comment");
+  if(validations.isAbusiveContent(comment)) return response(res, 400, null, "Restricted Comment");
 
   const [_id, date] = feedId.split(':');
 
@@ -28,12 +27,13 @@ add.validateBody = (req, res, next) => {
   instance.getById(feedId, {}, (error, result) => {
     if(result && result._source){
       req._instance = instance;
+      req.body.createdAt = moment().unix();
       next();
     }
     else{
       return response(res, 400, null, "Post not found");
     }
-  })
+ })
 }
 
 /**
@@ -43,27 +43,23 @@ add.validateBody = (req, res, next) => {
 * @param {*} next
 */
 add.saveInMongo = async (req, res, next) => {
-  if(req.body.privacy === ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].CUSTOM){
-    req.body[feedsMongo.FIELDS.PRIVATE_TO] = req.body.privateTo || []
-  }
+  const userId = req.headers._id;
+  const {feedId, comment, parentCommentId} = req.body;
 
   const toAdd = {
-    [feedsMongo.FIELDS.TYPE]: 'post',
-    [feedsMongo.FIELDS.DATA]: req.body.data,
-    [feedsMongo.FIELDS.AUTHOR]: req.headers._id,
-    [feedsMongo.FIELDS.PRIVACY]: req.body.privacy,
-    [feedsMongo.FIELDS.PRIVATE_TO]: req.body.privateTo,
-    [feedsMongo.FIELDS.CREATED_AT]: req.body.createdAt,
-    [feedsMongo.FIELDS.TAGGED_USERS]: req.body.taggedUsers,
-    [feedsMongo.FIELDS.FEELINGS]: req.body.feelings,
-    [feedsMongo.FIELDS.CHECK_IN_TEXT]: req.body.checkInText,
-    [feedsMongo.FIELDS.CHECK_IN_GEO_POINTS]: req.body.checkInGroPoints,
-    [feedsMongo.FIELDS.TAGGED_USERS]: req.body.taggedUsers,
+    [commentMongo.FIELDS.POST_ID]: feedId,
+    [commentMongo.FIELDS.USER_ID]: userId,
+    [commentMongo.FIELDS.PARENT_COMMENT_ID]: parentCommentId ? parentCommentId : 0,
+    [commentMongo.FIELDS.COMMENT]: comment,
+    [commentMongo.FIELDS.CREATED_AT]: req.body.createdAt,
+    [commentMongo.FIELDS.UPDATED_AT]: req.body.createdAt
   };
-  const mongoResult = await feedsMongo.instance.insertPost(toAdd);
-  mongoResult && mongoResult.originalData && (req._groupId = feedsMongo.instance.getStringFromObjectId(mongoResult.originalData._id));
-  if(!req._groupId) return response(res, 400, null, "Something went wrong");
+  const mongoResult = await commentMongo.instance.insert(toAdd);
+  req._commentId = mongoResult && mongoResult.originalData && mongoResult.originalData._id ? mongoResult.originalData._id : '';
+  req._data =  mongoResult && mongoResult.originalData ? {...mongoResult.originalData, commentId:req._commentId} : {};
+  if(!req._commentId) return response(res, 400, mongoResult.originalData, "Something went wrong");
   next();
+  
 }
 
 /**
@@ -73,11 +69,13 @@ add.saveInMongo = async (req, res, next) => {
 * @param {*} next
 */
 add.saveInES = (req, res, next) => {
-  const commentByResult = 
+  const userId = req.headers._id;
+  const {feedId} = req.body;
 
-  req.instance.commentedBy(feedId, userId).then(result => {
-    req.instance.incrementCommentCount(feedId, 1).then(result => {
+  req._instance.commentedBy(feedId, userId).then(result => {
+    req._instance.incrementCommentCount(feedId, 1).then(result => {
       next();
+      return response(res, 200, req._data, "Comment Posted Successfully!");
     }, err=>{
 
     })
@@ -86,4 +84,4 @@ add.saveInES = (req, res, next) => {
   })
 }
 
-module.exports = createPost;
+module.exports = add;
