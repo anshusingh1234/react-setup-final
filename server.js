@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const config = require('./config/config')
 const db = require('./dbConnectivity/mongodb')
 const index = require('./routes/indexRoute')
+const v2Routes = require('./routes/v2')
 const app = express()
 const morgan = require('morgan');
 const cors = require('cors');
@@ -49,8 +50,10 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(morgan('dev'))
 
 jConfig.ENV !== 'local' && app.all("/api/v1/*", auth);
+jConfig.ENV !== 'local' && app.all("/api/v2/*", auth);
 
 app.use('/api/v1', index)
+app.use('/api/v2', v2Routes)
 
 const mongo = require("./core/mongo/index");
 mongo.initMongoDB().then(() => {

@@ -1,9 +1,10 @@
-const {feeds} = require("../../core/elasticsearch");
+const {feeds} = require("../../../core/elasticsearch");
 const moment = require("moment");
-const { commonResponse: response } = require('../../helper/commonResponseHandler')
-const C = require("../../constants");
+const C = require("../../../constants");
 const TYPES_ALLOWED = Object.values(C.TIMELINE.TYPES_ALLOWED);
-const {FIELDS: ES_FEEDS_FIELDS} = require("../../core/elasticsearch/templates/index/feeds/v1");
+const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
+const ApiError = require("../ApiError");
+
 
 const timeline = {};
 
@@ -13,7 +14,7 @@ timeline.validate = (req, res, next) => {
   const type = req.query.type;
 
   req._userToFetch = other || userId;
-  if(!TYPES_ALLOWED.includes(type)) return response(res, 400, null, "invalid/missing types");
+  if(!TYPES_ALLOWED.includes(type)) return next(new ApiError(400, 'E0010009'));
   next();
 }
 
@@ -22,7 +23,7 @@ timeline.search = async (req, res, next) => {
   const other = req.query.other;
   const type = req.query.type;
   let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
-  const searchResult  = await feedsInstance.timeline(req._userToFetch, userId, true, type);
+  const searchResult  = await feedsInstance.timeline(req._userToFetch, userId, true, type, C.TIMELINE.DEFAULT_HIDE_TIME);
   req._searchResult = (searchResult && searchResult.hits.hits && searchResult.hits.hits.map(obj => obj._source)) || [];
   next();
 }
@@ -99,5 +100,8 @@ const _gallerSetWrapper = (result) => {
 }
 
 const _feedsWrapper = (result) => {
+  result.forEach(_obj => {
+    _obj[ES_FEEDS_FIELDS.CREATED_AT] = moment( _obj[ES_FEEDS_FIELDS.CREATED_AT]*1000).format("YYYY-MM-DD hh:mm:ss")
+  })
   return result;
 }

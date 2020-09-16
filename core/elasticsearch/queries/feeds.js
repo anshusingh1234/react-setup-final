@@ -104,7 +104,7 @@ query.searchFeeds = (userId, options) => {
   }
 }
 
-query.timeline = (author, userId, isFriend) => {
+query.timeline = (author, userId, isFriend, hideTime) => {
   let shouldArray = [];
   let mustArray = [];
 
@@ -157,6 +157,14 @@ query.timeline = (author, userId, isFriend) => {
       }]
     }
   });
+
+  mustArray.push({
+    "range": {
+      [FEEDS_FIELDS.CREATED_AT]: {
+        "gte": `now-${hideTime}`
+      }
+    }
+  })
 
   return {
     "bool": {
