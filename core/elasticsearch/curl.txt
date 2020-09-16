@@ -1,70 +1,70 @@
 curl -X PUT \
-  'http://localhost:9200/feeds-2020-41?pretty=' \
+  'http://localhost:9200/feeds-2020-43?pretty=' \
   -H 'Content-Type: application/json' \
   -H 'Postman-Token: c98d126a-b9cf-4d3f-a252-e7317074f7aa' \
   -H 'cache-control: no-cache' \
   -d '{
-    "settings": {
-        "number_of_shards": 5,
-        "number_of_replicas": 2
-    },
-    "mappings": {
-        "properties": {
-            "feed_id": {
-                "type": "keyword"
-            },
-            "type": {
-                "type": "keyword"
-            },
-            "created_at": {
-                "type": "date",
-                "format": "epoch_second"
-            },
-            "updated_at": {
-                "type": "date",
-                "format": "epoch_second"
-            },
-            "data": {
-                "enabled": false
-            },
-            "media": {
-                "enabled": false
-            },
-            "tagged_users": {
-                "type": "keyword"
-            },
-            "feelings": {
-                "type": "keyword"
-            },
-            "check_in_text": {
-                "type": "keyword"
-            },
-            "check_in_geo_points": {
-                "type": "geo_point"
-            },
-            "author": {
-                "type": "keyword"
-            },
-            "privacy": {
-                "type": "integer"
-            },
-            "private_to": {
-                "type": "keyword"
-            },
-            "comments_count": {
-                "type": "integer"
-            },
-            "reactions_count": {
-                "type": "integer"
-            },
-            "commented_by": {
-                "type": "keyword"
-            },
-            "reaction_by": {
-                "type": "keyword"
-            }
-        }
+  "settings": {
+    "number_of_shards": 5,
+    "number_of_replicas": 2
+  },
+  "mappings": {
+    "properties": {
+      "feed_id": {
+        "type": "keyword"
+      },
+      "type": {
+        "type": "keyword"
+      },
+      "created_at": {
+        "type": "date",
+        "format": "epoch_second"
+      },
+      "updated_at": {
+        "type": "date",
+        "format": "epoch_second"
+      },
+      "data": {
+        "enabled": false
+      },
+      "media": {
+        "enabled": false
+      },
+      "tagged_users": {
+        "type": "keyword"
+      },
+      "feelings": {
+        "type": "keyword"
+      },
+      "check_in_text": {
+        "type": "keyword"
+      },
+      "check_in_geo_points": {
+        "type": "geo_point"
+      },
+      "author": {
+        "type": "keyword"
+      },
+      "privacy": {
+        "type": "integer"
+      },
+      "private_to": {
+        "type": "keyword"
+      },
+      "comments_count": {
+        "type": "integer"
+      },
+      "reactions_count": {
+        "type": "integer"
+      },
+      "commented_by": {
+        "type": "keyword"
+      },
+      "reaction_by": {
+        "type": "keyword"
+      }
     }
+  }
 }'
 
 curl -X PUT "http://127.0.0.1:9200/feeds-2020-41/_mapping?pretty" -H 'Content-Type: application/json' -d'

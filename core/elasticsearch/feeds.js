@@ -193,8 +193,8 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   * fetching timeline for the user
   * @param {*} userId user whose feeds are getting fetched
   */
-  timeline(author, userId, isFriend, type){
-    const query = FEEDS_QUERY.timeline(author, userId, isFriend);
+  timeline(author, userId, isFriend, type, hideTime){
+    const query = FEEDS_QUERY.timeline(author, userId, isFriend, hideTime);
     const _body = {
       size: 100,
       query,
@@ -203,6 +203,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     if(type === C.TIMELINE.TYPES_ALLOWED.GALLERY || type === C.TIMELINE.TYPES_ALLOWED.GALLERY_SET){
       _body._source = [FEEDS_FIELDS.MEDIA, FEEDS_FIELDS.CREATED_AT];
     }
+    console.log(JSON.stringify(_body, null, 2))
     return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }
 
