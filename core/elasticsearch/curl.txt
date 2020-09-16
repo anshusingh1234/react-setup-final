@@ -27,6 +27,9 @@ curl -X PUT \
             "data": {
                 "enabled": false
             },
+            "media": {
+                "enabled": false
+            },
             "tagged_users": {
                 "type": "keyword"
             },
@@ -64,11 +67,11 @@ curl -X PUT \
     }
 }'
 
-curl -X PUT "http://127.0.0.1:9200/feeds-2020-37/_mapping?pretty" -H 'Content-Type: application/json' -d'
+curl -X PUT "http://127.0.0.1:9200/feeds-2020-41/_mapping?pretty" -H 'Content-Type: application/json' -d'
 {
   "properties": {
-    "reaction_by": {
-      "type": "keyword"
+    "media": {
+      "enabled": false
     }
   }
 }

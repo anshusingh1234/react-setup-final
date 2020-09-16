@@ -4,6 +4,7 @@ const FIELDS = {
   CREATED_AT: 'created_at',
   UPDATED_AT: 'updated_at',
   DATA: 'data',
+  MEDIA: 'media',
   TAGGED_USERS: 'tagged_users',
   FEELINGS: 'feelings',
   CHECK_IN_TEXT: 'check_in_text',
@@ -52,6 +53,9 @@ const MAPPING = {
         "format": "epoch_second"
       },
       [FIELDS.DATA]: {
+        enabled: false
+      },
+      [FIELDS.MEDIA]: {
         enabled: false
       },
       [FIELDS.TAGGED_USERS]: {
