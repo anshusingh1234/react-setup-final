@@ -207,6 +207,16 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }
 
+  updatePrivacy(feedId, privacy, callback){
+    const script = {
+      source: `ctx._source.${FEEDS_FIELDS.PRIVACY} = params.${FEEDS_FIELDS.PRIVACY};`,
+      params: {
+        [FEEDS_FIELDS.PRIVACY]: privacy
+      }
+    }
+    super.updateWithPartialDocWithScript(feedId, script, true, callback)
+  }
+
 }
 
 module.exports = {

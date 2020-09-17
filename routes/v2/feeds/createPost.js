@@ -48,7 +48,7 @@ createPost.saveInMongo = async (req, res, next) => {
   };
   const mongoResult = await feedsMongo.instance.insertPost(toAdd);
   mongoResult && mongoResult.originalData && (req._groupId = feedsMongo.instance.getStringFromObjectId(mongoResult.originalData._id));
-  if(!req._groupId) return next(new ApiError(400, 'E0010002'));
+  if(!req._groupId) return next(new ApiError(500, 'E0010002'));
   next();
 }
 

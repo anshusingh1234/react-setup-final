@@ -4,6 +4,7 @@ const createPost = require("./createPost");
 const feeds = require("./feeds");
 const timeline = require("./timeline");
 const deletePost = require("./deletePost");
+const updatePost = require("./updatePost");
 const auth = require('../auth');
 const error = require('../error');
 
@@ -24,6 +25,13 @@ auth,
 deletePost.validate,
 deletePost.inMongo,
 deletePost.inElastic,
+error);
+
+router.patch(`/post`,
+auth,
+updatePost.validate,
+updatePost.updateInMongo,
+updatePost.updateInES,
 error);
 
 router.get(`/timeline`,
