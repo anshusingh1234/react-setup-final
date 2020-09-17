@@ -62,16 +62,20 @@ curl -X PUT \
       },
       "reaction_by": {
         "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
       }
     }
   }
+}
 }'
 
-curl -X PUT "http://127.0.0.1:9200/feeds-2020-41/_mapping?pretty" -H 'Content-Type: application/json' -d'
+curl -X PUT "http://127.0.0.1:9200/feeds-20*/_mapping?pretty" -H 'Content-Type: application/json' -d'
 {
   "properties": {
-    "media": {
-      "enabled": false
+    "reported_by": {
+      "type": "keyword"
     }
   }
 }

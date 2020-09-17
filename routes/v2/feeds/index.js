@@ -5,6 +5,7 @@ const feeds = require("./feeds");
 const timeline = require("./timeline");
 const deletePost = require("./deletePost");
 const updatePost = require("./updatePost");
+const report = require("./report");
 const auth = require('../auth');
 const error = require('../error');
 
@@ -39,6 +40,12 @@ auth,
 timeline.validate,
 timeline.search,
 timeline.fetchDetails,
+error);
+
+router.patch(`/post/report`,
+auth,
+report.validate,
+report.save,
 error);
 
 module.exports = router;

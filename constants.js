@@ -15,4 +15,8 @@ CONSTANTS.TIMELINE = {
   }
 }
 
+CONSTANTS.POST = {
+  MAX_REPORTS_ALLOWED: 30
+}
+
 module.exports = CONSTANTS;

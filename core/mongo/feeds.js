@@ -1,5 +1,5 @@
 const {MongoDB} = require("./db");
-const { FIELDS_VALUES } = require("../elasticsearch/templates/index/feeds/v1");
+const { FIELDS_VALUES: ES_FIELDS_VALUES, FIELDS: ES_FEEDS_FIELDS } = require("../elasticsearch/templates/index/feeds/v1");
 const collectionName = "feeds";
 const FIELDS = {
   TYPE: 'type',
@@ -11,7 +11,7 @@ const FIELDS = {
   CHECK_IN_GEO_POINTS: 'check_in_geo_points',
   AUTHOR: 'author',
   PRIVACY: 'privacy',
-  PRIVATE_TO: 'private_to',
+  PRIVATE_TO: 'private_to'
 }
 
 class Feeds extends MongoDB {

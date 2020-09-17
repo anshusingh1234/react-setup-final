@@ -47,7 +47,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb",parameterLimit: 1000000}));
 app.use(bodyParser.json({ limit: "50mb" }));
-app.use(morgan('dev'))
+// app.use(morgan('dev'))
 
 jConfig.ENV !== 'local' && app.all("/api/v1/*", auth);
 jConfig.ENV !== 'local' && app.all("/api/v2/*", auth);

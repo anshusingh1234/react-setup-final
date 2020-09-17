@@ -15,7 +15,9 @@ const FIELDS = {
   COMMENTED_BY: 'commented_by',
   REACTION_BY: 'reaction_by',
   COMMENTS_COUNT: 'comments_count',
-  REACTIONS_COUNT: 'reactions_count'
+  REACTIONS_COUNT: 'reactions_count',
+  STATUS: 'status',
+  REPORTED_BY: 'reported_by'
 }
 
 const FIELDS_VALUES = {
@@ -28,6 +30,10 @@ const FIELDS_VALUES = {
   },
   [FIELDS.TYPE]: {
     MOMENTS: 'moments'
+  },
+  [FIELDS.STATUS]: {
+    LIVE: 1,
+    REPORTED: 2
   }
 }
 
@@ -89,6 +95,12 @@ const MAPPING = {
         type: "keyword"
       },
       [FIELDS.REACTION_BY]: {
+        type: "keyword"
+      },
+      [FIELDS.STATUS]: {
+        type: "keyword"
+      },
+      [FIELDS.REPORTED_BY]: {
         type: "keyword"
       }
     }

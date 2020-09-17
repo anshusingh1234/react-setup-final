@@ -4,6 +4,13 @@ const query = {};
 
 query.searchFeeds = (userId, options) => {
   let shouldArray = [];
+  let mustArray = [];
+
+  mustArray.push({
+    "term": {
+      [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
+    }
+  })
 
   shouldArray.push({
     "term": {
@@ -99,7 +106,8 @@ query.searchFeeds = (userId, options) => {
 
   return {
     "bool": {
-      "should": shouldArray
+      "should": shouldArray,
+      "must": mustArray
     }
   }
 }
@@ -163,6 +171,12 @@ query.timeline = (author, userId, isFriend, hideTime) => {
       [FEEDS_FIELDS.CREATED_AT]: {
         "gte": `now-${hideTime}`
       }
+    }
+  })
+
+  mustArray.push({
+    "term": {
+      [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
     }
   })
 
