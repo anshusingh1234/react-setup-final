@@ -100,11 +100,12 @@ script.reportPost = (userId) => {
 }
 
 /**
-* making a post live
+* making a post live and resetting the reported_by array
 */
 script.makePostLive = () => {
   return {
-    source: `ctx._source.${FEEDS_FIELDS.STATUS} = params.${FEEDS_FIELDS.STATUS};`,
+    source: `ctx._source.${FEEDS_FIELDS.STATUS} = params.${FEEDS_FIELDS.STATUS};
+    ctx._source.${FEEDS_FIELDS.REPORTED_BY} = new ArrayList();`,
     params: {
       [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
     }
