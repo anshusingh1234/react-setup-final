@@ -1,4 +1,5 @@
 const {MongoDB} = require("./db");
+const { FIELDS_VALUES: ES_FIELDS_VALUES, FIELDS: ES_FEEDS_FIELDS } = require("../elasticsearch/templates/index/feeds/v1");
 const collectionName = "feeds";
 const FIELDS = {
   TYPE: 'type',
@@ -10,7 +11,7 @@ const FIELDS = {
   CHECK_IN_GEO_POINTS: 'check_in_geo_points',
   AUTHOR: 'author',
   PRIVACY: 'privacy',
-  PRIVATE_TO: 'private_to',
+  PRIVATE_TO: 'private_to'
 }
 
 class Feeds extends MongoDB {
@@ -35,6 +36,32 @@ class Feeds extends MongoDB {
       this.collection.insertOne(post, (err, data) => {
         if(err) return reject(err);
         data.originalData = post;
+        resolve(data);
+      });
+    });
+  }
+
+  async deletePost(id){
+    return new Promise((resolve, reject) => {
+      if(!id) return reject(`Invalid post id ro delete ${id}`);
+      const objectId = super.getObjectIdFromString(id);
+      this.collection.remove({_id: objectId}, (err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
+
+  async updatePrivacy(id, privacy){
+    return new Promise((resolve, reject) => {
+      if(!id) return reject(`Invalid post id ro delete ${id}`);
+      const objectId = super.getObjectIdFromString(id);
+      this.collection.findOneAndUpdate({_id: objectId}, {
+        $set: {
+          [FIELDS.PRIVACY]: privacy
+        }
+      }, (err, data) => {
+        if(err) return reject(err);
         resolve(data);
       });
     });

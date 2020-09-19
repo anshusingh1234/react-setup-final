@@ -374,6 +374,29 @@ class AbstractElasticsearch {
     }
     this.update(id, script, callback);
   }
+
+  /**
+  * updates a doc with given partial doc
+  * @param {*} id document id
+  * @param {*} script script obj for ES update call
+  * @param {*} cb
+  */
+  updateWithPartialDocWithScript(id, script, refreshDb, cb) {
+    if (!id || !script || !cb) {
+      throw new Error('Invalid argument(s)');
+    }
+    const requestBody = _buildRequest(this.indexName, {
+      "script": script
+    }, id);
+    requestBody.refresh = refreshDb || false;
+
+    _update(requestBody, (err, response) => {
+      if (err) {
+        logger.error({err}, `[Elasticsearch] [${this.indexName}] Failed to update (with partial doc) doc ${id}:`, script);
+      }
+      return cb(err, response);
+    });
+  }
 }
 
 function _update(params, cb) {

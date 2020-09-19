@@ -1,5 +1,6 @@
-const {FIELDS: FEEDS_FIELDS} = require("../templates/index/feeds/v1");
+const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES} = require("../templates/index/feeds/v1");
 const moment = require('moment');
+const C = require("../../../constants");
 
 const script = {};
 
@@ -60,6 +61,56 @@ script.decrementCommentCount = (decrementBy) => {
     }else{
       ctx._source.${FEEDS_FIELDS.COMMENTS_COUNT} = 0;
     }`
+  }
+}
+
+/**
+* updating the privacy
+* @param {*} privacy
+*/
+script.updatePrivacy = (privacy) => {
+  return {
+    source: `ctx._source.${FEEDS_FIELDS.PRIVACY} = params.${FEEDS_FIELDS.PRIVACY};`,
+    params: {
+      [FEEDS_FIELDS.PRIVACY]: privacy
+    },
+    lang: "painless"
+  }
+}
+
+/**
+* reporting apost
+*/
+script.reportPost = (userId) => {
+  return {
+    source: `if(ctx._source.${FEEDS_FIELDS.REPORTED_BY} == null){
+      List tmp = new ArrayList();
+      tmp.add(params.token);
+      ctx._source.${FEEDS_FIELDS.REPORTED_BY} = tmp;
+    }else if(!ctx._source.${FEEDS_FIELDS.REPORTED_BY}.contains(params.token)){
+      ctx._source.${FEEDS_FIELDS.REPORTED_BY}.add(params.token)
+    }
+    if(ctx._source.${FEEDS_FIELDS.REPORTED_BY}.length >= ${C.POST.MAX_REPORTS_ALLOWED} && ctx._source.${FEEDS_FIELDS.STATUS}===${FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE}){
+      ctx._source.${FEEDS_FIELDS.STATUS}=${FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].REPORTED}
+    }`,
+    params: {
+      token: userId
+    },
+    lang: "painless"
+  }
+}
+
+/**
+* making a post live and resetting the reported_by array
+*/
+script.makePostLive = () => {
+  return {
+    source: `ctx._source.${FEEDS_FIELDS.STATUS} = params.${FEEDS_FIELDS.STATUS};
+    ctx._source.${FEEDS_FIELDS.REPORTED_BY} = new ArrayList();`,
+    params: {
+      [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
+    },
+    lang: "painless"
   }
 }
 

@@ -2,7 +2,7 @@ const moment = require('moment');
 const {dateTime} = require('../../util');
 const AbstractElasticsearch = require('./abstract');
 const config = require("../../config/jigrrConfig").getConfig();
-const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES} = require('./templates/index/feeds/v1');
+const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES, FIELDS_VALUES} = require('./templates/index/feeds/v1');
 const {feeds: FEEDS_QUERY} = require("./queries");
 const {feeds: FEEDS_SCRIPT} = require("./scripts");
 const C = require("../../constants");
@@ -81,6 +81,8 @@ class FeedsElasticsearch extends AbstractElasticsearch {
       delete data[FEEDS_FIELDS.DATA].media;
     }
 
+    data[FEEDS_FIELDS.STATUS] = FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE;
+
     const _id = `${data[FEEDS_FIELDS.FEED_ID]}:${this.dateTag}`;
     data[FEEDS_FIELDS.FEED_ID] = _id;
     super.indexDoc(_id, data, callback);
@@ -96,7 +98,6 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     const query = FEEDS_QUERY.searchFeeds(userId, {
       friends, following
     });
-    console.log(JSON.stringify(query, null, 2))
     const _body = {
       size: 100,
       query,
@@ -203,8 +204,35 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     if(type === C.TIMELINE.TYPES_ALLOWED.GALLERY || type === C.TIMELINE.TYPES_ALLOWED.GALLERY_SET){
       _body._source = [FEEDS_FIELDS.MEDIA, FEEDS_FIELDS.CREATED_AT];
     }
-    console.log(JSON.stringify(_body, null, 2))
     return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
+  }
+
+  /**
+  * Updating the privacy of the post
+  * @param {*} feedId
+  * @param {*} privacy
+  * @param {*} callback
+  */
+  updatePrivacy(feedId, privacy, callback){
+    super.updateWithPartialDocWithScript(feedId, FEEDS_SCRIPT.updatePrivacy(privacy), true, callback)
+  }
+
+  /**
+  * Reporting a post
+  * @param {*} feedId
+  * @param {*} callback
+  */
+  reportPost(feedId, userId, callback){
+    super.updateWithPartialDocWithScript(feedId, FEEDS_SCRIPT.reportPost(userId), false, callback)
+  }
+
+  /**
+  * making post a live
+  * @param {*} feedId
+  * @param {*} callback
+  */
+  makePostLive(feedId, callback){
+    super.updateWithPartialDocWithScript(feedId, FEEDS_SCRIPT.makePostLive(), true, callback)
   }
 
 }
