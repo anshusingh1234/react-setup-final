@@ -13,6 +13,7 @@ const app = express()
 const morgan = require('morgan');
 const cors = require('cors');
 const auth = require('./auth');
+const mongo = require("./core/mongo/index");
 
 app.use(cors());
 
@@ -55,11 +56,10 @@ jConfig.ENV !== 'local' && app.all("/api/v2/*", auth);
 app.use('/api/v1', index)
 app.use('/api/v2', v2Routes)
 
-const mongo = require("./core/mongo/index");
 mongo.initMongoDB().then(() => {
   app.listen(jConfig.PORT, function () {
     console.log("Server is listening on", jConfig.PORT)
-  })
+  });
 }).catch(err=> {
   console.log("Error while initializing mongo", err);
   process.exit(1);

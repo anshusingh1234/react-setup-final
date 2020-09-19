@@ -1,8 +1,9 @@
 const moment = require("moment");
-const {feeds} = require("../../core/elasticsearch");
-const {comments: commentMongo} = require("../../core/mongo");
-const { commonResponse: response } = require('../../helper/commonResponseHandler')
-const validations  = require('./../../helper/validations');
+const {feeds} = require("../../../core/elasticsearch");
+const {comments: commentMongo} = require("../../../core/mongo");
+const { commonResponse: response } = require('../../../helper/commonResponseHandler')
+const validations  = require('./../../../helper/validations');
+const ApiError = require("../ApiError");
 
 const add = {};
 
@@ -17,9 +18,8 @@ add.validateBody = (req, res, next) => {
   const {feedId, comment} = req.body;
   
   if(!feedId) return response(res, 400, null, "invalid/missing feedId");
-  if(!userId) return response(res, 400, null, "invalid/missing userId");
   if(!comment) return response(res, 400, null, "invalid/missing comment");
-  if(validations.isAbusiveContent(comment)) return response(res, 400, null, "Restricted Comment");
+  if(validations.isAbusiveContent(comment))  return next(new ApiError(400, 'E0030001'));
 
   const [_id, date] = feedId.split(':');
 
@@ -30,9 +30,7 @@ add.validateBody = (req, res, next) => {
       req.body.createdAt = moment().unix();
       next();
     }
-    else{
-      return response(res, 400, null, "Post not found");
-    }
+    else return next(new ApiError(400, 'E0010004'));
  })
 }
 
@@ -57,7 +55,7 @@ add.saveInMongo = async (req, res, next) => {
   const mongoResult = await commentMongo.instance.insert(toAdd);
   req._commentId = mongoResult && mongoResult.originalData && mongoResult.originalData._id ? mongoResult.originalData._id : '';
   req._data =  mongoResult && mongoResult.originalData ? {...mongoResult.originalData, commentId:req._commentId} : {};
-  if(!req._commentId) return response(res, 400, mongoResult.originalData, "Something went wrong");
+  if(!req._commentId) return next(new ApiError(400, 'E0010010'));
   next();
   
 }
@@ -71,17 +69,9 @@ add.saveInMongo = async (req, res, next) => {
 add.saveInES = (req, res, next) => {
   const userId = req.headers._id;
   const {feedId} = req.body;
-
-  req._instance.commentedBy(feedId, userId).then(result => {
-    req._instance.incrementCommentCount(feedId, 1).then(result => {
-      next();
-      return response(res, 200, req._data, "Comment Posted Successfully!");
-    }, err=>{
-
-    })
-  }, err=>{
-
-  })
+  req._instance.commentedBy(feedId, userId);
+  req._instance.incrementCommentCount(feedId, 1);
+  return response(res, 200, req._data, "Comment Posted Successfully!");
 }
 
 module.exports = add;

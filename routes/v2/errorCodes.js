@@ -56,6 +56,18 @@ const _errors = {
       }
     }
   },
+  E0010010: {
+    title: 'Something went wrong',
+    message: 'Something went wrong!',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Something went wrong.",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
 
   //Feed related errors
   E0020001: {
@@ -69,7 +81,64 @@ const _errors = {
         label: "Retry"
       }
     }
+  },
+
+
+  //Comments related errors
+  E0030001: {
+    title: 'Restricted Comment',
+    message: 'Restricted Comment',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Restricted Comment",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0030002: {
+    title: 'Unauthorized Access',
+    message: 'Not authorised to modify this comment',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Not authorised to modify this comment",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0030003: {
+    title: 'Unauthorized Access',
+    message: 'Not authorised to delete this comment',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Not authorised to delete this comment",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+
+  //Users related errors
+  E0040001: {
+    title: 'User not found',
+    message: 'User not found',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "User not found",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
   }
+
+
+
+
 };
 
 module.exports = {

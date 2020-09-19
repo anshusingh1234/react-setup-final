@@ -1,5 +1,5 @@
-import RedisConnection from "./connection";
-import { reject } from "async";
+const RedisConnection = require("./connection");
+const {reject} = require("async");
 
 module.exports = {
   set: (key, value, callback) => {
@@ -98,7 +98,8 @@ module.exports = {
   },
   hmset: (key, values, callback) => {
     const client = RedisConnection.getInstance();
-    if (client && key && values && Array.isArray(values) && values.length > 0) {
+
+    if (client && key && values && Object.keys(values).length > 0) {
       client.hmset(key, values, (error, result) => {
         return callback(error, result);
       });

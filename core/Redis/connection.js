@@ -1,16 +1,15 @@
-import redis from "redis";
-
-const jConfig = require("./config/jigrrConfig").getConfig();
+const redis = require("redis");
+const jConfig = require("../../config/jigrrConfig").getConfig();
 
 /**
- * Redis Connection
+ * Redis RedisConnection
  */
-let Connection = (() => {
+let RedisConnection = (() => {
     let client;
     return {
         getInstance: () => {
             if (client == null) {   
-                client = redis.createClient({port: jConfig.REDIS.PORT, host: conjConfigfig.REDIS.HOST, password: jConfig.REDIS.PASSWORD});
+                client = redis.createClient({port: jConfig.REDIS.PORT, host: jConfig.REDIS.HOST, password: jConfig.REDIS.PASSWORD});
                 client.on("error", (err) => {
                     console.error("Error in redis:", err);
                 });
@@ -19,9 +18,9 @@ let Connection = (() => {
         },
 
         initialize: () => {
-            return Connection.getInstance();
+            return RedisConnection.getInstance();
         }
     };
 })();
 
-export default Connection;
+module.exports = RedisConnection;

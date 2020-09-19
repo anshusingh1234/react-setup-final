@@ -1,5 +1,6 @@
 const {MongoDB} = require("./db");
 const collectionName = "comments";
+const async = require("async");
 
 const FIELDS = {
   ID: '_id',
@@ -47,7 +48,7 @@ class Comments extends MongoDB {
         [FIELDS.PARENT_COMMENT_ID]:0
       };
 
-      this.collection.find(where).skip(skip).limit(params.limit).toArray((err, data) => {
+      this.collection.find(where).sort({ _id: -1 }).skip(skip).limit(params.limit).toArray((err, data) => {
         if(err) return reject(err);
         resolve(data);
       });
@@ -94,6 +95,24 @@ class Comments extends MongoDB {
         resolve(data);
       });
     });
+  }
+
+  async replies(commentIds) {
+    return new Promise ((resolve, reject) => {
+      let map = new Map();
+      let scripts = commentIds.map(el => cb => {
+        const where = {
+          [FIELDS.PARENT_COMMENT_ID]:el.toString()
+        };
+        this.collection.find(where).toArray((err, data) => {
+          map.set(el, data);
+          cb()
+        });
+      })
+      async.parallel(scripts, () => {
+        resolve(map)
+      })
+    })
   }
 
 }

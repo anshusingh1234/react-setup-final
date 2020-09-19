@@ -1,7 +1,8 @@
-const { commonResponse: response } = require('../../helper/commonResponseHandler')
-const {FIELDS: ES_FEEDS_FIELDS} = require("../../core/elasticsearch/templates/index/feeds/v1");
-const {feeds} = require("../../core/elasticsearch");
-const {comments: commentMongo} = require("../../core/mongo");
+const { commonResponse: response } = require('../../../helper/commonResponseHandler')
+const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
+const {feeds} = require("../../../core/elasticsearch");
+const {comments: commentMongo} = require("../../../core/mongo");
+const ApiError = require("../ApiError");
 
 const deleteComment = {
 
@@ -28,9 +29,7 @@ const deleteComment = {
         req._author = result._source[ES_FEEDS_FIELDS.AUTHOR] === userId ? userId : '';
         next();
       }
-      else{
-        return response(res, 400, null, "Post not found");
-      }
+      else return next(new ApiError(400, 'E0010004'));
     })
   },
 
@@ -48,9 +47,7 @@ const deleteComment = {
       if(commentOwner && commentOwner[commentMongo.FIELDS.USER_ID] && commentOwner[commentMongo.FIELDS.USER_ID] == userId){
         next();
       }
-      else{
-        return response(res, 400, null, "Not authorised to delete this comment");
-      }
+      else return next(new ApiError(400, 'E0030003'));
     }
   },
 
@@ -66,7 +63,7 @@ const deleteComment = {
     if(mongoResult && mongoResult.ok){
       next();
     }
-    else return response(res, 400, null, "Something went wrong!");
+    else return next(new ApiError(400, 'E0010010'));
   },
 
   /**
