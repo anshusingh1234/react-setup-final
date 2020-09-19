@@ -16,7 +16,7 @@ createPost.validateBody = (req, res, next) => {
   const {privacy, data} = req.body;
   const userId = req.headers._id;
 
-  if(!Object.values(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY]).includes(privacy)) return next(new ApiError(400, 'E0010004'));
+  if(!Object.values(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY]).includes(privacy)) return next(new ApiError(400, 'E0010004', {debug: ""}));
 
   if(!data || (!data.content && (!Array.isArray(data.media) || !data.media.length))) return next(new ApiError(400, 'E0010004'));
 

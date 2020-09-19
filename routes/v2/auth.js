@@ -6,9 +6,10 @@ module.exports = (req, res, next) => {
   const userId = req.headers._id;
   if(!userId) return res.status(401).send();
 
-  user.isUserActive(userId).then(isActive=>{
-    if(!isActive) return res.status(401).send();
-    else next();
-  })
-  
+  // user.isUserActive(userId).then(isActive=>{
+  //   if(!isActive) return res.status(401).send();
+  //   else next();
+  // })
+  next();
+
 }
