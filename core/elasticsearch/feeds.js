@@ -223,7 +223,6 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   * @param {*} callback
   */
   reportPost(feedId, userId, callback){
-    console.log(FEEDS_SCRIPT.reportPost(userId))
     super.updateWithPartialDocWithScript(feedId, FEEDS_SCRIPT.reportPost(userId), false, callback)
   }
 

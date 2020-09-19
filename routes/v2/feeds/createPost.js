@@ -14,9 +14,34 @@ const createPost = {};
 */
 createPost.validateBody = (req, res, next) => {
   const {privacy, data} = req.body;
+  const userId = req.headers._id;
+
   if(!Object.values(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY]).includes(privacy)) return next(new ApiError(400, 'E0010004'));
 
   if(!data || (!data.content && (!Array.isArray(data.media) || !data.media.length))) return next(new ApiError(400, 'E0010004'));
+
+  //verifying check-ins starts
+  if(Array.isArray(req.body.checkInGeoPoints)){
+    if(req.body.checkInGeoPoints.length !== 2) return next(new ApiError(400, 'E0010004'));
+    const _lat = req.body.checkInGeoPoints[0];
+    const _lon = req.body.checkInGeoPoints[1];
+    if(typeof _lat !== 'number' || typeof _lon !== 'number') return next(new ApiError(400, 'E0010004'));
+    if(typeof req.body.checkInText !== 'string') return next(new ApiError(400, 'E0010004'));
+  }else{
+    delete req.body.checkInGeoPoints;
+    delete req.body.checkInText;
+  }
+  //verifying check-ins ends
+
+  //verifying taggedUsers starts
+  if(Array.isArray(req.body.taggedUsers)){
+    req.body.taggedUsers = req.body.taggedUsers.filter(el => (typeof el === 'string' && el !== userId));
+  }else{
+    delete req.body.taggedUsers;
+  }
+  //verifying taggedUsers ends
+
+  delete req.body.feelings;
 
   req.body.createdAt = moment().unix();
   next();
@@ -43,7 +68,7 @@ createPost.saveInMongo = async (req, res, next) => {
     [feedsMongo.FIELDS.TAGGED_USERS]: req.body.taggedUsers,
     [feedsMongo.FIELDS.FEELINGS]: req.body.feelings,
     [feedsMongo.FIELDS.CHECK_IN_TEXT]: req.body.checkInText,
-    [feedsMongo.FIELDS.CHECK_IN_GEO_POINTS]: req.body.checkInGroPoints,
+    [feedsMongo.FIELDS.CHECK_IN_GEO_POINTS]: req.body.checkInGeoPoints,
     [feedsMongo.FIELDS.TAGGED_USERS]: req.body.taggedUsers,
   };
   const mongoResult = await feedsMongo.instance.insertPost(toAdd);
@@ -71,7 +96,7 @@ createPost.saveInES = (req, res, next) => {
     [ES_FEEDS_FIELDS.TAGGED_USERS]: req.body.taggedUsers,
     [ES_FEEDS_FIELDS.FEELINGS]: req.body.feelings,
     [ES_FEEDS_FIELDS.CHECK_IN_TEXT]: req.body.checkInText,
-    [ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS]: req.body.checkInGroPoints,
+    [ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS]: req.body.checkInGeoPoints,
     [ES_FEEDS_FIELDS.TAGGED_USERS]: req.body.taggedUsers,
   }
   const feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));

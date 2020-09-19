@@ -73,7 +73,8 @@ script.updatePrivacy = (privacy) => {
     source: `ctx._source.${FEEDS_FIELDS.PRIVACY} = params.${FEEDS_FIELDS.PRIVACY};`,
     params: {
       [FEEDS_FIELDS.PRIVACY]: privacy
-    }
+    },
+    lang: "painless"
   }
 }
 
@@ -108,7 +109,8 @@ script.makePostLive = () => {
     ctx._source.${FEEDS_FIELDS.REPORTED_BY} = new ArrayList();`,
     params: {
       [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
-    }
+    },
+    lang: "painless"
   }
 }
 

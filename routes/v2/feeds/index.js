@@ -19,6 +19,8 @@ error);
 router.get(`/search`,
 auth,
 feeds.search,
+feeds.fetchDetails,
+feeds.buildResponse,
 error);
 
 router.delete(`/post`,
