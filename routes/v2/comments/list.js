@@ -22,12 +22,10 @@ const comments = {
   */
   validateBody: (req, res, next) => {
     const {feedId} = req.query;
-    
-    if(!feedId) return response(res, 400, null, "invalid/missing feedId");  
-    
-    const [_id, date] = feedId.split(':');
-    
-    const instance = feeds.forDate(date);
+
+    if(!feedId) return response(res, 400, null, "invalid/missing feedId");
+
+    const instance = feeds.forId(feedId);
     instance.getById(feedId, {}, (error, result) => {
       if(result && result._source){
         req._instance = instance;
@@ -36,19 +34,19 @@ const comments = {
       else return next(new ApiError(400, 'E0010004'));
     })
   },
-  
+
   list: async (req, res, next) => {
     const feedId = req.query.feedId;
     const page = parseInt(req.query.page) || DEFAULT.PAGE;
     const limit = parseInt(req.query.limit) || DEFAULT.LIMIT;
-    
+
     const params = { feedId, page, limit };
-    
+
     const mongoResult = await commentMongo.instance.list(params);
     res.status(200).send(await wrapper(mongoResult));
     next();
   }
-  
+
 };
 
 var wrapper = async (data) =>{
@@ -71,7 +69,7 @@ var wrapper = async (data) =>{
           cb();
         })
       },
-    }, 
+    },
     (error, result) => {
       let response =  data.map( _obj => {
         return {

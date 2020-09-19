@@ -9,35 +9,35 @@ const error = require('../error');
 
 
 router.post(`/add`,
-  auth,
-  addComment.validateBody,
-  addComment.saveInMongo,
-  addComment.saveInES,
-  error
+auth,
+addComment.validateBody,
+addComment.saveInMongo,
+addComment.saveInES,
+error
 )
 
 router.put(`/edit`,
-  auth,
-  editComment.validateBody,
-  editComment.verifyOwner,
-  editComment.updateInMongo,
-  error
+auth,
+editComment.validateBody,
+editComment.verifyOwner,
+editComment.updateInMongo,
+error
 )
 
 router.get(`/list`,
-  auth,
-  getComment.validateBody,
-  getComment.list,
-  error
+auth,
+getComment.validateBody,
+getComment.list,
+error
 )
 
 router.delete(`/delete`,
-  auth,
-  deleteComment.validateBody,
-  deleteComment.verifyOwner,
-  deleteComment.inMongo,
-  deleteComment.inElastic,
-  error
+auth,
+deleteComment.validateBody,
+deleteComment.verifyOwner,
+deleteComment.inMongo,
+deleteComment.inElastic,
+error
 )
 
 module.exports = router;

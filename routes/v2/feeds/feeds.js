@@ -30,8 +30,9 @@ feedsSearch.buildResponse = (req, res, next) => {
         "id": _obj[ES_FEEDS_FIELDS.FEED_ID],
         "commentsCount": _obj[ES_FEEDS_FIELDS.COMMENTS_COUNT],
         "reactionsCount": _obj[ES_FEEDS_FIELDS.REACTIONS_COUNT],
-        "media": _obj[ES_FEEDS_FIELDS.MEDIA],
-        "detail": _obj[ES_FEEDS_FIELDS.DATA],
+        "detail": {..._obj[ES_FEEDS_FIELDS.DATA],
+          "media": _obj[ES_FEEDS_FIELDS.MEDIA],
+        },
         "checkIn": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS] && {
           "geoPoints": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS],
           "text": _obj[ES_FEEDS_FIELDS.CHECK_IN_TEXT]

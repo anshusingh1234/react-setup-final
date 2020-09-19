@@ -16,7 +16,7 @@ const add = {};
 add.validateBody = (req, res, next) => {
   const userId = req.headers._id;
   const {feedId, comment} = req.body;
-  
+
   if(!feedId) return response(res, 400, null, "invalid/missing feedId");
   if(!comment) return response(res, 400, null, "invalid/missing comment");
   if(validations.isAbusiveContent(comment))  return next(new ApiError(400, 'E0030001'));
@@ -57,7 +57,7 @@ add.saveInMongo = async (req, res, next) => {
   req._data =  mongoResult && mongoResult.originalData ? {...mongoResult.originalData, commentId:req._commentId} : {};
   if(!req._commentId) return next(new ApiError(400, 'E0010010'));
   next();
-  
+
 }
 
 /**
@@ -71,7 +71,8 @@ add.saveInES = (req, res, next) => {
   const {feedId} = req.body;
   req._instance.commentedBy(feedId, userId);
   req._instance.incrementCommentCount(feedId, 1);
-  return response(res, 200, req._data, "Comment Posted Successfully!");
+  res.status(200).send(req._data);
+  next();
 }
 
 module.exports = add;

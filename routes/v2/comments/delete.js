@@ -8,16 +8,16 @@ const deleteComment = {
 
 
   /**
-   * Validate query params + feed on elastic search
-   */
+  * Validate query params + feed on elastic search
+  */
   validateBody: async(req, res, next) => {
     const commentId = req.query.id;
     const feedId = req.query.feedId;
     const userId = req.headers._id;
-    
+
     if(!feedId) return response(res, 400, null, "invalid/missing feedId");
     if(!commentId) return response(res, 400, null, "invalid/missing id");
-  
+
     const [_id, date] = feedId.split(':');
     const instance = feeds.forDate(date);
     instance.getById(feedId, {
@@ -33,8 +33,8 @@ const deleteComment = {
   },
 
   /**
-   * Verify if valid user is deleted this comment
-   */
+  * Verify if valid user is deleted this comment
+  */
   verifyOwner: async(req, res, next) => {
     const commentId = req.query.id;
     const userId = req.headers._id;
@@ -42,7 +42,7 @@ const deleteComment = {
       next();
     }
     else{
-      const commentOwner = await commentMongo.instance.getOwner(commentMongo.instance.getObjectIdFromString(commentId)); 
+      const commentOwner = await commentMongo.instance.getOwner(commentMongo.instance.getObjectIdFromString(commentId));
       if(commentOwner && commentOwner[commentMongo.FIELDS.USER_ID] && commentOwner[commentMongo.FIELDS.USER_ID] == userId){
         next();
       }
@@ -51,8 +51,8 @@ const deleteComment = {
   },
 
   /**
-   * Delete comment from Mongo
-   */
+  * Delete comment from Mongo
+  */
   inMongo: async(req, res, next) => {
     const commentId = req.query.id;
     const params = {
@@ -66,8 +66,8 @@ const deleteComment = {
   },
 
   /**
-   * Decrement specific count in elastic
-   */
+  * Decrement specific count in elastic
+  */
   inElastic: (req, res, next) => {
     const feedId = req.query.feedId;
     req._instance.decrementCommentCount(feedId, 1).then(result => {
