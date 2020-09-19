@@ -7,7 +7,7 @@ const report = {};
 
 report.validate = (req, res, next) => {
   const userId = req.headers._id;
-  const feedId = req.query.id;
+  const {feedId} = req.body;
 
   if(!feedId || !userId) return next(new ApiError(400, 'E0010009'));
   next();
@@ -21,7 +21,7 @@ report.validate = (req, res, next) => {
 */
 report.save = (req, res, next) => {
   const userId = req.headers._id;
-  const feedId = req.query.id;
+  const feedId = req.body.feedId;
 
   const instance = feeds.forId(feedId);
   instance.reportPost(feedId, userId, (error, result) => {
