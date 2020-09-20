@@ -100,8 +100,31 @@ const _gallerSetWrapper = (result) => {
 }
 
 const _feedsWrapper = (result) => {
-  result.forEach(_obj => {
-    _obj[ES_FEEDS_FIELDS.CREATED_AT] = moment( _obj[ES_FEEDS_FIELDS.CREATED_AT]*1000).format("YYYY-MM-DD hh:mm:ss")
-  })
-  return result;
+  return result.map(_obj => {
+    return {
+      "type": _obj[ES_FEEDS_FIELDS.TYPE],
+      "data": {
+        "author": {
+          "userId": _obj[ES_FEEDS_FIELDS.AUTHOR]
+        },
+        "privacy": _obj[ES_FEEDS_FIELDS.PRIVACY],
+        "createdAt": _obj[ES_FEEDS_FIELDS.CREATED_AT],
+        "id": _obj[ES_FEEDS_FIELDS.FEED_ID],
+        "commentsCount": _obj[ES_FEEDS_FIELDS.COMMENTS_COUNT],
+        "reactionsCount": _obj[ES_FEEDS_FIELDS.REACTIONS_COUNT],
+        "detail": {..._obj[ES_FEEDS_FIELDS.DATA],
+          "media": _obj[ES_FEEDS_FIELDS.MEDIA],
+        },
+        "checkIn": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS] && {
+          "geoPoints": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS],
+          "text": _obj[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
+        },
+        "taggedUsers": (_obj[ES_FEEDS_FIELDS.TAGGED_USERS] && _obj[ES_FEEDS_FIELDS.TAGGED_USERS].length) ? _obj[ES_FEEDS_FIELDS.TAGGED_USERS].map(_userId => {
+          return {
+            "userId": _userId
+          }
+        }) : undefined
+      }
+    }
+  });
 }
