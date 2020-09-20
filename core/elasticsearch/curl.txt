@@ -65,6 +65,9 @@ curl -X PUT \
       },
       "status": {
         "type": "keyword"
+      },
+      "reported_by": {
+        "type": "keyword"
       }
     }
   }
