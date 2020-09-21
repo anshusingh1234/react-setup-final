@@ -188,4 +188,26 @@ query.timeline = (author, userId, isFriend, hideTime) => {
   }
 }
 
+query.timelineRewards = () => {
+  let mustArray = [];
+
+  mustArray.push({
+    "term": {
+      [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].ADMIN
+    }
+  });
+
+  mustArray.push({
+    "term": {
+      [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
+    }
+  })
+
+  return {
+    "bool": {
+      "must": mustArray
+    }
+  }
+}
+
 module.exports = query;

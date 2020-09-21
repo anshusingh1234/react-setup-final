@@ -85,7 +85,12 @@ class FeedsElasticsearch extends AbstractElasticsearch {
 
     const _id = `${data[FEEDS_FIELDS.FEED_ID]}:${this.dateTag}`;
     data[FEEDS_FIELDS.FEED_ID] = _id;
-    super.indexDoc(_id, data, callback);
+    super.indexDoc(_id, data, (error, result) => {
+      if(result && typeof result === 'object'){
+        result.feedId = _id;
+      }
+      callback(error, result);
+    });
   }
 
   /**
@@ -197,6 +202,23 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   */
   timeline(author, userId, isFriend, type, hideTime){
     const query = FEEDS_QUERY.timeline(author, userId, isFriend, hideTime);
+    const _body = {
+      size: 100,
+      query,
+      sort: [{[FEEDS_FIELDS.UPDATED_AT]: "desc"}]
+    };
+    if(type === C.TIMELINE.TYPES_ALLOWED.GALLERY || type === C.TIMELINE.TYPES_ALLOWED.GALLERY_SET){
+      _body._source = [FEEDS_FIELDS.MEDIA, FEEDS_FIELDS.CREATED_AT];
+    }
+    return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
+  }
+
+  /**
+  * fetching timeline for the user
+  * @param {*} userId user whose feeds are getting fetched
+  */
+  timelineRewards(type){
+    const query = FEEDS_QUERY.timelineRewards();
     const _body = {
       size: 100,
       query,
