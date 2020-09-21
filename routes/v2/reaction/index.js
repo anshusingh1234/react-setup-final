@@ -16,7 +16,6 @@ router.post(`/add`,
 router.delete(`/delete`,
   auth,
   deleteReaction.validateBody,
-  deleteReaction.verifyOwner,
   deleteReaction.inMongo,
   deleteReaction.inElastic,
   error

@@ -1,65 +1,45 @@
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
-const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const {feeds} = require("../../../core/elasticsearch");
-const {comments: commentMongo} = require("../../../core/mongo");
+const {reactions: reactionMongo} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
 
-const deleteComment = {
+const deleteReaction = {
 
 
   /**
    * Validate query params + feed on elastic search
    */
   validateBody: async(req, res, next) => {
-    const commentId = req.query.id;
-    const feedId = req.query.feedId;
     const userId = req.headers._id;
-    
-    if(!feedId) return response(res, 400, null, "invalid/missing feedId");
-    if(!userId) return response(res, 400, null, "invalid/missing userId");
-    if(!commentId) return response(res, 400, null, "invalid/missing id");
-  
-    const [_id, date] = feedId.split(':');
-    const instance = feeds.forDate(date);
-    instance.getById(feedId, {
-      _source: [ES_FEEDS_FIELDS.AUTHOR]
-    }, (error, result) => {
-      if(result && result._source){
-        req._instance = instance;
-        req._author = result._source[ES_FEEDS_FIELDS.AUTHOR] === userId ? userId : '';
-        next();
-      }
-      else return next(new ApiError(400, 'E0010004'));
-    })
-  },
+    const {entityId, entityType} = req.query;
 
-  /**
-   * Verify if valid user is deleted this comment
-   */
-  verifyOwner: async(req, res, next) => {
-    const commentId = req.query.id;
-    const userId = req.headers._id;
-    if(req._author == userId){
+    const entity={
+      [reactionMongo.FIELDS.ENTITY_ID]: entityId,
+      [reactionMongo.FIELDS.ENTITY_TYPE]: entityType
+    }
+    if(!entityId) return response(res, 400, null, "invalid/missing entityId");
+    if(!entityType) return response(res, 400, null, "invalid/missing entityType");
+    const alreadyReacted = await reactionMongo.instance.checkIfAlreadyReacted(entity, userId); 
+    if(alreadyReacted){
       next();
     }
-    else{
-      const commentOwner = await commentMongo.instance.getOwner(commentMongo.instance.getObjectIdFromString(commentId)); 
-      if(commentOwner && commentOwner[commentMongo.FIELDS.USER_ID] && commentOwner[commentMongo.FIELDS.USER_ID] == userId){
-        next();
-      }
-      else return next(new ApiError(400, 'E0030003'));
-    }
+    else return response(res, 400, null, "No reactions found");
+    
   },
 
   /**
    * Delete comment from Mongo
    */
   inMongo: async(req, res, next) => {
-    const commentId = req.query.id;
-    const params = {
-      [commentMongo.FIELDS.ID]: commentMongo.instance.getObjectIdFromString(commentId)
-    };
-    const mongoResult = await commentMongo.instance.delete(params);
+    const userId = req.headers._id;
+    const {entityId, entityType} = req.query;
+
+    const entity={
+      [reactionMongo.FIELDS.ENTITY_ID]: entityId,
+      [reactionMongo.FIELDS.ENTITY_TYPE]: entityType
+    }
+
+    const mongoResult = await reactionMongo.instance.delete(entity, userId);
     if(mongoResult && mongoResult.ok){
       next();
     }
@@ -70,15 +50,16 @@ const deleteComment = {
    * Decrement specific count in elastic
    */
   inElastic: (req, res, next) => {
-    const feedId = req.query.feedId;
-    req._instance.decrementCommentCount(feedId, 1).then(result => {
-      next();
-      return response(res, 200, null, "Comment Deleted Successfully!");
-    }, err=>{
+    res.status(200).send('Reaction Deleted Successfully!');
+    next();
 
-    })
+    const {entityId, entityType} = req.query;
+    if(entityType == 'post'){
+      const feedsInstance = feeds.forId(entityId);
+      feedsInstance.decrementReactionCount(entityId, 1)
+    }
   }
 };
 
 
-module.exports = deleteComment;
+module.exports = deleteReaction;
