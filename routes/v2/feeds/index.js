@@ -14,6 +14,7 @@ auth,
 createPost.validateBody,
 createPost.saveInMongo,
 createPost.saveInES,
+createPost.buildResponse,
 error);
 
 router.get(`/search`,

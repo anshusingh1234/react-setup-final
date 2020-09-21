@@ -1,22 +1,16 @@
 const moment = require("moment");
-const {feeds} = require("../../../core/elasticsearch");
-const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FIELDS_VALUES} = require("../../../core/elasticsearch/templates/index/feeds/v1");
-const {feeds: feedsMongo} = require("../../../core/mongo");
-const ApiError = require("../ApiError");
+const {feeds} = require("../../../../core/elasticsearch");
+const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FIELDS_VALUES} = require("../../../../core/elasticsearch/templates/index/feeds/v1");
+const {feeds: feedsMongo} = require("../../../../core/mongo");
+const ApiError = require("../../ApiError");
 
 const createPost = {};
 
-/**
-* Validating JSON Body
-* @param {*} req
-* @param {*} res
-* @param {*} next
-*/
-createPost.validateBody = (req, res, next) => {
-  const {privacy, data} = req.body;
+createPost.validate = (req, res, next) => {
+  const {data} = req.body;
   const userId = req.headers._id;
 
-  if(!Object.values(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY]).includes(privacy)) return next(new ApiError(400, 'E0010004', {debug: ""}));
+  req.body.privacy = ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].ADMIN;
 
   if(!data || (!data.content && (!Array.isArray(data.media) || !data.media.length))) return next(new ApiError(400, 'E0010004'));
 
@@ -49,12 +43,6 @@ createPost.validateBody = (req, res, next) => {
   next();
 }
 
-/**
-* Saving in Mongo
-* @param {*} req
-* @param {*} res
-* @param {*} next
-*/
 createPost.saveInMongo = async (req, res, next) => {
   if(req.body.privacy === ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].CUSTOM){
     req.body[feedsMongo.FIELDS.PRIVATE_TO] = req.body.privateTo || []
@@ -103,7 +91,7 @@ createPost.saveInES = (req, res, next) => {
   }
   const feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
   feedsInstance.indexDoc(toAdd, (error, result) => {
-    if(error) console.log(error)
+    if(error) console.log(error);
     if(result && result.feedId) req._feedId = result.feedId;
     next();
   })

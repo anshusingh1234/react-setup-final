@@ -10,19 +10,17 @@ const timeline = {};
 
 timeline.validate = (req, res, next) => {
   const userId = req.headers._id;
-  const other = req.query.other;
   const type = req.query.type;
 
-  req._userToFetch = other || userId;
+  req._userToFetch = userId;
   if(!TYPES_ALLOWED.includes(type)) return next(new ApiError(400, 'E0010009'));
   next();
 }
 
 timeline.search = async (req, res, next) => {
-  const userId = req.headers._id;
   const type = req.query.type;
   let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
-  const searchResult  = await feedsInstance.timeline(req._userToFetch, userId, true, type, C.TIMELINE.DEFAULT_HIDE_TIME);
+  const searchResult  = await feedsInstance.timelineRewards(type);
   req._searchResult = (searchResult && searchResult.hits.hits && searchResult.hits.hits.map(obj => obj._source)) || [];
   next();
 }
@@ -36,7 +34,7 @@ timeline.fetchDetails = async(req, res, next) => {
     break;
 
     case C.TIMELINE.TYPES_ALLOWED.GALLERY_SET:
-    response = _gallerySetWrapper(searchResult);
+    response = _gallerSetWrapper(searchResult);
     break;
 
     case C.TIMELINE.TYPES_ALLOWED.FEEDS:
@@ -64,7 +62,7 @@ const _galleryWrapper = (result) => {
   return _return;
 }
 
-const _gallerySetWrapper = (result) => {
+const _gallerSetWrapper = (result) => {
   let yearMap = new Map();
   let dateMap = new Map();
   let _return = [];

@@ -19,4 +19,11 @@ CONSTANTS.POST = {
   MAX_REPORTS_ALLOWED: 30
 }
 
+CONSTANTS.PLATFORM = {
+  SUPPORTED: {
+    ANDROID: 'android',
+    IOS: 'ios'
+  }
+}
+
 module.exports = CONSTANTS;
