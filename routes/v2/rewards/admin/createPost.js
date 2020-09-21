@@ -35,6 +35,8 @@ createPost.validate = (req, res, next) => {
   }
   //verifying taggedUsers ends
 
+  //TODO: verify media array
+
   delete req.body.feelings;
 
   req.body.createdAt = moment().unix();
