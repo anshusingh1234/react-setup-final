@@ -1,6 +1,6 @@
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const {feeds} = require("../../../core/elasticsearch");
-const {reactions: reactionMongo} = require("../../../core/mongo");
+const {reactions: reactionMongo} = require("../../../core/Mongo");
 const ApiError = require("../ApiError");
 
 const deleteReaction = {

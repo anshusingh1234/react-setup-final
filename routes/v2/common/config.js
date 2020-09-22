@@ -1,6 +1,5 @@
 const moment = require("moment");
 const ApiError = require("../ApiError");
-const { countBy } = require("lodash");
 
 const config = {
   /**

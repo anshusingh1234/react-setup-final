@@ -1,7 +1,7 @@
 const moment = require("moment");
 const {feeds} = require("../../../core/elasticsearch");
 const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FIELDS_VALUES} = require("../../../core/elasticsearch/templates/index/feeds/v1");
-const {feeds: feedsMongo} = require("../../../core/mongo");
+const {feeds: feedsMongo} = require("../../../core/Mongo");
 const ApiError = require("../ApiError");
 
 const updatePost = {};

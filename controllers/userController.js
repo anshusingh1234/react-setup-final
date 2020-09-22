@@ -922,7 +922,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
@@ -1206,7 +1206,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
@@ -1308,7 +1308,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
@@ -1372,7 +1372,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
@@ -1531,7 +1531,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
@@ -1579,7 +1579,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
@@ -3329,7 +3329,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
@@ -3924,7 +3924,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
@@ -3972,7 +3972,7 @@ module.exports = {
             })
 
         }
-        catch{
+        catch(e){
             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.SOMETHING_WRONG);
         }
     },
