@@ -649,6 +649,7 @@ module.exports = {
                                 response(res, ErrorCode.NOT_FOUND, [], ErrorMessage.NOT_FOUND)
                             }
                             else {
+                                user.saveUserProfile(userData._id, updateData);
                                 response(res, SuccessCode.SUCCESS, updateData, SuccessMessage.UPDATE_SUCCESS)
                             }
                         })
