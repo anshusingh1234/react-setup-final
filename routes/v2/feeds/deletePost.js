@@ -1,7 +1,7 @@
 const {feeds} = require("../../../core/elasticsearch");
 const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const ApiError = require("../ApiError");
-const {feeds: feedsMongo} = require("../../../core/Mongo");
+const {feeds: feedsMongo} = require("../../../core/mongoDB");
 
 const deletePost = {};
 

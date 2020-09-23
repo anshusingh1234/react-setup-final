@@ -13,7 +13,7 @@ const app = express()
 const morgan = require('morgan');
 const cors = require('cors');
 const auth = require('./auth');
-const mongo = require("./core/mongo/index");
+const mongo = require("./core/mongoDB/index");
 
 app.use(cors());
 

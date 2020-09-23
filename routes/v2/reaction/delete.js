@@ -1,6 +1,6 @@
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const {feeds} = require("../../../core/elasticsearch");
-const {reactions: reactionMongo} = require("../../../core/Mongo");
+const {reactions: reactionMongo} = require("../../../core/mongoDB");
 const ApiError = require("../ApiError");
 
 const deleteReaction = {
@@ -19,12 +19,12 @@ const deleteReaction = {
     }
     if(!entityId) return response(res, 400, null, "invalid/missing entityId");
     if(!entityType) return response(res, 400, null, "invalid/missing entityType");
-    const alreadyReacted = await reactionMongo.instance.checkIfAlreadyReacted(entity, userId); 
+    const alreadyReacted = await reactionMongo.instance.checkIfAlreadyReacted(entity, userId);
     if(alreadyReacted){
       next();
     }
     else return response(res, 400, null, "No reactions found");
-    
+
   },
 
   /**

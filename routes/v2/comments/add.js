@@ -1,6 +1,6 @@
 const moment = require("moment");
 const {feeds} = require("../../../core/elasticsearch");
-const {comments: commentMongo} = require("../../../core/Mongo");
+const {comments: commentMongo} = require("../../../core/mongoDB");
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const validations  = require('./../../../helper/validations');
 const ApiError = require("../ApiError");

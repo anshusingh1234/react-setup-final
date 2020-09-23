@@ -381,7 +381,7 @@ module.exports = {
     },
     /**
         * Function Name :showUserProfile
-        * Description   : show user profile 
+        * Description   : show user profile
         *
         * @return response
       */
@@ -397,7 +397,7 @@ module.exports = {
                 else {
                     response(res, SuccessCode.SUCCESS, userData, SuccessMessage.DETAIL_GET)
 
-                    //var userData = await 
+                    //var userData = await
                     // userModel.findOne({ _id: req.body.user, status: "ACTIVE" }, (error, findUserData) => {
                     //     if (UserErr) {
                     //         response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
@@ -2039,7 +2039,7 @@ module.exports = {
 
     /**
       * Function Name :search contact
-      * Description   : search contact in contact list 
+      * Description   : search contact in contact list
       *
       * @return response
     */
@@ -2079,7 +2079,7 @@ module.exports = {
     },
     /**
        * Function Name :myBlockUserList
-       * Description   : show my myBlockUserList 
+       * Description   : show my myBlockUserList
        *
        * @return response
      */
@@ -3262,7 +3262,7 @@ module.exports = {
                             response(res, SuccessCode.SUCCESS, saveData, SuccessMessage.DATA_SAVED)
                         }
                     })
-                    //     } 
+                    //     }
                     // })
                 }
             })

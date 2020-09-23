@@ -1,4 +1,4 @@
-const { MongoClient, ObjectID} = require("../../node_modules/mongodb");
+const { MongoClient, ObjectID} = require("mongodb");
 const jConfig = require("../../config/jigrrConfig").getConfig();
 
 const host = jConfig.MONGO.HOST || "0.0.0.0";

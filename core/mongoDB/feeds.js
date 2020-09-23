@@ -1,5 +1,4 @@
 const {MongoDB} = require("./db");
-const { FIELDS_VALUES: ES_FIELDS_VALUES, FIELDS: ES_FEEDS_FIELDS } = require("../elasticsearch/templates/index/feeds/v1");
 const collectionName = "feeds";
 const FIELDS = {
   TYPE: 'type',
@@ -24,6 +23,7 @@ class Feeds extends MongoDB {
     if(!this.collection) {
       const db = await super.getDBInstance();
       this.collection = db.collection(collectionName);
+      console.log(this.collection)
     }
   }
 

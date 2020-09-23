@@ -1,6 +1,6 @@
 const moment = require("moment");
 const {feeds} = require("../../../core/elasticsearch");
-const {reactions: reactionMongo} = require("../../../core/Mongo");
+const {reactions: reactionMongo} = require("../../../core/mongoDB");
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const validations  = require('./../../../helper/validations');
 const ApiError = require("../ApiError");
@@ -57,7 +57,7 @@ add.saveInMongo = async (req, res, next) => {
   if(mongoResult && mongoResult.ok){
     next();
   }
-  else return next(new ApiError(400, 'E0010010'));  
+  else return next(new ApiError(400, 'E0010010'));
 }
 
 /**
