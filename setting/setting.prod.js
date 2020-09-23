@@ -7,6 +7,10 @@ const settings = {
       "LOG_LEVEL": process.env["ELASTIC_SEARCH:LOG_LEVEL"] || "info",
       "SERVER_API_VERSION": process.env["ELASTIC_SEARCH:SERVER_API_VERSION"] || "_default"
     },
+    "LOG": {
+      "PATH": process.env["LOG_PATH"],
+      "LEVEL": process.env["LOG_LEVEL"] || "info"
+    },
     "REDIS":{
       "PORT":process.env["REDIS:PORT"],
       "HOST":process.env["REDIS:HOST"],

@@ -14,6 +14,8 @@ const morgan = require('morgan');
 const cors = require('cors');
 const auth = require('./auth');
 const mongo = require("./core/mongo/index");
+const requestLogger = require('./routes/requestLogger');
+
 
 app.use(cors());
 
@@ -48,6 +50,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb",parameterLimit: 1000000}));
 app.use(bodyParser.json({ limit: "50mb" }));
+app.use(requestLogger());
+
 // app.use(morgan('dev'))
 
 // jConfig.ENV !== 'local' && app.all("/api/v1/*", auth);
