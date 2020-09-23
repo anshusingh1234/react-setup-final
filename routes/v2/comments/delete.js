@@ -1,7 +1,7 @@
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const {feeds} = require("../../../core/elasticsearch");
-const {comments: commentMongo} = require("../../../core/mongoDB");
+const {comments: commentMongo} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
 
 const deleteComment = {
