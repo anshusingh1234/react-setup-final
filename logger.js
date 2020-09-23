@@ -28,7 +28,7 @@ const RES_SERIALIZER = (res) => {
 };
 
 const logger = bunyan.createLogger({
-    name: "longwalks",
+    name: "jigrr",
     src: true,
     serializers: {
       err: ERR_SERIALIZER,
