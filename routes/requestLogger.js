@@ -3,8 +3,8 @@ const shortUuid = require('short-uuid');
 
 module.exports = (options) => {
   return (req, res, next) => {
-    req.requestId = req.headers['x-amzn-trace-id'] || req.headers['x-lgwk-request-id'] || shortUuid.generate();
-    res.set('x-lgwk-request-id', req.requestId);
+    req.requestId = req.headers['x-jigrr-request-id'] || shortUuid.generate();
+    res.set('x-jigrr-request-id', req.requestId);
 
     req.logger = logger.child({
       requestId: req.requestId
