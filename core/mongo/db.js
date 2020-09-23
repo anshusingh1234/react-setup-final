@@ -2,7 +2,7 @@ const { MongoClient, ObjectID} = require("mongodb");
 const jConfig = require("../../config/jigrrConfig").getConfig();
 
 const host = jConfig.MONGO.HOST || "0.0.0.0";
-const dbName = jConfig.MONGO.DB_NAME || "jigrr";
+const dbName = jConfig.MONGO.DB_NAME || "build-socialMedia-dev";
 const user = jConfig.MONGO.USER;
 const pass = jConfig.MONGO.PASS;
 const port = jConfig.MONGO.PORT || "27017"
