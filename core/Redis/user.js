@@ -17,14 +17,16 @@ const user = {
 
   saveUserProfile: (userId, userData) => {
     return new Promise((resolve, reject) => {
-      query.hmset(key.USER_SHORT_DETAIL(userId), {
-        [HASH_FIELDS.USER_ID]: userId,
+      const userProfile = {
+        [HASH_FIELDS.USER_ID]: userId.toString(),
         [HASH_FIELDS.PROFILE_PRIVACY]: userData.profilePrivacy,
         [HASH_FIELDS.NAME]: userData.name,
         [HASH_FIELDS.PICTURE]: userData.profilePic,
         [HASH_FIELDS.USER_TYPE]: userData.userType,
         [HASH_FIELDS.STATUS]: userData.status,
-      }, (err, result)=>{
+      }
+      
+      query.hmset(key.USER_SHORT_DETAIL(userId), userProfile, (err, result)=>{
         if(err) return reject(err); 
         else return resolve(result);
       });
