@@ -50,8 +50,8 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "50mb",parameterLimit: 10
 app.use(bodyParser.json({ limit: "50mb" }));
 // app.use(morgan('dev'))
 
-jConfig.ENV !== 'local' && app.all("/api/v1/*", auth);
-jConfig.ENV !== 'local' && app.all("/api/v2/*", auth);
+// jConfig.ENV !== 'local' && app.all("/api/v1/*", auth);
+// jConfig.ENV !== 'local' && app.all("/api/v2/*", auth);
 
 app.use('/api/v1', index)
 app.use('/api/v2', v2Routes)

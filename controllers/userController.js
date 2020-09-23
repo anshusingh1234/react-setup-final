@@ -25,6 +25,7 @@ const favouriteModel = require('../models/favouriteModel')
 const foodModel = require('../models/foodModel')
 const notificationModel = require('../models/notificationModel')
 
+const { user } = require("./../core/Redis");
 
 
 module.exports = {
@@ -288,7 +289,8 @@ module.exports = {
                                 response(res, ErrorCode.NOT_FOUND, ErrorMessage.NOT_FOUND)
                             }
                             else {
-                                response(res, SuccessCode.SUCCESS, updateData, SuccessMessage.UPDATE_SUCCESS)
+                              user.saveUserProfile(userData._id, updateData);
+                              response(res, SuccessCode.SUCCESS, updateData, SuccessMessage.UPDATE_SUCCESS)
                             }
                         })
                 }
