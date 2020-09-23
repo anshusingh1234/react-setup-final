@@ -1,8 +1,8 @@
 const { MongoClient, ObjectID} = require("mongodb");
 const jConfig = require("../../config/jigrrConfig").getConfig();
 
-const host = jConfig.MONGO.HOST || "0.0.0.0";
-const dbName = jConfig.MONGO.DB_NAME || "jigrr";
+const host = jConfig.MONGO.HOST || "localhost";
+const dbName = jConfig.MONGO.DB_NAME || "build-socialMedia-stag";
 const user = jConfig.MONGO.USER;
 const pass = jConfig.MONGO.PASS;
 const port = jConfig.MONGO.PORT || "27017"
@@ -34,7 +34,7 @@ class MongoDB {
       if(user && pass) {
         url = `${url}${authString}`;
       }
-      url = `${url}${host}:27017/?authSource=${dbName}`;
+      url = `${url}${host}/${dbName}`;
       if(replicaSet) {
         url = `${url}&replicaSet=${replicaSet}`;
       }
