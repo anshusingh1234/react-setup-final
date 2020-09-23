@@ -64,7 +64,6 @@ const obfuscateReqHeaders = (headersOriginal) => {
 
 const getStructuredLog = (req, res) => {
   const reqHeaders = obfuscateReqHeaders(req.headers);
-  // const resHeaders = obfuscateResHeaders(res.getHeaders());
 
   const logData = {
     status: res.statusCode,
