@@ -23,7 +23,6 @@ class Feeds extends MongoDB {
     if(!this.collection) {
       const db = await super.getDBInstance();
       this.collection = db.collection(collectionName);
-      console.log(this.collection)
     }
   }
 
