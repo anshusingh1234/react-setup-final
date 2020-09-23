@@ -21,7 +21,7 @@ const user = {
         [HASH_FIELDS.USER_ID]: userId.toString(),
         [HASH_FIELDS.PROFILE_PRIVACY]: userData.profilePrivacy,
         [HASH_FIELDS.NAME]: userData.name,
-        [HASH_FIELDS.PICTURE]: userData.profilePic,
+        [HASH_FIELDS.PICTURE]: userData.profilePic ? userData.profilePic : '',
         [HASH_FIELDS.USER_TYPE]: userData.userType,
         [HASH_FIELDS.STATUS]: userData.status,
       }
