@@ -26,6 +26,18 @@ class Users extends MongoDB {
     return this.collection;
   }
 
+  async list(params) {
+    return new Promise((resolve, reject) => {
+     const where = {
+       [FIELDS.STATUS]:'ACTIVE'
+     }
+      this.collection.find(where).sort({ _id: -1 }).toArray((err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
+
   async shortDetail(userId) {
     return new Promise((resolve, reject) => {
       const where = {
