@@ -86,3 +86,11 @@ curl -X PUT "http://127.0.0.1:9200/feeds-20*/_mapping?pretty" -H 'Content-Type: 
   }
 }
 '
+
+curl -X POST "http://127.0.0.1:9200/feeds-20*/_delete_by_query?pretty" -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "match_all": {}
+  }
+}
+'
