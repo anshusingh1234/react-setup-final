@@ -14,6 +14,4 @@ module.exports = (req, res, next) => {
     if(!isActive) return res.status(401).send();
     else next();
   })
-  next();
-
 }
