@@ -10,7 +10,7 @@ syncContacts.upload = async(req, res, next) => {
   if(!contacts.length) return next(new ApiError(400, 'E0010004'))
 
   try{
-    const response = await contactsMongo.instance.addContacts(userId, contacts.map(_obj => {
+    await contactsMongo.instance.addContacts(userId, contacts.map(_obj => {
       if(_obj.countryCode && _obj.nationalNumber && _obj.contactName){
         return {
           [contactsMongo.NESTED_FIELDS[contactsMongo.FIELDS.CONTACTS].COUNTRY_CODE]: Number(_obj.countryCode),
@@ -20,7 +20,7 @@ syncContacts.upload = async(req, res, next) => {
         }
       }
     }).filter(el => el))
-    res.status(200).send(response)
+    res.status(200).send()
     next();
   }catch(e){
     console.log(e)
