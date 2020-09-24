@@ -3,12 +3,14 @@ const key = require("./keys");
 const async = require("async");
 
 const HASH_FIELDS = {
-    USER_ID: "id",
-    PROFILE_PRIVACY: "profilePrivacy",
-    NAME: "name",
-    PICTURE: "picture",
-    USER_TYPE: "userType",
-    STATUS: "status"
+  USER_ID: "id",
+  PROFILE_PRIVACY: "profilePrivacy",
+  NAME: "name",
+  FIRSTNAME: "firstName",
+  LASTNAME: "lastName",
+  PICTURE: "picture",
+  USER_TYPE: "userType",
+  STATUS: "status"
 }
 
 const user = {
@@ -17,17 +19,23 @@ const user = {
 
   saveUserProfile: (userId, userData) => {
     return new Promise((resolve, reject) => {
+      let firstName, lastName;
+      if(userData.name.includes(" ")){
+        [firstName, lastName] = userData.name.split(' ')
+      };
       const userProfile = {
         [HASH_FIELDS.USER_ID]: userId.toString(),
         [HASH_FIELDS.PROFILE_PRIVACY]: userData.profilePrivacy,
         [HASH_FIELDS.NAME]: userData.name,
+        [HASH_FIELDS.FIRSTNAME]: userData.firstName || firstName,
+        [HASH_FIELDS.LASTNAME]: userData.lastName || lastName,
         [HASH_FIELDS.PICTURE]: userData.profilePic ? userData.profilePic : '',
         [HASH_FIELDS.USER_TYPE]: userData.userType,
         [HASH_FIELDS.STATUS]: userData.status,
       }
-      
+
       query.hmset(key.USER_SHORT_DETAIL(userId), userProfile, (err, result)=>{
-        if(err) return reject(err); 
+        if(err) return reject(err);
         else return resolve(result);
       });
     })
@@ -35,22 +43,27 @@ const user = {
 
   isUserActive: (userId) => {
     return new Promise((resolve, reject) => {
-        query.hget({key:key.USER_SHORT_DETAIL(userId), field:HASH_FIELDS.STATUS},(err, result)=>{
-          return resolve(result == 'ACTIVE' ? true : false);
-       })
+      query.hget({key:key.USER_SHORT_DETAIL(userId), field:HASH_FIELDS.STATUS},(err, result)=>{
+        return resolve(result == 'ACTIVE' ? true : false);
+      })
     })
   },
 
   getUserProfile: (userId) => {
     return new Promise((resolve, reject) => {
-        query.hgetall(key.USER_SHORT_DETAIL(userId),(result)=>{
-          let shortDetail = {
+      query.hgetall(key.USER_SHORT_DETAIL(userId),(error, result)=>{
+        let shortDetail;
+        if(result){
+          shortDetail = {
             [HASH_FIELDS.USER_ID]: result[HASH_FIELDS.USER_ID],
             [HASH_FIELDS.NAME]: result[HASH_FIELDS.NAME],
+            [HASH_FIELDS.FIRSTNAME]: result[HASH_FIELDS.FIRSTNAME],
+            [HASH_FIELDS.LASTNAME]: result[HASH_FIELDS.LASTNAME],
             [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE]
           }
-          return resolve(shortDetail);
-       })
+        }
+        return resolve(shortDetail);
+      })
     })
   },
 
@@ -58,17 +71,12 @@ const user = {
     return new Promise ((resolve, reject) => {
       let map = new Map();
       let scripts = userIds.map(el => cb => {
-        query.hgetall(key.USER_SHORT_DETAIL(el),(error, result)=>{
-          let shortDetail = {
-            [HASH_FIELDS.USER_ID]: result[HASH_FIELDS.USER_ID],
-            [HASH_FIELDS.NAME]: result[HASH_FIELDS.NAME],
-            [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE]
-          }
-          map.set(el, shortDetail);
+        user.getUserProfile(el).then(shortDetail => {
+          shortDetail && map.set(el, shortDetail);
           cb()
         })
       })
-      async.parallel(scripts, () => {
+      async.parallelLimit(scripts, 10, () => {
         resolve(map)
       })
     })

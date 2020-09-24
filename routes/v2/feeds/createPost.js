@@ -62,6 +62,7 @@ createPost.saveInMongo = async (req, res, next) => {
 
   const toAdd = {
     [feedsMongo.FIELDS.TYPE]: 'post',
+    [feedsMongo.FIELDS.SUBTYPE]: 'post',
     [feedsMongo.FIELDS.DATA]: req.body.data,
     [feedsMongo.FIELDS.AUTHOR]: req.headers._id,
     [feedsMongo.FIELDS.PRIVACY]: req.body.privacy,
@@ -90,6 +91,7 @@ createPost.saveInES = (req, res, next) => {
   const toAdd = {
     [ES_FEEDS_FIELDS.FEED_ID]: feedId,
     [ES_FEEDS_FIELDS.TYPE]: 'post',
+    [ES_FEEDS_FIELDS.SUB_TYPE]: 'post',
     [ES_FEEDS_FIELDS.DATA]: req.body.data,
     [ES_FEEDS_FIELDS.AUTHOR]: req.headers._id,
     [ES_FEEDS_FIELDS.PRIVACY]: req.body.privacy,

@@ -1,6 +1,7 @@
 const FIELDS = {
   FEED_ID: 'feed_id',
   TYPE: 'type',
+  SUB_TYPE: 'sub_type',
   CREATED_AT: 'created_at',
   UPDATED_AT: 'updated_at',
   DATA: 'data',
@@ -48,6 +49,9 @@ const MAPPING = {
         type: "keyword"
       },
       [FIELDS.TYPE]: {
+        type: "keyword"
+      },
+      [FIELDS.SUB_TYPE]: {
         type: "keyword"
       },
       [FIELDS.CREATED_AT]: {

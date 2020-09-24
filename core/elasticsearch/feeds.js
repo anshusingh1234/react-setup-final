@@ -52,12 +52,13 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   * adding a new document in the feed
   * @param {String} data[FEEDS_FIELDS.FEED_ID] [Mandatory] feed id to create in the format => <_id>:<date>
   * @param {String} data[FEEDS_FIELDS.TYPE] [Mandatory]
+  * @param {String} data[FEEDS_FIELDS.SUB_TYPE] [Mandatory]
   * @param {String} data[FEEDS_FIELDS.AUTHOR] [Mandatory] author of the post
   * @param {String} data[FEEDS_FIELDS.PRIVACY] [Mandatory] privacy of the post
   * @param {*} callback
   */
   indexDoc({...data}, callback){
-    if(!data[FEEDS_FIELDS.FEED_ID] || !data[FEEDS_FIELDS.TYPE] || !data[FEEDS_FIELDS.AUTHOR] || !Object.values(FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY]).includes(data[FEEDS_FIELDS.PRIVACY])) return callback("Invalid params", null);
+    if(!data[FEEDS_FIELDS.FEED_ID] || !data[FEEDS_FIELDS.TYPE] || !data[FEEDS_FIELDS.SUB_TYPE] || !data[FEEDS_FIELDS.AUTHOR] || !Object.values(FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY]).includes(data[FEEDS_FIELDS.PRIVACY])) return callback("Invalid params", null);
 
     if(typeof data[FEEDS_FIELDS.DATA] !== 'object') return callback("invalid feed data type", null);
     if(!Array.isArray(data[FEEDS_FIELDS.TAGGED_USERS])) data[FEEDS_FIELDS.TAGGED_USERS] = [];
@@ -108,7 +109,6 @@ class FeedsElasticsearch extends AbstractElasticsearch {
       query,
       sort: [{[FEEDS_FIELDS.UPDATED_AT]: "desc"}]
     };
-    console.log(JSON.stringify(_body, null, 2))
     return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }
 

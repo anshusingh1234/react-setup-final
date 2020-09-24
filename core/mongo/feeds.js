@@ -2,6 +2,7 @@ const {MongoDB} = require("./db");
 const collectionName = "feeds";
 const FIELDS = {
   TYPE: 'type',
+  SUBTYPE: 'sub_type',
   CREATED_AT: 'created_at',
   DATA: 'data',
   TAGGED_USERS: 'tagged_users',

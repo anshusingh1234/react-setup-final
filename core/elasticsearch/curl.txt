@@ -16,6 +16,9 @@ curl -X PUT \
       "type": {
         "type": "keyword"
       },
+      "sub_type": {
+        "type": "keyword"
+      },
       "created_at": {
         "type": "date",
         "format": "epoch_second"
@@ -77,7 +80,7 @@ curl -X PUT \
 curl -X PUT "http://127.0.0.1:9200/feeds-20*/_mapping?pretty" -H 'Content-Type: application/json' -d'
 {
   "properties": {
-    "reported_by": {
+    "sub_type": {
       "type": "keyword"
     }
   }
