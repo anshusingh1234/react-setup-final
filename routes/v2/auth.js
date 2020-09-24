@@ -7,12 +7,13 @@ module.exports = (req, res, next) => {
   const userId = req.headers._id;
   const platform = req.headers.platform;
   const version = req.headers.version;
+
   if(!userId || !Object.values(C.PLATFORM.SUPPORTED).includes(platform) || !version) return res.status(401).send();
 
-  // user.isUserActive(userId).then(isActive=>{
-  //   if(!isActive) return res.status(401).send();
-  //   else next();
-  // })
+  user.isUserActive(userId).then(isActive=>{
+    if(!isActive) return res.status(401).send();
+    else next();
+  })
   next();
 
 }

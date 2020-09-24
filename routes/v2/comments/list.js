@@ -42,21 +42,23 @@ const comments = {
 
     const params = { feedId, page, limit };
 
+    const total = await commentMongo.instance.countComments(params);
     const mongoResult = await commentMongo.instance.list(params);
-    res.status(200).send(await wrapper(mongoResult));
+
+    res.status(200).send(await wrapper(total, mongoResult));
     next();
   }
 
 };
 
-var wrapper = async (data) =>{
+var wrapper = async (total, data) =>{
   return new Promise ((resolve, reject) => {
-    const userIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.USER_ID]))];
+    let userIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.USER_ID]))];
     const commentIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.ID]))];
 
-    let userProfiles, replies;
+    let userProfiles = [], replies = [];
 
-    async.parallel({
+    async.series({
       replies: cb => {
         commentMongo.instance.replies(commentIds).then(res=>{
           replies = res;
@@ -64,7 +66,11 @@ var wrapper = async (data) =>{
         })
       },
       profiles: cb => {
-        user.getAllUsersProfile(userIds).then(res=>{
+        let repliesUserIds = [...new Set((([...replies.values()]).map(repliesArray => {
+          return repliesArray.map(obj => obj.user_id)
+        })).reduce((x, z) => x.concat(z), []))]
+
+        user.getAllUsersProfile(userIds.concat(repliesUserIds)).then(res=>{
           userProfiles = res;
           cb();
         })
@@ -72,22 +78,29 @@ var wrapper = async (data) =>{
     },
     (error, result) => {
       let response =  data.map( _obj => {
-        return {
-          "feedId": _obj[commentMongo.FIELDS.POST_ID],
-          "comment": _obj[commentMongo.FIELDS.COMMENT],
-          "createdAt": _obj[commentMongo.FIELDS.CREATED_AT],
-          "replies": replies.get(_obj[commentMongo.FIELDS.ID]),
-          "user": userProfiles.get(_obj[commentMongo.FIELDS.USER_ID])
+        var formatTuple = (data, profiles, replies) =>{
+          if(data && data[commentMongo.FIELDS.ID]){
+            const allReplies = replies.get(data[commentMongo.FIELDS.ID]);
+            return {
+              "commentId": data[commentMongo.FIELDS.ID],
+              "feedId": data[commentMongo.FIELDS.POST_ID],
+              "comment": data[commentMongo.FIELDS.COMMENT],
+              "createdAt": data[commentMongo.FIELDS.CREATED_AT],
+              "replies": allReplies && allReplies.length && allReplies.map(reply=>formatTuple(reply, profiles, replies)),
+              "user": profiles.get(data[commentMongo.FIELDS.USER_ID])
+            }
+          }
         }
+        return formatTuple(_obj, userProfiles, replies);
       }).filter(el => el);
-      resolve(response)
+
+      resolve({
+        total: total,
+        response: response
+      })
     })
   })
 }
-
-
-
-
 
 
 module.exports = comments;

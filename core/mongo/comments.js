@@ -54,6 +54,21 @@ class Comments extends MongoDB {
       });
     });
   }
+  async countComments(params) {
+    return new Promise((resolve, reject) => {
+      const where = {
+        [FIELDS.POST_ID]: params.feedId,
+        [FIELDS.PARENT_COMMENT_ID]:0
+      };
+
+      this.collection.countDocuments(where,(err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
+
+  
 
   async delete(params) {
     return new Promise((resolve, reject) => {

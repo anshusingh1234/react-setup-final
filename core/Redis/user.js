@@ -44,7 +44,12 @@ const user = {
   getUserProfile: (userId) => {
     return new Promise((resolve, reject) => {
         query.hgetall(key.USER_SHORT_DETAIL(userId),(result)=>{
-          return resolve(result);
+          let shortDetail = {
+            [HASH_FIELDS.USER_ID]: result[HASH_FIELDS.USER_ID],
+            [HASH_FIELDS.NAME]: result[HASH_FIELDS.NAME],
+            [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE]
+          }
+          return resolve(shortDetail);
        })
     })
   },
@@ -54,7 +59,12 @@ const user = {
       let map = new Map();
       let scripts = userIds.map(el => cb => {
         query.hgetall(key.USER_SHORT_DETAIL(el),(error, result)=>{
-          map.set(el, result);
+          let shortDetail = {
+            [HASH_FIELDS.USER_ID]: result[HASH_FIELDS.USER_ID],
+            [HASH_FIELDS.NAME]: result[HASH_FIELDS.NAME],
+            [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE]
+          }
+          map.set(el, shortDetail);
           cb()
         })
       })
