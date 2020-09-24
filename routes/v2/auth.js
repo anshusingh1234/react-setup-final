@@ -8,6 +8,8 @@ module.exports = (req, res, next) => {
   const platform = req.headers.platform;
   const version = req.headers.version;
 
+  req._userId = userId;
+
   if(!userId || !Object.values(C.PLATFORM.SUPPORTED).includes(platform) || !version) return res.status(401).send();
 
   user.isUserActive(userId).then(isActive=>{
