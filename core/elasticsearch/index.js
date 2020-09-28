@@ -1,3 +1,4 @@
 module.exports = {
-  feeds: require('./feeds')
+  feeds: require('./feeds'),
+  events: require('./events')
 }
