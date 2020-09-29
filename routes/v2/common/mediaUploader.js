@@ -1,11 +1,12 @@
 const cloudinary = require('cloudinary');
 const multiparty = require("multiparty");
 const async = require('async');
+const jigrrConfig = require("../../../config/jigrrConfig").getConfig();
 
 cloudinary.config({
-  cloud_name: 'dl2d0v5hy',
-  api_key: '841684319665911',
-  api_secret: 'kG5j1sXJT3eeNAp5CtpZgIdfQzM'
+  cloud_name: jigrrConfig.CLOUDINARY.CLOUD_NAME,
+  api_key: jigrrConfig.CLOUDINARY.API_KEY,
+  api_secret: jigrrConfig.CLOUDINARY.API_SECRET
 });
 
 

@@ -4,6 +4,7 @@ const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FIELDS_VALUES} = require("../.
 const {feeds: feedsMongo} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
 const multiparty = require("multiparty");
+const C = require("../../../constants");
 
 const createPost = {};
 
@@ -54,6 +55,11 @@ createPost.validateBody = (req, res, next) => {
   if(!Object.values(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY]).includes(privacy)) return next(new ApiError(400, 'E0010004', {debug: ""}));
 
   if(data && data.media) delete data.media;
+  if(Array.isArray(req._files)){
+    const images = req._files.image || [];
+    const videos = req._files.video || [];
+    if((images.length + videos.length) > C.POST.MAX_MEDIA_ALLOWED) return next(new ApiError(400, 'E0010004', {debug: ""}));
+  }
 
   //verifying check-ins starts
   if(Array.isArray(req.body.checkInGeoPoints)){
