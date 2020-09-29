@@ -15,8 +15,8 @@ const deleteComment = {
     const feedId = req.query.feedId;
     const userId = req.headers._id;
 
-    if(!feedId) return response(res, 400, null, "invalid/missing feedId");
-    if(!commentId) return response(res, 400, null, "invalid/missing id");
+    if(!feedId) return next(new ApiError(400, 'E0030004'));
+    if(!commentId) return next(new ApiError(400, 'E0030005'));
 
     const [_id, date] = feedId.split(':');
     const instance = feeds.forDate(date);
@@ -72,7 +72,7 @@ const deleteComment = {
     const feedId = req.query.feedId;
     req._instance.decrementCommentCount(feedId, 1).then(result => {
       next();
-      return response(res, 200, null, "Comment Deleted Successfully!");
+      res.status(200).send({response_message:'Comment deleted successfully!'});
     }, err=>{
 
     })

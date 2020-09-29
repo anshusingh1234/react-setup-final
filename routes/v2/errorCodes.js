@@ -121,6 +121,43 @@ const _errors = {
       }
     }
   },
+  E0030004: {
+    title: 'Invalid FeedID',
+    message: 'Invalid FeedID',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0030005: {
+    title: 'Invalid ID',
+    message: 'Invalid ID',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0030006: {
+    title: 'Invalid Comment',
+    message: 'Invalid Comment',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  
 
   //Users related errors
   E0040001: {
@@ -134,9 +171,33 @@ const _errors = {
         label: "Retry"
       }
     }
-  }
+  },
 
-
+  //TOPICS RELATED ERRORR
+  E0050001: {
+    title: 'Invalid Topic',
+    message: 'Invalid Topic',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0050002: {
+    title: 'Invalid Language',
+    message: 'Invalid Language',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
 
 
 };

@@ -17,8 +17,8 @@ add.validateBody = (req, res, next) => {
   const userId = req.headers._id;
   const {feedId, comment} = req.body;
 
-  if(!feedId) return response(res, 400, null, "invalid/missing feedId");
-  if(!comment) return response(res, 400, null, "invalid/missing comment");
+  if(!feedId) return next(new ApiError(400, 'E0030004'));
+  if(!comment) return next(new ApiError(400, 'E0030006'));
   if(validations.isAbusiveContent(comment))  return next(new ApiError(400, 'E0030001'));
 
   const [_id, date] = feedId.split(':');
@@ -71,7 +71,7 @@ add.saveInES = (req, res, next) => {
   const {feedId} = req.body;
   req._instance.commentedBy(feedId, userId);
   req._instance.incrementCommentCount(feedId, 1);
-  res.status(200).send(req._data);
+  res.status(200).send({response_message:'Comment added successfully!'});
   next();
 }
 

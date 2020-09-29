@@ -50,7 +50,7 @@ const deleteReaction = {
    * Decrement specific count in elastic
    */
   inElastic: (req, res, next) => {
-    res.status(200).send('Reaction Deleted Successfully!');
+    res.status(200).send({response_message:'Reaction deleted successfully!'});
     next();
 
     const {entityId, entityType} = req.query;
