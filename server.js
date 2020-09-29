@@ -57,6 +57,8 @@ app.use(requestLogger());
 // jConfig.ENV !== 'local' && app.all("/api/v1/*", auth);
 // jConfig.ENV !== 'local' && app.all("/api/v2/*", auth);
 
+app.all("/api/v2/topics/list", auth);
+
 app.use('/api/v1', index)
 app.use('/api/v2', v2Routes)
 
