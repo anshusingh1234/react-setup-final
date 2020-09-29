@@ -40,6 +40,7 @@ feedsSearch.buildResponse = (req, res, next) => {
         "data": {
           "author": user,
           "privacy": _obj[ES_FEEDS_FIELDS.PRIVACY],
+          "feelings": _obj[ES_FEEDS_FIELDS.FEELINGS],
           "createdAt": _obj[ES_FEEDS_FIELDS.CREATED_AT],
           "id": _obj[ES_FEEDS_FIELDS.FEED_ID],
           "commentsCount": _obj[ES_FEEDS_FIELDS.COMMENTS_COUNT],
