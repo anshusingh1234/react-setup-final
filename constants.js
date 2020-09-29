@@ -26,4 +26,11 @@ CONSTANTS.PLATFORM = {
   }
 }
 
+CONSTANTS.REFERRALS = {
+  TYPES: {
+    PRIVATE: 'private',
+    PUBLIC: 'public'
+  }
+}
+
 module.exports = CONSTANTS;
