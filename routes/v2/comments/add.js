@@ -71,7 +71,7 @@ add.saveInES = (req, res, next) => {
   const {feedId} = req.body;
   req._instance.commentedBy(feedId, userId);
   req._instance.incrementCommentCount(feedId, 1);
-  res.status(200).send(req._data);
+  res.status(200).send({response_message:'Comment added successfully!'});
   next();
 }
 

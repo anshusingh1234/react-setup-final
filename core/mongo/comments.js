@@ -72,11 +72,7 @@ class Comments extends MongoDB {
 
   async delete(params) {
     return new Promise((resolve, reject) => {
-      const where = {
-        [FIELDS.ID]: params.commentId
-      };
-
-      this.collection.findOneAndDelete(where, (err, data)=> {
+      this.collection.findOneAndDelete(params, (err, data)=> {
         if(err) return reject(err);
         resolve(data);
       });

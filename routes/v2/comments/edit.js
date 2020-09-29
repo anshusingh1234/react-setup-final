@@ -61,7 +61,7 @@ edit.updateInMongo = async (req, res, next) => {
   const mongoResult = await commentMongo.instance.update(commentId, params);
 
   if(mongoResult && mongoResult.ok){
-    return response(res, 200, null, "Comment Updated Successfully!");
+    res.status(200).send({response_message:'Comment updated successfully!'});
   }
   else return next(new ApiError(400, 'E0010010'));
 }

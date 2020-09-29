@@ -72,7 +72,7 @@ const deleteComment = {
     const feedId = req.query.feedId;
     req._instance.decrementCommentCount(feedId, 1).then(result => {
       next();
-      return response(res, 200, null, "Comment Deleted Successfully!");
+      res.status(200).send({response_message:'Comment deleted successfully!'});
     }, err=>{
 
     })

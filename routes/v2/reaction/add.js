@@ -67,7 +67,7 @@ add.saveInMongo = async (req, res, next) => {
 * @param {*} next
 */
 add.saveInES = async (req, res, next) => {
-  res.status(200).send('Reaction Posted Successfully!');
+  res.status(200).send({response_message:'Reaction posted successfully!'});
   next();
 
   const {entityId, entityType, alreadyReacted} = req.body;
