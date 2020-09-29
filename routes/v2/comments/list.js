@@ -23,7 +23,7 @@ const comments = {
   validateBody: (req, res, next) => {
     const {feedId} = req.query;
 
-    if(!feedId) return response(res, 400, null, "invalid/missing feedId");
+    if(!feedId) return next(new ApiError(400, 'E0030004'));
 
     const instance = feeds.forId(feedId);
     instance.getById(feedId, {}, (error, result) => {

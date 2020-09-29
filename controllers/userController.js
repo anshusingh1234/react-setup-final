@@ -1837,6 +1837,7 @@ module.exports = {
                 else {
                     var friends = userResult.friends.map(f => f.friendId);
                     postModel.find({ postStatus: "ACTIVE" }, (err, result) => {
+                      
                         if (err) {
                             response(res, ErrorCode.INTERNAL_ERROR, [], ErrorMessage.INTERNAL_ERROR);
                         }
@@ -1904,6 +1905,7 @@ module.exports = {
                             };
 
                             userModel.paginate(query, options, (err2, result2) => {
+                              console.log('EEEEE', err2);
                                 if (err2) {
                                     response(res, ErrorCode.INTERNAL_ERROR, [], ErrorMessage.INTERNAL_ERROR);
                                 }

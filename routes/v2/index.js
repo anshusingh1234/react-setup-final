@@ -7,6 +7,7 @@ const common = require('./common');
 const reaction = require('./reaction');
 const rewards = require('./rewards');
 const users = require('./users');
+const topics = require('./topics');
 
 router.use('/feeds', feeds);
 router.use('/comments',comments)
@@ -14,5 +15,6 @@ router.use('/common',common)
 router.use('/reaction',reaction)
 router.use('/rewards', rewards)
 router.use('/users', users)
+router.use('/topics', topics)
 
 module.exports= router;

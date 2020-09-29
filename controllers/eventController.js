@@ -32,7 +32,6 @@ module.exports = {
     createEvent: (req, res) => {
         try {
             userModel.findOne({ _id: req.headers._id, status: "ACTIVE" }, async (err, result) => {
-                console.log("JDJJFJ", err, result)
 
                 if (err) {
                     response(res, ErrorCode.INTERNAL_ERROR, [], ErrorMessage.INTERNAL_ERROR);
@@ -41,6 +40,7 @@ module.exports = {
                     response(res, ErrorCode.NOT_FOUND, [], ErrorMessage.USER_NOT_FOUND);
                 }
                 else {
+                  console.log('COMPLETE REQUEST', req);
                     var hour = req.body.time.match(/(\d+)/);
                     var hours = parseInt(hour[0])
                     var newDate = new Date(req.body.date)

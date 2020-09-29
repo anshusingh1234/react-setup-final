@@ -15,10 +15,12 @@ const edit = {};
 */
 edit.validateBody = (req, res, next) => {
   const userId = req.headers._id;
-  const {feedId, comment} = req.body;
+  const {feedId, comment, id} = req.body;
 
-  if(!feedId) return response(res, 400, null, "invalid/missing feedId");
-  if(!comment) return response(res, 400, null, "invalid/missing comment");
+  if(!feedId) return next(new ApiError(400, 'E0030004'));
+  if(!id) return next(new ApiError(400, 'E0030005'));
+  if(!comment) return next(new ApiError(400, 'E0030006'));
+  
   if(validations.isAbusiveContent(comment)) return next(new ApiError(400, 'E0030001'));
 
   const [_id, date] = feedId.split(':');
