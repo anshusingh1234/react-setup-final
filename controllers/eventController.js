@@ -712,7 +712,7 @@ module.exports = {
                                                             }
                                                         })
                                                         //     }
-                                                        // }) 
+                                                        // })
                                                     }
                                                 }
                                             })
@@ -785,7 +785,7 @@ module.exports = {
                                                             }
                                                         })
                                                         //     }
-                                                        // }) 
+                                                        // })
                                                     }
                                                 }
                                             })
@@ -1114,7 +1114,7 @@ module.exports = {
     //                     event.privacy = "ONLYME"
     //                 }
 
-    //                 eventModel.create(event, async (error, eventData) => {   
+    //                 eventModel.create(event, async (error, eventData) => {
     //                     console.log("gagagagg", error, eventData)
     //                     if (error) {
     //                         response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
@@ -1668,6 +1668,7 @@ module.exports = {
 
                 else {
                     var myEvent = await eventModel.find({ userId: userData._id, status: "ACTIVE", date: { $gte: todayDate }, eventType: { $in: ["ONLINE_ANTAKSHRI", "ONLINE_GENERAL"] } });
+                    console.log(">>>>>>>>>>>myEvent", myEvent)
 
                     eventModel.find({ privacy: 1, status: "ACTIVE", date: { $gte: todayDate }, eventType: { $in: ["ONLINE_ANTAKSHRI", "ONLINE_GENERAL"] } }, async (eventErr, eventData) => {
                         console.log(">>>>>>>>>>>12", eventData)
@@ -2483,5 +2484,3 @@ module.exports = {
 
 
 }
-
-
