@@ -59,6 +59,19 @@ class Contacts extends MongoDB {
     })
   }
 
+  getContacts(userId){
+    return new Promise((resolve, reject) => {
+      const where = {
+        [FIELDS.USER_ID]: userId
+      }
+      this.collection.findOne(where, (err, data)=> {
+        if(err) return reject(err);
+        const contacts = data && data.contacts ? data.contacts : [];
+        resolve(contacts);
+      });
+    });
+  }
+
 }
 
 module.exports = {

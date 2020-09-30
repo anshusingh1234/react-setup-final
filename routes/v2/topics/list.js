@@ -27,8 +27,9 @@ const topics = {
   list: async (req, res, next) => {
     const page = parseInt(req.query.page) || DEFAULT.PAGE;
     const limit = parseInt(req.query.limit) || DEFAULT.LIMIT;
+    const language = req.query.language;
 
-    const params = { page, limit };
+    const params = { language, page, limit };
 
     const total = await topicMongo.instance.countTopics(params);
     const mongoResult = await topicMongo.instance.list(params);

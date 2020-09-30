@@ -43,8 +43,10 @@ class Topics extends MongoDB {
   async list(params) {
     return new Promise((resolve, reject) => {
       const skip = (params.page-1) * params.limit;
-
-      this.collection.find().sort({ _id: -1 }).skip(skip).limit(params.limit).toArray((err, data) => {
+      const where = {
+        [FIELDS.LANGUAGE]: params.language
+      }
+      this.collection.find(where).sort({ _id: -1 }).skip(skip).limit(params.limit).toArray((err, data) => {
         if(err) return reject(err);
         resolve(data);
       });
@@ -53,8 +55,10 @@ class Topics extends MongoDB {
 
   async countTopics(params) {
     return new Promise((resolve, reject) => {
-      
-      this.collection.countDocuments({},(err, data) => {
+      const where = {
+        [FIELDS.LANGUAGE]: params.language
+      }
+      this.collection.countDocuments(where,(err, data) => {
         if(err) return reject(err);
         resolve(data);
       });
