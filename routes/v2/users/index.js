@@ -12,7 +12,7 @@ userList.list,
 error
 )
 
-router.get(`/friendSuggestions`,
+router.get(`/friend/suggestions`,
 auth,
 friends.suggestions,
 error

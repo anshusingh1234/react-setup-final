@@ -6,6 +6,7 @@ const FIELDS = {
   PROFILE_PIC: 'profilePic',
   STATUS: 'status',
   NAME: 'name',
+  MOBILE: 'mobileNumber'
 }
 
 
@@ -45,13 +46,29 @@ class Users extends MongoDB {
         [FIELDS.STATUS]:'ACTIVE'
       }
 
-      const selectFields = {
-        [FIELDS.PROFILE_PIC]:1,
-        [FIELDS.NAME]:1,
-        [FIELDS.ID]:1
+      const selectField = { 
+        projection: 
+        { 
+          [FIELDS.PROFILE_PIC]:1,
+          [FIELDS.NAME]:1,
+          [FIELDS.ID]:1
+        } 
       }
 
-      this.collection.findOne(where, selectFields).toArray((err, data) => {
+      this.collection.findOne(where, selectField).toArray((err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
+
+  async fullDetail(userId) {
+    return new Promise((resolve, reject) => {
+      const where = {
+        [FIELDS.ID] : this.getObjectIdFromString(userId),
+        [FIELDS.STATUS]:'ACTIVE'
+      }
+      this.collection.findOne(where, (err, data) => {
         if(err) return reject(err);
         resolve(data);
       });
@@ -72,6 +89,27 @@ class Users extends MongoDB {
       })
     })
   }
+
+  async getMobileUserIDs(mobileNumbers) {
+    return new Promise((resolve, reject) => {
+      const where = {
+        [FIELDS.STATUS]:'ACTIVE',
+        [FIELDS.MOBILE]: {$in: mobileNumbers}
+      }
+      const selectField = { 
+        projection: 
+        { 
+          [FIELDS.ID]:1
+        } 
+      }
+      this.collection.find(where, selectField).sort({ _id: -1 }).toArray((err, data) => {
+        if(err) return reject(err);
+        const userIDs = data && data.length ? data.map(user=>{return user[FIELDS.ID].toString()}) : []
+        resolve(userIDs);
+      });
+    });
+  }
+  
 
 }
 
