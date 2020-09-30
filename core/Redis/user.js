@@ -35,6 +35,8 @@ const user = {
       }
       !userProfile[HASH_FIELDS.FIRSTNAME] && delete userProfile[HASH_FIELDS.FIRSTNAME];
       !userProfile[HASH_FIELDS.LASTNAME] && delete userProfile[HASH_FIELDS.LASTNAME];
+      !userProfile[HASH_FIELDS.NAME] && delete userProfile[HASH_FIELDS.NAME];
+
       query.hmset(key.USER_SHORT_DETAIL(userId), userProfile, (err, result)=>{
         if(err) return reject(err);
         else return resolve(result);
