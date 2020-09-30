@@ -23,6 +23,11 @@ const settings = {
       "PASS":process.env["MONGO:PASS"],
       "PORT":process.env["MONGO:PORT"],
       "REPLICA_SET":process.env["MONGO:REPLICA_SET"]
+    },
+    "CLOUDINARY": {
+      "CLOUD_NAME": process.env["CLOUDINARY:CLOUD_NAME"],
+      "API_KEY": process.env["CLOUDINARY:API_KEY"],
+      "API_SECRET": process.env["CLOUDINARY:API_SECRET"]
     }
   }
 };

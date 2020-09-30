@@ -70,3 +70,4 @@ mongo.initMongoDB().then(() => {
   console.log("Error while initializing mongo", err);
   process.exit(1);
 })
+

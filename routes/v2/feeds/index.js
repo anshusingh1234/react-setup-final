@@ -8,10 +8,13 @@ const updatePost = require("./updatePost");
 const report = require("./report");
 const auth = require('../auth');
 const error = require('../error');
+const mediaUploader = require("../common/mediaUploader");
 
 router.post(`/post`,
 auth,
+createPost.formDataWrapper,
 createPost.validateBody,
+mediaUploader.uploadReqFiles,
 createPost.saveInMongo,
 createPost.saveInES,
 createPost.buildResponse,

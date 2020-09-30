@@ -28,9 +28,9 @@ class Users extends MongoDB {
 
   async list(params) {
     return new Promise((resolve, reject) => {
-     const where = {
-       [FIELDS.STATUS]:'ACTIVE'
-     }
+      const where = {
+        [FIELDS.STATUS]:'ACTIVE'
+      }
       this.collection.find(where).sort({ _id: -1 }).toArray((err, data) => {
         if(err) return reject(err);
         resolve(data);
@@ -41,7 +41,7 @@ class Users extends MongoDB {
   async shortDetail(userId) {
     return new Promise((resolve, reject) => {
       const where = {
-        [FIELDS.ID] : userId, 
+        [FIELDS.ID] : userId,
         [FIELDS.STATUS]:'ACTIVE'
       }
 
@@ -56,6 +56,21 @@ class Users extends MongoDB {
         resolve(data);
       });
     });
+  }
+
+  saveReferredBy(userId, referredBy){
+    return new Promise((resolve, reject) => {
+      this.collection.findOneAndUpdate({_id: userId}, {
+        $set: {
+          referrals: {
+            referredBy
+          }
+        }
+      }, (error, result) => {
+        if(error) return reject(error);
+        resolve(result);
+      })
+    })
   }
 
 }

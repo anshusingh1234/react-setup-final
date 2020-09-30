@@ -16,13 +16,21 @@ CONSTANTS.TIMELINE = {
 }
 
 CONSTANTS.POST = {
-  MAX_REPORTS_ALLOWED: 30
+  MAX_REPORTS_ALLOWED: 30,
+  MAX_MEDIA_ALLOWED: 9
 }
 
 CONSTANTS.PLATFORM = {
   SUPPORTED: {
     ANDROID: 'android',
     IOS: 'ios'
+  }
+}
+
+CONSTANTS.REFERRALS = {
+  TYPES: {
+    PRIVATE: 'private',
+    PUBLIC: 'public'
   }
 }
 
