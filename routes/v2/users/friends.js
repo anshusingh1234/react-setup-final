@@ -18,7 +18,7 @@ const friends = {
 
   suggestions: async (req, res, next) => {
     const userId = req.headers._id;
-    let userData, contacts, contactsUserIDs, suggestions;
+    let userData, contacts = [], contactsUserIDs = [], suggestions = [];
 
     async.series({
       userDetail: cb => {
