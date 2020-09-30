@@ -20,7 +20,7 @@ const user = {
   saveUserProfile: (userId, userData) => {
     return new Promise((resolve, reject) => {
       let firstName, lastName;
-      if(userData.name.includes(" ")){
+      if(userData.name && userData.name.includes(" ")){
         [firstName, lastName] = userData.name.split(' ')
       };
       const userProfile = {
