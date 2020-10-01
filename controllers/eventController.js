@@ -2026,6 +2026,17 @@ module.exports = {
     },
 
     eventHosted: (req, res) => {
+      const formatResponse = (data, status) =>{
+        return { 
+          _id: data._id, 
+          title: data.title || '', 
+          date: data.date || '', 
+          time: data.time || '', 
+          image: data.image && data.image[0] ? data.image[0] : '', 
+          eventType:data.eventType || '', 
+          status: status 
+        }
+      }
         try {
             userModel.findOne({ _id: req.headers._id, status: "ACTIVE" }, (err, userData) => {
                 if (err) {
@@ -2050,26 +2061,25 @@ module.exports = {
                             eventData.forEach((p) => {
                                 if (date1 <= p.date) {
                                     if (p.status == "ACTIVE") {
-                                        upcoming.push({ _id: p._id, title: p.title, date: p.date, image: p.image[0], status: "PLANNED" })
+                                        upcoming.push(formatResponse(p, "PLANNED"))
                                     }
                                     if (p.status == "CANCEL") {
-                                        upcoming.push({ _id: p._id, title: p.title, date: p.date, image: p.image[0], status: "CANCELLED" })
+                                        upcoming.push(formatResponse(p, "CANCELLED"))
                                     }
-
                                 }
                                 else if (date1 >= p.date && date1 <= p.expiryDate) {
                                     if (p.status == "ACTIVE") {
-                                        upcoming.push({ _id: p._id, title: p.title, date: p.date, image: p.image[0], status: "LIVE" })
+                                        upcoming.push(formatResponse(p, "LIVE"))
                                     }
                                 }
                                 else {
                                     if (p.status == "ACTIVE") {
-                                        previous.push({ _id: p._id, title: p.title, date: p.date, image: p.image[0], status: "COMPLETED" })
+                                        previous.push(formatResponse(p, "COMPLETED"))
 
                                         // previous.push(p.title, p.image[0], p.status = "COMPLETED")
                                     }
                                     if (p.status == "CANCEL") {
-                                        previous.push({ _id: p._id, title: p.title, date: p.date, image: p.image[0], status: "CANCELLED" })
+                                        previous.push(formatResponse(p, "CANCELLED"))
 
                                     }
                                     //previous.push(p.title,p.status)
