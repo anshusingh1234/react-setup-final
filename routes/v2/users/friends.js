@@ -16,8 +16,13 @@ const DEFAULT = {
 
 const friends = {
 
+  /**
+   * API to fetch friends suggestions starts here
+   */
   suggestions: async (req, res, next) => {
     const userId = req.headers._id;
+    const keyword = req.query.keyword;
+
     let userData, contacts = [], contactsUserIDs = [], suggestions = [];
 
     async.series({
@@ -28,7 +33,8 @@ const friends = {
         })
       },
       allContacts: cb => {
-        contactsMongo.instance.getContacts(userId).then(res=>{
+        const params = { userId, keyword };
+        contactsMongo.instance.getContacts(params).then(res=>{
           contacts = res;
           cb();
         })
@@ -63,6 +69,7 @@ const friends = {
       next();
     })
   }
+
 
 };
 
