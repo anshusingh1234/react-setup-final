@@ -178,6 +178,10 @@ module.exports = {
                 response(res, ErrorCode.NOT_FOUND, [], ErrorMessage.MOBILE_NOT_FOUND);
             }
             else {
+                // user.saveUserProfile(result._id, updateData);
+                console.log("-------------------------------------------\n\n\n\n\n")
+                console.log(JSON.stringify(result, null, 2))
+                console.log("\n\n\n\n\n------------------------------")
                 if (result.otp == req.body.otp || req.body.otp == 1234) {
                     var newTime = Date.now()
                     var difference = newTime - result.otpTime
@@ -1837,7 +1841,7 @@ module.exports = {
                 else {
                     var friends = userResult.friends.map(f => f.friendId);
                     postModel.find({ postStatus: "ACTIVE" }, (err, result) => {
-                      
+
                         if (err) {
                             response(res, ErrorCode.INTERNAL_ERROR, [], ErrorMessage.INTERNAL_ERROR);
                         }
