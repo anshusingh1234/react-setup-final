@@ -13,26 +13,26 @@ createPost.formDataWrapper = (req, res, next) => {
   form.parse(req, (error, fields, files) => {
     if(error || !fields) return next(new ApiError(400, 'E0010004'));
     console.log("CREATE POST FORM DATA", fields)
-    const type = Array.isArray(fields.type) && fields.type[0];
-    const privacy = Array.isArray(fields.privacy) && Number(fields.privacy[0]);
-    const content = Array.isArray(fields.content) && fields.content[0];
-    const checkInGeoPointsLat = Array.isArray(fields.checkInGeoPointsLat) && Number(fields.checkInGeoPointsLat[0]);
-    const checkInGeoPointsLon = Array.isArray(fields.checkInGeoPointsLon) && Number(fields.checkInGeoPointsLon[0]);
-    const checkInText = Array.isArray(fields.checkInText) && fields.checkInText[0];
-    const taggedUsers = Array.isArray(fields.taggedUsers) && fields.taggedUsers;
-    const feelings = Array.isArray(fields.feelings) && fields.feelings[0];
+    const type = (Array.isArray(fields.type) && fields.type[0]) ? fields.type[0] : undefined;
+    const privacy = (Array.isArray(fields.privacy)) ? Number(fields.privacy[0]) : undefined ;
+    const content = (Array.isArray(fields.content) && typeof fields.content[0] === 'string') ? fields.content[0]: undefined ;
+    const checkInGeoPointsLat = (Array.isArray(fields.checkInGeoPointsLat) && fields.checkInGeoPointsLat[0]) ? fields.checkInGeoPointsLat[0] : undefined;
+    const checkInGeoPointsLon = (Array.isArray(fields.checkInGeoPointsLon) && fields.checkInGeoPointsLat[0]) ? fields.checkInGeoPointsLon[0] : undefined;
+    const checkInText = (Array.isArray(fields.checkInText) && typeof fields.checkInText[0] === 'string') ? fields.checkInText[0] : undefined;
+    const taggedUsers = Array.isArray(fields.taggedUsers) ? fields.taggedUsers : undefined;
+    const feelings = (Array.isArray(fields.feelings) && typeof fields.feelings[0] === 'string') ? fields.feelings[0] : undefined;
     req.body = {
       "type": type,
       "data": {
         "content": content
       },
-      "checkInGeoPoints": [
-        checkInGeoPointsLat,
-        checkInGeoPointsLon
-      ],
+      "checkInGeoPoints": (checkInGeoPointsLat && checkInGeoPointsLon) ? [
+        Number(checkInGeoPointsLat) ? Number(checkInGeoPointsLat) : 0.0,
+        Number(checkInGeoPointsLon) ? Number(checkInGeoPointsLon) : 0.0
+      ] : undefined,
       "checkInText": checkInText,
       "privacy": privacy,
-      "feelings": feelings,
+      "feelings": Number(feelings),
       "taggedUsers": taggedUsers
     }
     req._files = files;
@@ -67,7 +67,7 @@ createPost.validateBody = (req, res, next) => {
     const _lat = req.body.checkInGeoPoints[0];
     const _lon = req.body.checkInGeoPoints[1];
     if(typeof _lat !== 'number' || typeof _lon !== 'number') return next(new ApiError(400, 'E0010004'));
-    if(typeof req.body.checkInText !== 'string') return next(new ApiError(400, 'E0010004'));
+    if(typeof req.body.checkInText !== 'string' || !req.body.checkInText.length) return next(new ApiError(400, 'E0010004'));
   }else{
     delete req.body.checkInGeoPoints;
     delete req.body.checkInText;

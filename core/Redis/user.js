@@ -20,7 +20,7 @@ const user = {
   saveUserProfile: (userId, userData) => {
     return new Promise((resolve, reject) => {
       let firstName, lastName;
-      if(userData.name.includes(" ")){
+      if(userData.name && userData.name.includes(" ")){
         [firstName, lastName] = userData.name.split(' ')
       };
       const userProfile = {
@@ -33,6 +33,9 @@ const user = {
         [HASH_FIELDS.USER_TYPE]: userData.userType,
         [HASH_FIELDS.STATUS]: userData.status,
       }
+      !userProfile[HASH_FIELDS.FIRSTNAME] && delete userProfile[HASH_FIELDS.FIRSTNAME];
+      !userProfile[HASH_FIELDS.LASTNAME] && delete userProfile[HASH_FIELDS.LASTNAME];
+      !userProfile[HASH_FIELDS.NAME] && delete userProfile[HASH_FIELDS.NAME];
 
       query.hmset(key.USER_SHORT_DETAIL(userId), userProfile, (err, result)=>{
         if(err) return reject(err);

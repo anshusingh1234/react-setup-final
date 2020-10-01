@@ -35,12 +35,16 @@ feedsSearch.buildResponse = (req, res, next) => {
     user && delete user.name;
     const taggedUsers = (_obj[ES_FEEDS_FIELDS.TAGGED_USERS] || []).length && _obj[ES_FEEDS_FIELDS.TAGGED_USERS].map(_id => req._userMap.get(_id)).filter(el => el);
     if(user){
+      if(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS]){
+        _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat + "";
+        _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon + "";
+      }
       return {
         "type": _obj[ES_FEEDS_FIELDS.TYPE],
         "data": {
           "author": user,
           "privacy": _obj[ES_FEEDS_FIELDS.PRIVACY],
-          "feelings": _obj[ES_FEEDS_FIELDS.FEELINGS],
+          "feelings": Number(_obj[ES_FEEDS_FIELDS.FEELINGS]) ? Number(_obj[ES_FEEDS_FIELDS.FEELINGS]) : undefined,
           "createdAt": _obj[ES_FEEDS_FIELDS.CREATED_AT],
           "id": _obj[ES_FEEDS_FIELDS.FEED_ID],
           "commentsCount": _obj[ES_FEEDS_FIELDS.COMMENTS_COUNT],
