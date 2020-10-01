@@ -21,7 +21,7 @@ const friends = {
    */
   suggestions: async (req, res, next) => {
     const userId = req.headers._id;
-    const keyword = req.query.keyword;
+    const keyword = req.query.keyword || '';
 
     let userData, contacts = [], contactsUserIDs = [], suggestions = [];
 
