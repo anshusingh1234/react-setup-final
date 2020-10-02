@@ -115,7 +115,7 @@ class Users extends MongoDB {
   getFriends(userId){
     return new Promise((resolve, reject) => {
       this.collection.findOne({
-        _id: userId
+        _id: super.getObjectIdFromString(userId)
       }, (err, data) => {
         if(err) return reject(err);
         console.log(JSON.stringify(data, null, 2))
