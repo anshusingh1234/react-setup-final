@@ -2,13 +2,15 @@ const {feeds} = require("../../../core/elasticsearch");
 const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const moment = require("moment");
 const {user} = require("../../../core/Redis");
-const { ES } = require("aws-sdk");
+const {users: mongoUsers} = require("../../../core/mongo");
 
 const feedsSearch = {};
 
 feedsSearch.search = async (req, res, next) => {
   let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
-  const searchResult  = await feedsInstance.searchFeed(req.headers._id, [], []);
+  const friends = await mongoUsers.instance.getFriends(req.headers._id) || [];
+  console.log("----------------", friends)
+  const searchResult  = await feedsInstance.searchFeed(req.headers._id, friends, []);
   req._searchResult = (searchResult && searchResult.hits.hits) || [];
   next();
 
