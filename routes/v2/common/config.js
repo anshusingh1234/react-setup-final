@@ -12,8 +12,9 @@ const config = {
     const config = {
       privacyOptions:[
         {label:'Public', value:0, icon:''},
-        {label:'Friends', value:1, icon:''},
-        {label:'Only Me', value:2, icon:''},
+        {label:'Only Me', value:1, icon:''},
+        {label:'Friends', value:2, icon:''},
+        {label:'Custom', value:3, icon:''},
       ],
       reactions:[
         {name:'like', value:1, icon:''},
