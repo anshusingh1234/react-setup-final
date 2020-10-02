@@ -104,9 +104,14 @@ query.searchFeeds = (userId, options) => {
     }
   })
 
+  mustArray.push({
+    "bool": {
+      "should": shouldArray
+    }
+  })
+
   return {
     "bool": {
-      "should": shouldArray,
       "must": mustArray
     }
   }
