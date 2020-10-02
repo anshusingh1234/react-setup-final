@@ -121,7 +121,7 @@ class Users extends MongoDB {
         console.log(JSON.stringify(data, null, 2))
         let friends = data && Array.isArray(data.friends) && data.friends.map(_obj => {
           if(_obj.status === 'ACTIVE'){
-            return _obj.friendId;
+            return super.getStringFromObjectId(_obj.friendId);
           }
         }).filter(el => el);
         Array.isArray(data) ? resolve(friends) : resolve([])
