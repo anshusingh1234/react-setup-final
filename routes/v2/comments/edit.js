@@ -4,6 +4,7 @@ const {comments: commentMongo} = require("../../../core/mongo");
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const validations  = require('./../../../helper/validations');
 const ApiError = require("../ApiError");
+const {user} = require("./../../../core/Redis");
 
 const edit = {};
 
@@ -54,18 +55,42 @@ edit.verifyOwner = async(req, res, next) => {
 */
 edit.updateInMongo = async (req, res, next) => {
   const {id, comment} = req.body;
+  const userId = req.headers._id;
 
   const commentId =  commentMongo.instance.getObjectIdFromString(id);
   const params = {
     [commentMongo.FIELDS.COMMENT]: comment,
     [commentMongo.FIELDS.UPDATED_AT]: req.body.updatedAt
   };
-  const mongoResult = await commentMongo.instance.update(commentId, params);
 
-  if(mongoResult && mongoResult.ok){
-    res.status(200).send({response_message:'Comment updated successfully!'});
+  const mongoResult = await commentMongo.instance.update(commentId, params);
+  const userData = await user.getUserProfile(userId);
+
+  
+if(mongoResult && mongoResult.ok){
+    const response = wrapper(mongoResult.value, userData);
+    res.status(200).send(response);
   }
   else return next(new ApiError(400, 'E0010010'));
 }
+
+
+
+const wrapper = (data, userData) =>{
+  return {
+    response_message:'Comment updated successfully!',
+    comment:{
+      commentId : data[commentMongo.FIELDS.ID],
+      feedId: data[commentMongo.FIELDS.POST_ID],
+      comment: data[commentMongo.FIELDS.COMMENT],
+      createdAt: data[commentMongo.FIELDS.CREATED_AT],
+      replies: [],
+      reactionCount:0,
+      topReactions:[],
+      user: userData
+    }
+  }
+}
+
 
 module.exports = edit;

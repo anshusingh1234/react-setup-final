@@ -59,14 +59,16 @@ class Contacts extends MongoDB {
     })
   }
 
-  getContacts(userId){
+  getContacts(params){
     return new Promise((resolve, reject) => {
-      const where = {
-        [FIELDS.USER_ID]: userId
-      }
+
+      let where = {
+        [FIELDS.USER_ID]: params.userId
+      };
       this.collection.findOne(where, (err, data)=> {
         if(err) return reject(err);
-        const contacts = data && data.contacts ? data.contacts : [];
+        const contactNameKey = NESTED_FIELDS[FIELDS.CONTACTS].CONTACT_NAME;
+        const contacts = data && data.contacts ? data.contacts.filter(contact=>contact[contactNameKey].toLowerCase().indexOf(params.keyword.toLowerCase()) > -1) : [];
         resolve(contacts);
       });
     });

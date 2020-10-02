@@ -81,7 +81,10 @@ class Comments extends MongoDB {
 
   async update(id, comment) {
     return new Promise((resolve, reject) => {
-      this.collection.findOneAndUpdate({[FIELDS.ID]: id}, {$set: comment}, (err, data) => {
+      const options = {
+        new: true
+      }
+      this.collection.findOneAndUpdate({[FIELDS.ID]: id}, {$set: comment}, options, (err, data) => {
         if(err) return reject(err);
         resolve(data);
       });

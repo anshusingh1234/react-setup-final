@@ -4,6 +4,7 @@ const {comments: commentMongo} = require("../../../core/mongo");
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const validations  = require('./../../../helper/validations');
 const ApiError = require("../ApiError");
+const {user} = require("./../../../core/Redis");
 
 const add = {};
 
@@ -53,6 +54,7 @@ add.saveInMongo = async (req, res, next) => {
     [commentMongo.FIELDS.UPDATED_AT]: req.body.createdAt
   };
   const mongoResult = await commentMongo.instance.insert(toAdd);
+  req._userData = await user.getUserProfile(userId);
   req._commentId = mongoResult && mongoResult.originalData && mongoResult.originalData._id ? mongoResult.originalData._id : '';
   req._data =  mongoResult && mongoResult.originalData ? {...mongoResult.originalData, commentId:req._commentId} : {};
   if(!req._commentId) return next(new ApiError(400, 'E0010010'));
@@ -71,8 +73,27 @@ add.saveInES = (req, res, next) => {
   const {feedId} = req.body;
   req._instance.commentedBy(feedId, userId);
   req._instance.incrementCommentCount(feedId, 1);
-  res.status(200).send({response_message:'Comment added successfully!'});
+
+  const response = wrapper(req._data, req._userData);
+  
+  res.status(200).send(response);
   next();
+}
+
+const wrapper = (data, userData) =>{
+    return {
+      response_message:'Comment added successfully!',
+      comment:{
+        commentId : data[commentMongo.FIELDS.ID],
+        feedId: data[commentMongo.FIELDS.POST_ID],
+        comment: data[commentMongo.FIELDS.COMMENT],
+        createdAt: data[commentMongo.FIELDS.CREATED_AT],
+        replies: [],
+        reactionCount:0,
+        topReactions:[],
+        user: userData
+      }
+    }
 }
 
 module.exports = add;
