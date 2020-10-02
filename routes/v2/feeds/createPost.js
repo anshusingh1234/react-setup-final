@@ -20,6 +20,7 @@ createPost.formDataWrapper = (req, res, next) => {
     const checkInGeoPointsLon = (Array.isArray(fields.checkInGeoPointsLon) && fields.checkInGeoPointsLat[0]) ? fields.checkInGeoPointsLon[0] : undefined;
     const checkInText = (Array.isArray(fields.checkInText) && typeof fields.checkInText[0] === 'string') ? fields.checkInText[0] : undefined;
     const taggedUsers = Array.isArray(fields.taggedUsers) ? fields.taggedUsers : undefined;
+    const privateTo = Array.isArray(fields.privateTo) ? fields.privateTo : undefined;
     const feelings = (Array.isArray(fields.feelings) && typeof fields.feelings[0] === 'string') ? fields.feelings[0] : undefined;
     req.body = {
       "type": type,
@@ -33,7 +34,8 @@ createPost.formDataWrapper = (req, res, next) => {
       "checkInText": checkInText,
       "privacy": privacy,
       "feelings": Number(feelings),
-      "taggedUsers": taggedUsers
+      "taggedUsers": taggedUsers,
+      "privateTo": privateTo
     }
     req._files = files;
     next();
