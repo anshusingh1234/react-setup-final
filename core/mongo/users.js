@@ -6,7 +6,8 @@ const FIELDS = {
   PROFILE_PIC: 'profilePic',
   STATUS: 'status',
   NAME: 'name',
-  MOBILE: 'mobileNumber'
+  MOBILE: 'mobileNumber',
+  FRIENDS: 'friends'
 }
 
 
@@ -46,13 +47,13 @@ class Users extends MongoDB {
         [FIELDS.STATUS]:'ACTIVE'
       }
 
-      const selectField = { 
-        projection: 
-        { 
+      const selectField = {
+        projection:
+        {
           [FIELDS.PROFILE_PIC]:1,
           [FIELDS.NAME]:1,
           [FIELDS.ID]:1
-        } 
+        }
       }
 
       this.collection.findOne(where, selectField).toArray((err, data) => {
@@ -96,11 +97,11 @@ class Users extends MongoDB {
         [FIELDS.STATUS]:'ACTIVE',
         [FIELDS.MOBILE]: {$in: mobileNumbers}
       }
-      const selectField = { 
-        projection: 
-        { 
+      const selectField = {
+        projection:
+        {
           [FIELDS.ID]:1
-        } 
+        }
       }
       this.collection.find(where, selectField).sort({ _id: -1 }).toArray((err, data) => {
         if(err) return reject(err);
@@ -109,8 +110,33 @@ class Users extends MongoDB {
       });
     });
   }
-  
 
+
+  getFriendsAndFollowings(userId){
+    return new Promise((resolve, reject) => {
+      this.collection.findOne({
+        _id: super.getObjectIdFromString(userId)
+      }, (err, data) => {
+        if(err) return reject(err);
+        let friends = [];
+        let followings = [];
+        friends = (data && Array.isArray(data.friends)) ? data.friends.map(_obj => {
+          if(_obj.status === 'ACTIVE'){
+            return _obj.friendId;
+          }
+        }).filter(el => el): [];
+        followings = (data && Array.isArray(data.followings)) ? data.followings.map(_obj => {
+          if(_obj.status === 'ACTIVE'){
+            return _obj.followingId;
+          }
+        }).filter(el => el) : [];
+        resolve({
+          friends: [...new Set(friends)],
+          followings: [...new Set(followings)]
+        })
+      })
+    })
+  }
 }
 
 module.exports = {

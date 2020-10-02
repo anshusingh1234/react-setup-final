@@ -2,16 +2,23 @@ const {feeds} = require("../../../core/elasticsearch");
 const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const moment = require("moment");
 const {user} = require("../../../core/Redis");
-const { ES } = require("aws-sdk");
+const {users: mongoUsers} = require("../../../core/mongo");
+const ApiError = require("../ApiError");
 
 const feedsSearch = {};
 
 feedsSearch.search = async (req, res, next) => {
-  let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
-  const searchResult  = await feedsInstance.searchFeed(req.headers._id, ["dkjnsjknjsdknjksdnsjkd"], []);
-  req._searchResult = (searchResult && searchResult.hits.hits) || [];
-  next();
-
+  try{
+    let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
+    const {friends = [], followings = []} = await mongoUsers.instance.getFriendsAndFollowings(req.headers._id) || {};
+    console.log("----------------", friends, followings)
+    const searchResult  = await feedsInstance.searchFeed(req.headers._id, friends, followings);
+    req._searchResult = (searchResult && searchResult.hits.hits) || [];
+    next();
+  }catch(e){
+    console.log("/feeds search()", e);
+    return next(new ApiError(500, 'E0010002'));
+  }
 }
 
 feedsSearch.fetchDetails = async(req, res, next) => {
