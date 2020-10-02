@@ -24,8 +24,8 @@ const FIELDS = {
 const FIELDS_VALUES = {
   [FIELDS.PRIVACY]: {
     PUBLIC: 0,
-    PRIVATE: 1,
-    FRIENDS: 2,
+    FRIENDS: 1,
+    PRIVATE: 2,
     CUSTOM: 3,
     ADMIN: 4
   },
