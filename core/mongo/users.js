@@ -112,19 +112,27 @@ class Users extends MongoDB {
   }
 
 
-  getFriends(userId){
+  getFriendsAndFollowings(userId){
     return new Promise((resolve, reject) => {
       this.collection.findOne({
         _id: super.getObjectIdFromString(userId)
       }, (err, data) => {
         if(err) return reject(err);
-        console.log(JSON.stringify(data, null, 2))
-        let friends = data && Array.isArray(data.friends) && data.friends.map(_obj => {
+        let friends = [];
+        let followings = [];
+        friends = data && Array.isArray(data.friends) && data.friends.map(_obj => {
           if(_obj.status === 'ACTIVE'){
             return _obj.friendId;
           }
         }).filter(el => el);
-        Array.isArray(data) ? resolve(friends) : resolve([])
+        followings = data && Array.isArray(data.followings) && data.followings.map(_obj => {
+          if(_obj.status === 'ACTIVE'){
+            return _obj.followingId;
+          }
+        }).filter(el => el);
+        resolve({
+          friends, followings
+        })
       })
     })
   }
