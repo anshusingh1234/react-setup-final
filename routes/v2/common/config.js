@@ -14,7 +14,7 @@ const config = {
         {label:'Public', value:0, icon:''},
         {label:'Friends', value:1, icon:''},
         {label:'Only Me', value:2, icon:''},
-        {label:'Custom', value:3, icon:''},
+        {label:'Selected Friends', value:3, icon:''},
       ],
       reactions:[
         {name:'like', value:1, icon:''},
