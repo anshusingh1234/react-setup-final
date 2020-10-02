@@ -120,14 +120,14 @@ class Users extends MongoDB {
           $exists: true,
           $ne: []
         }
-      }).toArray((err, data = []) => {
+      }, (err, data) => {
         if(err) return reject(err);
-        data = data.map(_obj => {
+        let friends = data && Array.isArray(data.friends) && data.friends.map(_obj => {
           if(_obj.status === 'ACTIVE'){
             return _obj.friendId;
           }
         }).filter(el => el);
-        resolve(data)
+        Array.isArray(data) ? resolve(friends) : resolve([])
       })
     })
   }
