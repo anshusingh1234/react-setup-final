@@ -8,7 +8,7 @@ const feedsSearch = {};
 
 feedsSearch.search = async (req, res, next) => {
   let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
-  const searchResult  = await feedsInstance.searchFeed(req.headers._id, ["dkjnsjknjsdknjksdnsjkd"], []);
+  const searchResult  = await feedsInstance.searchFeed(req.headers._id, [], []);
   req._searchResult = (searchResult && searchResult.hits.hits) || [];
   next();
 
