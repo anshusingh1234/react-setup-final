@@ -122,6 +122,7 @@ class Users extends MongoDB {
         }
       }, (err, data) => {
         if(err) return reject(err);
+        console.log(JSON.stringify(data, null, 2))
         let friends = data && Array.isArray(data.friends) && data.friends.map(_obj => {
           if(_obj.status === 'ACTIVE'){
             return _obj.friendId;
