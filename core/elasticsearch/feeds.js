@@ -42,6 +42,16 @@ const forId = (feedId) => {
   return CACHED_FEEDS_ELASTICSEARCH[date];
 };
 
+const currentWeekInstance = () => {
+  const date = moment().format("YYYY-MM-DD");
+  if(!CACHED_FEEDS_ELASTICSEARCH[date]) {
+    // TODO: check if index exists
+    const weekId = dateTime.buildWeekIdForDate(date);
+    CACHED_FEEDS_ELASTICSEARCH[date] = new FeedsElasticsearch(`feeds-${weekId}`, date);
+  }
+  return CACHED_FEEDS_ELASTICSEARCH[date];
+};
+
 class FeedsElasticsearch extends AbstractElasticsearch {
   constructor(indexName, dateTag) {
     super(indexName);
@@ -284,7 +294,8 @@ class FeedsElasticsearch extends AbstractElasticsearch {
 module.exports = {
   forDate,
   forId,
-  getNextWeekIndexName
+  getNextWeekIndexName,
+  currentWeekInstance
 }
 
 function _fulfillPromiseCallback(resolve, reject) {

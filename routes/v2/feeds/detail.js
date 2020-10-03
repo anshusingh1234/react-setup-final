@@ -13,7 +13,7 @@ detail.validate = async(req, res, next) => {
   if(!id) return next(new ApiError(400, 'E0010009', {debug: "feed id is missing"}));
 
   try{
-    const instance = feeds.forId(id);
+    const instance = feeds.currentWeekInstance();
     const totalRewards = await instance.totalRewards();
     console.log("----------------", totalRewards);
     const detail = await instance.getDetail(id);
