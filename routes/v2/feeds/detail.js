@@ -98,7 +98,11 @@ detail.buildResponse = (req, res, next) => {
         "geoPoints": detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS],
         "text": detail[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
       },
-      "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined
+      "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
+      "participatingDetails": detail[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? {
+        "reactions": [1,2,3],
+        "message": "Ankit, Josh and 3 others participated"
+      } : undefined
     }
   }
   res.status(200).send(response);

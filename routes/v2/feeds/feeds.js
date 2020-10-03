@@ -62,7 +62,11 @@ feedsSearch.buildResponse = (req, res, next) => {
             "geoPoints": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS],
             "text": _obj[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
           },
-          "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined
+          "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
+          "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? {
+            "reactions": [1,2,3],
+            "message": "Ankit, Josh and 3 others participated"
+          } : undefined
         }
       }
     }

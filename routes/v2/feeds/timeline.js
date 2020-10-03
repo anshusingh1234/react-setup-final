@@ -40,7 +40,7 @@ timeline.fetchDetails = async(req, res, next) => {
     break;
 
     case C.TIMELINE.TYPES_ALLOWED.FEEDS:
-    response = _feedsWrapper(searchResult);
+    response = _feedsWrapper(searchResult, req._userId);
     break;
 
     default:
@@ -98,7 +98,7 @@ const _gallerySetWrapper = (result) => {
   return _return;
 }
 
-const _feedsWrapper = (result) => {
+const _feedsWrapper = (result, userId) => {
   return result.map(_obj => {
     return {
       "type": _obj[ES_FEEDS_FIELDS.TYPE],
@@ -122,7 +122,11 @@ const _feedsWrapper = (result) => {
           return {
             "userId": _userId
           }
-        }) : undefined
+        }) : undefined,
+        "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? {
+          "reactions": [1,2,3],
+          "message": "Ankit, Josh and 3 others participated"
+        } : undefined
       }
     }
   });
