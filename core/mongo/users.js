@@ -78,7 +78,11 @@ class Users extends MongoDB {
 
   saveReferredBy(userId, referredBy){
     return new Promise((resolve, reject) => {
-      this.collection.findOneAndUpdate({_id: userId}, {
+      const where = {
+        [FIELDS.ID] : this.getObjectIdFromString(userId)
+      }
+
+      this.collection.findOneAndUpdate(where, {
         $set: {
           referrals: {
             referredBy
@@ -105,12 +109,38 @@ class Users extends MongoDB {
       }
       this.collection.find(where, selectField).sort({ _id: -1 }).toArray((err, data) => {
         if(err) return reject(err);
-        const userIDs = data && data.length ? data.map(user=>{return user[FIELDS.ID].toString()}) : []
+        const userIDs = data && data.length ? data.map(user=>user[FIELDS.ID].toString()) : []
         resolve(userIDs);
       });
     });
   }
 
+  async countUsers() {
+    return new Promise((resolve, reject) => {
+      const where = {
+        [FIELDS.STATUS]:'ACTIVE'
+      };
+
+      this.collection.countDocuments(where,(err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
+
+  async getReferredCount(userId) {
+    return new Promise((resolve, reject) => {
+      const where = {
+        referrals: {
+          referredBy:userId
+        }
+      };      
+      this.collection.countDocuments(where,(err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
 
   getFriendsAndFollowings(userId){
     return new Promise((resolve, reject) => {
