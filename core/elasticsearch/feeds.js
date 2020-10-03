@@ -259,6 +259,26 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     super.updateWithPartialDocWithScript(feedId, FEEDS_SCRIPT.makePostLive(), true, callback)
   }
 
+  getDetail(feedId){
+    return new Promise((resolve, reject) => {
+      super.getById(feedId, {}, (error, detail) => {
+        resolve(detail);
+      })
+    })
+  }
+
+  totalRewards(){
+    const query = FEEDS_QUERY.timelineRewards();
+    const _body = {
+      size: 0,
+      query
+    };
+    return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, (error, result) => {
+      let _return = 0;
+      result && result.hits.total && result.hits.total.value && (_return = result.hits.total.value);
+      resolve(_return);
+    }));
+  }
 }
 
 module.exports = {
