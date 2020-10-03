@@ -34,4 +34,18 @@ CONSTANTS.REFERRALS = {
   }
 }
 
+CONSTANTS.CLEVERTAP = {
+  CHANNEL: {
+    dev: {    //this key is env name. Pick env name to access it
+      GENERAL: "jigrr-dev"
+    },
+    prod: {   //this key is env name. Pick env name to access it
+      GENERAL: "jigrr-prod"
+    },
+    stg: {    //this key is env name. Pick env name to access it
+      GENERAL: "jigrr-stage"
+    }
+  }
+}
+
 module.exports = CONSTANTS;
