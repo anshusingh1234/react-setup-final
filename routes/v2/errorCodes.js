@@ -74,11 +74,20 @@ const _errors = {
     title: 'Post not found',
     message: 'Post not found',
     info: {
-      type: "fullScreen",
+      type: "toast",
       data: {
-        description: "Post not found or user is not author",
-        cta: "retry",
-        label: "Retry"
+        description: "Content you are looking for either does not exist or is not shared with you",
+      }
+    }
+  },
+
+  E0020002: {
+    title: 'Post Privacy: Access denied',
+    message: 'Post Privacy: Access denied',
+    info: {
+      type: "toast",
+      data: {
+        description: "Content you are looking for either does not exist or is not shared with you",
       }
     }
   },
@@ -157,7 +166,7 @@ const _errors = {
       }
     }
   },
-  
+
 
   //Users related errors
   E0040001: {

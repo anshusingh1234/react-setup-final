@@ -272,6 +272,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   getDetail(feedId){
     return new Promise((resolve, reject) => {
       super.getById(feedId, {}, (error, detail) => {
+        if(error) return reject(error);
         resolve(detail);
       })
     })

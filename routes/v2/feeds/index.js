@@ -59,6 +59,7 @@ router.get(`/post/detail`,
 auth,
 detail.validate,
 detail.checkForPrivacy,
+detail.fetchDetails,
 detail.buildResponse,
 error);
 
