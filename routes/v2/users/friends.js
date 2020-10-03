@@ -23,12 +23,16 @@ const friends = {
     const userId = req.headers._id;
     const keyword = req.query.keyword || '';
 
-    let userData, contacts = [], contactsUserIDs = [], suggestions = [];
+    let userData, ignoreUserIDs = [], contacts = [], contactsUserIDs = [], suggestions = [];
 
     async.series({
       userDetail: cb => {
         userMongo.instance.fullDetail(userId).then(res=>{
           userData = res;
+          const friend = res.friends.map(friend=>friend.friendId.toString());
+          const friendRequest = res.friendRequestList.map(friend=>friend.friendId);
+          const requestSent = res.friendRequestSentList.map(friend=>friend.friendId);
+          ignoreUserIDs = [...new Set([...friend, ...friendRequest, ...requestSent])];
           cb();
         })
       },
@@ -41,9 +45,9 @@ const friends = {
       },
       getContactsUserIDs: cb =>{
         if(contacts && contacts.length){
-          const allMobiles = contacts.map(contact=>{return contact[contactsMongo.NESTED_FIELDS[contactsMongo.FIELDS.CONTACTS].NATIONAL_NUMBER].toString()})
+          const allMobiles = contacts.map(contact=>contact[contactsMongo.NESTED_FIELDS[contactsMongo.FIELDS.CONTACTS].NATIONAL_NUMBER].toString())
           userMongo.instance.getMobileUserIDs(allMobiles).then(res=>{
-            contactsUserIDs = res;
+            contactsUserIDs = res && res.length ? res.filter(userId=>ignoreUserIDs.indexOf(userId) == -1) : [];
             cb();
           })
         }
@@ -52,7 +56,7 @@ const friends = {
       getRecommendedUserData: cb =>{
         if(contactsUserIDs && contactsUserIDs.length){
           user.getAllUsersProfile(contactsUserIDs).then(res=>{
-            const allUsers = contactsUserIDs.map(userId=>{return res.get(userId)}).filter(el => el);
+            const allUsers = contactsUserIDs.map(userId=>res.get(userId)).filter(el => el);
             suggestions = allUsers;
             cb();
           })
