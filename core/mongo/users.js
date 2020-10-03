@@ -122,12 +122,12 @@ class Users extends MongoDB {
         let followings = [];
         friends = (data && Array.isArray(data.friends)) ? data.friends.map(_obj => {
           if(_obj.status === 'ACTIVE'){
-            return _obj.friendId;
+            return _obj.friendId.toString();
           }
         }).filter(el => el): [];
         followings = (data && Array.isArray(data.followings)) ? data.followings.map(_obj => {
           if(_obj.status === 'ACTIVE'){
-            return _obj.followingId;
+            return _obj.followingId.toString();
           }
         }).filter(el => el) : [];
         resolve({
