@@ -29,9 +29,9 @@ const friends = {
       userDetail: cb => {
         userMongo.instance.fullDetail(userId).then(res=>{
           userData = res;
-          const friend = res.friends.map(friend=>friend.friendId.toString());
-          const friendRequest = res.friendRequestList.map(friend=>friend.friendId.toString());
-          const requestSent = res.friendRequestSentList.map(friend=>friend.friendId.toString());
+          const friend = res.friends.map(friend=>friend && friend.friendId ? friend.friendId.toString() : '');
+          const friendRequest = res.friendRequestList.map(friend=>friend && friend.friendId ? friend.friendId.toString() : '');
+          const requestSent = res.friendRequestSentList.map(friend=>friend && friend.friendId ? friend.friendId.toString() : '');
           ignoreUserIDs = [...new Set([...friend, ...friendRequest, ...requestSent])];
           cb();
         })
