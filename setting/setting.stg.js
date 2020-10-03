@@ -28,6 +28,11 @@ const settings = {
       "CLOUD_NAME": process.env["CLOUDINARY:CLOUD_NAME"],
       "API_KEY": process.env["CLOUDINARY:API_KEY"],
       "API_SECRET": process.env["CLOUDINARY:API_SECRET"]
+    },
+    "CLEVERTAP": {
+      "ACCOUNT_NAME": process.env["CLEVERTAP:ACCOUNT_NAME"],
+      "ACCOUNT_ID": process.env["CLEVERTAP:ACCOUNT_ID"],
+      "PASSCODE": process.env["CLEVERTAP:PASSCODE"]
     }
   }
 };

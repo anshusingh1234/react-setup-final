@@ -260,6 +260,8 @@ module.exports = {
     addBasicInfo: (req, res) => {
         try {
             userModel.findOne({ _id: req.headers._id }, async (error, userData) => {
+                console.log("------------------------", req.headers._id, JSON.stringify(userData, null, 2))
+
                 if (error) {
                     response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR);
                 }
@@ -284,7 +286,15 @@ module.exports = {
                         set.profilePic = await imgUpload(req.body.image)
                     }
 
-                    userModel.findOneAndUpdate({ _id: userData._id, status: "ACTIVE" }, { $set: set, isFirstTime: true }, { new: true },
+                    let addToSet = {};
+                    if(req.body.clevertapId){
+                        addToSet.clevertapId = req.body.clevertapId;
+                    }
+                    if(req.body.deviceId){
+                        addToSet.deviceId = req.body.deviceId;
+                    }
+                    console.log("------------------------", JSON.stringify(addToSet, null, 2))
+                    userModel.findOneAndUpdate({ _id: userData._id, status: "ACTIVE" }, { $set: set, isFirstTime: true, $addToSet: addToSet }, { new: true },
                         (err, updateData) => {
                             if (err) {
                                 response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.SOMETHING_WRONG)
