@@ -24,6 +24,7 @@ const interestModel = require('../models/interestModel')
 const favouriteModel = require('../models/favouriteModel')
 const foodModel = require('../models/foodModel')
 const notificationModel = require('../models/notificationModel')
+const moment = require('moment');
 
 const { user } = require("./../core/Redis");
 
@@ -284,16 +285,19 @@ module.exports = {
                     if (req.body.image) {
                         set.profilePic = await imgUpload(req.body.image)
                     }
-                   
+
                     let addToSet = {};
                     if(req.body.clevertapId){
-                        addToSet.clevertapId = req.body.clevertapId;
+                        addToSet.clevertapId = {
+                            id: req.body.clevertapId
+                        };
                     }
                     if(req.body.deviceId){
-                        addToSet.deviceId = req.body.deviceId;
+                        addToSet.deviceId = {
+                            id: req.body.deviceId
+                        };
                     }
 
-                    console.log(JSON.stringify({ $set: set, isFirstTime: true, $addToSet: addToSet }, null, 2))
                     userModel.findOneAndUpdate({ _id: userData._id, status: "ACTIVE" }, { $set: set, isFirstTime: true, $addToSet: addToSet}, { upsert: true, new: true },
                         (err, updateData) => {
                             if (err) {

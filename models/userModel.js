@@ -312,6 +312,24 @@ var userModel = new schema({
             default: false
         }
 
+    }],
+    clevertapId: [{
+        id: {
+            type: String,
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now()
+        }
+    }],
+    deviceId: [{
+        id: {
+            type: String,
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now()
+        }
     }]
 
 }, { timestamps: true });
