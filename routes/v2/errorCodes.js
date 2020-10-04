@@ -208,6 +208,45 @@ const _errors = {
     }
   },
 
+  E0060001: {
+    title: 'Invalid Social Media Type',
+    message: 'Invalid Social Media Type',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0060002: {
+    title: 'Invalid Access Token',
+    message: 'Invalid Access Token',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0060003: {
+    title: 'Invalid Account ID',
+    message: 'Invalid Account ID',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+
+  
+
 
 };
 

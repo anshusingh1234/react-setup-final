@@ -1,6 +1,7 @@
 const query = require("./query");
 const key = require("./keys");
 const async = require("async");
+const { FIELDS } = require("../elasticsearch/templates/index/feeds/v1");
 
 const HASH_FIELDS = {
   USER_ID: "id",
@@ -10,7 +11,8 @@ const HASH_FIELDS = {
   LASTNAME: "lastName",
   PICTURE: "picture",
   USER_TYPE: "userType",
-  STATUS: "status"
+  STATUS: "status",
+  VERIFIED: "verified"
 }
 
 const user = {
@@ -62,7 +64,8 @@ const user = {
             [HASH_FIELDS.NAME]: result[HASH_FIELDS.NAME],
             [HASH_FIELDS.FIRSTNAME]: result[HASH_FIELDS.FIRSTNAME],
             [HASH_FIELDS.LASTNAME]: result[HASH_FIELDS.LASTNAME],
-            [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE]
+            [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE],
+            [HASH_FIELDS.VERIFIED]: result[HASH_FIELDS.VERIFIED] ? result[HASH_FIELDS.VERIFIED] : 0
           }
         }
         return resolve(shortDetail);
@@ -83,7 +86,23 @@ const user = {
         resolve(map)
       })
     })
-  }
+  },
+
+  saveVerified: (userId) => {
+    return new Promise((resolve, reject) => {
+
+      const hash = {
+        key : key.USER_SHORT_DETAIL(userId),
+        field : HASH_FIELDS.VERIFIED,
+        value : 1
+      }
+      query.hset(hash, (err, result)=>{
+        if(err) return reject(err);
+        else return resolve(result);
+      });
+    })
+  },
+
 };
 
 module.exports = user;
