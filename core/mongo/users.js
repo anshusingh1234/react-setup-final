@@ -78,11 +78,7 @@ class Users extends MongoDB {
 
   saveReferredBy(userId, referredBy){
     return new Promise((resolve, reject) => {
-      const where = {
-        [FIELDS.ID] : this.getObjectIdFromString(userId)
-      }
-
-      this.collection.findOneAndUpdate(where, {
+      this.collection.findOneAndUpdate({_id: super.getObjectIdFromString(userId)}, {
         $set: {
           referrals: {
             referredBy
@@ -134,7 +130,7 @@ class Users extends MongoDB {
         referrals: {
           referredBy:userId
         }
-      };      
+      };
       this.collection.countDocuments(where,(err, data) => {
         if(err) return reject(err);
         resolve(data);
