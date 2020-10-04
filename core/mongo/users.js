@@ -78,7 +78,7 @@ class Users extends MongoDB {
 
   saveReferredBy(userId, referredBy){
     return new Promise((resolve, reject) => {
-      this.collection.findOneAndUpdate({_id: userId}, {
+      this.collection.findOneAndUpdate({_id: super.getObjectIdFromString(userId)}, {
         $set: {
           referrals: {
             referredBy
