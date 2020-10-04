@@ -1,10 +1,9 @@
-const {feeds} = require("../../../core/elasticsearch");
+const async = require("async");
 const moment = require("moment");
-const C = require("../../../constants");
-const TYPES_ALLOWED = Object.values(C.TIMELINE.TYPES_ALLOWED);
-const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
+const {feeds} = require("../../../core/elasticsearch");
+const {users: userMongo} = require("../../../core/mongo");
+const {events: eventMongo} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
-
 
 const stats = {};
 
@@ -13,30 +12,83 @@ stats.validate = (req, res, next) => {
 }
 
 stats.getGlobalStats = async (req, res, next) => {
-  const stats = {
-    usersCount:10,
-    winnersRemaining: 1000-10
-  }
-  req._globalStats = stats;
-  next();
+  let usersCount, rewardsCount;
+
+  async.series({
+    users: cb => {
+      userMongo.instance.countUsers().then(res=>{
+        usersCount = res;
+        cb();
+      })
+    },
+    rewards: cb => {
+      const instance = feeds.currentWeekInstance(); 
+      instance.totalRewards().then(res=>{
+        rewardsCount = res;
+        cb();
+      })
+    },
+  },
+  (error, result) => {
+    const stats = {
+      usersCount,
+      winnersRemaining: 1000-rewardsCount
+    }
+    req._globalStats = stats;
+    next();
+  })
 }
 
 stats.getPrivateStats = async (req, res, next) => {
-  const privateStats = {
-    friendsInvited: 3,
-    activeDays:10,
-    eventsHosted:4,
-    eventsAttended:3
-  }
+  const userId = req.headers._id;
+  let userDetails, friendsInvited, eventsHosted, eventsAttended;
 
-  const response = {
-    stats:{
-      global: req._globalStats,
-      private: privateStats
+  async.series({
+    userDetails: cb => {
+      userMongo.instance.fullDetail(userId).then(res=>{
+        userDetails = res;
+        cb();
+      })
+    },
+    friendsInvited: cb => {
+      userMongo.instance.getReferredCount(userId).then(res=>{
+        friendsInvited = res;
+        cb();
+      })
+    },
+    eventsHosted: cb => {
+      eventMongo.instance.countEvents(userId).then(res=>{
+        eventsHosted = res;
+        cb();
+      })
+    },
+    eventsAttended: cb => {
+      eventMongo.instance.countEventsAttended(userId).then(res=>{
+        eventsAttended = res;
+        cb();
+      })
+    },
+  },
+  (error, result) => {
+    const startDate = moment(userDetails.createdAt);
+    const activeDays = moment().diff(startDate, 'days');
+
+    const privateStats = {
+      friendsInvited,
+      activeDays,
+      eventsHosted,
+      eventsAttended
     }
-  }
-  res.status(200).send(response);
-  next();
+  
+    const response = {
+      stats:{
+        global: req._globalStats,
+        private: privateStats
+      }
+    }
+    res.status(200).send(response);
+    next();
+  })
 }
 
 module.exports = stats;
