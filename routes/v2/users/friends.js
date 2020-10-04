@@ -30,8 +30,8 @@ const friends = {
         userMongo.instance.fullDetail(userId).then(res=>{
           userData = res;
           const friend = res.friends.map(friend=>friend && friend.friendId ? friend.friendId.toString() : '');
-          const friendRequest = res.friendRequestList.map(friend=>friend && friend.friendId ? friend.friendId.toString() : '');
-          const requestSent = res.friendRequestSentList.map(friend=>friend && friend.friendId ? friend.friendId.toString() : '');
+          const friendRequest = res.friendRequestList.map(friend=>friend && friend.friendRequestUserId ? friend.friendRequestUserId.toString() : '');
+          const requestSent = res.friendRequestSentList.map(friend=>friend && friend.friendRequestSentId ? friend.friendRequestSentId.toString() : '');
           ignoreUserIDs = [...new Set([...friend, ...friendRequest, ...requestSent])];
           cb();
         })
@@ -68,6 +68,39 @@ const friends = {
       const response = {
         total: suggestions.length,
         response: suggestions
+      }
+      res.status(200).send(response);
+      next();
+    })
+  },
+
+
+  requests: async (req, res, next) => {
+    const userId = req.headers._id;
+    let userIDs = [], allRequests = [];
+
+    async.series({
+      userDetail: cb => {
+        userMongo.instance.fullDetail(userId).then(res=>{
+          userIDs = [...new Set(res.friendRequestList.map(friend=>friend && friend.friendRequestUserId ? friend.friendRequestUserId.toString() : ''))];
+          cb();
+        })
+      },
+      getRecommendedUserData: cb =>{
+        if(userIDs && userIDs.length){
+          user.getAllUsersProfile(userIDs).then(res=>{
+            const allUsers = userIDs.map(userId=>res.get(userId)).filter(el => el);
+            allRequests = allUsers;
+            cb();
+          })
+        }
+        else cb();
+      }
+    },
+    (error, result) => {
+      const response = {
+        total: allRequests.length,
+        response: allRequests
       }
       res.status(200).send(response);
       next();

@@ -18,6 +18,12 @@ friends.suggestions,
 error
 )
 
+router.get(`/friend/requests`,
+auth,
+friends.requests,
+error
+)
+
 router.post(`/syncContacts`,
 auth,
 syncContacts.upload,
