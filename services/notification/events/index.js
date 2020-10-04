@@ -1,3 +1,4 @@
 module.exports = {
-  friendRequest: require("./friendRequest")
+  friendRequest: require("./friendRequest"),
+  requestAccept: require("./requestAccept")
 }

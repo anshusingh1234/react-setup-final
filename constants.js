@@ -36,6 +36,9 @@ CONSTANTS.REFERRALS = {
 
 CONSTANTS.CLEVERTAP = {
   CHANNEL: {
+    local: {    //this key is env name. Pick env name to access it
+      GENERAL: "jigrr-dev"
+    },
     dev: {    //this key is env name. Pick env name to access it
       GENERAL: "jigrr-dev"
     },

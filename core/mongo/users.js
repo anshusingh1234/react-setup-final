@@ -163,6 +163,19 @@ class Users extends MongoDB {
       })
     })
   }
+
+  incrementBadgeCount(userId){
+    return new Promise((resolve, reject) => {
+      this.collection.findOneAndUpdate({_id: super.getObjectIdFromString(userId)}, {
+        $inc: {
+          badgeCount: 1
+        }
+      }, (error, result) => {
+        if(error) return reject(error);
+        resolve(result);
+      })
+    })
+  }
 }
 
 module.exports = {

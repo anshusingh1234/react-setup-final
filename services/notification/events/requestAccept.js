@@ -3,9 +3,9 @@ const async = require('async');
 const sender = require("../sender");
 const notificationConstants = require("../constants");
 
-const friendRequest = {};
+const requestAccepted = {};
 
-friendRequest.send = (from, to) => {
+requestAccepted.send = (from, to) => {
   return new Promise(async (resolve, reject) => {
     try{
       const fromUserId = typeof from === 'string' ? from : from._id;
@@ -39,13 +39,13 @@ friendRequest.send = (from, to) => {
   })
 }
 
-module.exports = friendRequest;
+module.exports = requestAccepted;
 
 const _createPayload = (from, to, userMap) => {
   const fromUserDetail = typeof from === 'string' ? userMap.get(from): from;
   const toUserDetail = typeof to === 'string' ? userMap.get(to): to;
   const title = `Hey ${toUserDetail.name}!`;
-  const subTitle = `${fromUserDetail.name} has sent you a friend request`;
+  const subTitle = `${fromUserDetail.name} has accepted you request`;
   const payloadData = {
     notificationType: notificationConstants.NOTIFICATION_TYPES.FRIEND_REQUEST,
     title,
