@@ -7,7 +7,8 @@ const FIELDS = {
   STATUS: 'status',
   NAME: 'name',
   MOBILE: 'mobileNumber',
-  FRIENDS: 'friends'
+  FRIENDS: 'friends',
+  VERIFIED: 'verified'
 }
 
 
@@ -132,6 +133,20 @@ class Users extends MongoDB {
         }
       };
       this.collection.countDocuments(where,(err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
+
+  saveVerified(userId){
+    return new Promise((resolve, reject) => {
+      const objectId = super.getObjectIdFromString(userId);
+      this.collection.findOneAndUpdate({_id: objectId}, {
+        $set: {
+          [FIELDS.VERIFIED]: 1
+        }
+      }, (err, data) => {
         if(err) return reject(err);
         resolve(data);
       });

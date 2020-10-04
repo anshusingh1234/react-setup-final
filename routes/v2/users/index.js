@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userList = require("./list");
 const friends = require("./friends");
+const social = require("./social");
 const referrals = require("./referrals");
 const syncContacts = require("./syncContacts");
 const auth = require('../auth');
@@ -34,6 +35,13 @@ router.patch(`/referrals`,
 auth,
 referrals.validate,
 referrals.save,
+error
+)
+
+router.post(`/social/link`,
+auth,
+social.validate,
+social.link,
 error
 )
 
