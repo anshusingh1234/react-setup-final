@@ -13,7 +13,6 @@ const Facebook = {
   }
 };
 
-
 const CURL_GET = (url, cb) =>{
   fetch(url).then(res => res.json()).then(json => {
     if(json && json.error){

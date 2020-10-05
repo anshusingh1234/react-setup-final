@@ -123,7 +123,7 @@ const _feedsWrapper = (result, userId) => {
             "userId": _userId
           }
         }) : undefined,
-        "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? {
+        "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === userId ? {
           "reactions": [1,2,3],
           "message": "Ankit, Josh and 3 others participated"
         } : undefined
