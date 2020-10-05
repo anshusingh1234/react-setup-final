@@ -33,7 +33,7 @@ const config = {
       const config = {
         privacyOptions:[
           ...privacyOptions,
-          {label:'Friends', value:1, icon:'https://www.adweek.com/wp-content/themes/adweek-next/src/images/default-profile.svg'},
+          {label:'Friends', value:1, icon:'https://static.thenounproject.com/png/201719-200.png'},
           {label:'Only Me', value:2, icon:'https://www.iconfinder.com/data/icons/hawcons/32/698630-icon-114-lock-512.png'},
           {label:'Selected Friends', value:3, icon:'https://www.materialui.co/materialIcons/action/settings_grey_192x192.png'},
         ],
