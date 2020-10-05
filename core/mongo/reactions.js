@@ -126,6 +126,36 @@ class Reactions extends MongoDB {
      });
     })
   }
+
+  async checkIfUserReacted(commentIDs, userId){
+    return new Promise((resolve, reject) => {
+      let map = new Map();
+     const project = [
+      {$match: {
+          [FIELDS.ENTITY_ID]: {$in:commentIDs},
+          [FIELDS.ENTITY_TYPE]: 'comment',
+      }},
+      {$project: {
+          reaction: {$filter: {
+              input: `$${FIELDS.REACTION}`,
+              as: `${FIELDS.REACTION}`,
+              cond: {$eq: [`$$${FIELDS.REACTION}.${FIELDS.REACTION_USERID}`, userId]}
+          }},
+          _id: 0,
+          'commentId':`$${FIELDS.ENTITY_ID}`,
+      }}
+    ]
+     this.collection.aggregate(project).toArray((err, data)=>{
+      if(err) return reject(err);
+
+      data.map(el=>{
+        if(el.reaction && el.reaction[0] && el.reaction[0].reaction)
+        map.set(el.commentId, el.reaction[0].reaction);
+      })
+      return resolve(map);
+     });
+    })
+  }
 }
 
 module.exports = {

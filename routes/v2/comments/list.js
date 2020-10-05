@@ -38,6 +38,7 @@ const comments = {
 
   list: async (req, res, next) => {
     const feedId = req.query.feedId;
+    const userId = req.headers._id;
     const page = parseInt(req.query.page) || DEFAULT.PAGE;
     const limit = parseInt(req.query.limit) || DEFAULT.LIMIT;
 
@@ -46,18 +47,18 @@ const comments = {
     const total = await commentMongo.instance.countComments(params);
     const mongoResult = await commentMongo.instance.list(params);
 
-    res.status(200).send(await wrapper(total, mongoResult));
+    res.status(200).send(await wrapper(userId, total, mongoResult));
     next();
   }
 
 };
 
-var wrapper = async (total, data) =>{
+var wrapper = async (userId, total, data) =>{
   return new Promise ((resolve, reject) => {
     let userIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.USER_ID]))];
     const commentIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.ID].toString()))];
 
-    let userProfiles = [], replies = [], reactionCount = 0, replyReactionCount = 0;
+    let userProfiles = [], replies = [], reactionCount = 0, replyReactionCount = 0, userReacted = [];
 
     async.series({
       replies: cb => {
@@ -73,6 +74,16 @@ var wrapper = async (total, data) =>{
 
         reactionMongo.instance.getCount(commentIds.concat(replyIDs)).then(res=>{
           reactionCount = res;
+          cb();
+        })
+      },
+      checkIfUserReacted: cb => {
+        let replyIDs = [...new Set((([...replies.values()]).map(repliesArray => {
+          return repliesArray.map(obj => obj._id.toString())
+        })).reduce((x, z) => x.concat(z), []))]
+
+        reactionMongo.instance.checkIfUserReacted(commentIds.concat(replyIDs), userId).then(res=>{
+          userReacted = res;
           cb();
         })
       },
@@ -93,7 +104,8 @@ var wrapper = async (total, data) =>{
           if(data && data[commentMongo.FIELDS.ID]){
             const allReplies = replies.get(data[commentMongo.FIELDS.ID].toString());
             const reactionCountVal = reactionCount.get(data[commentMongo.FIELDS.ID].toString());
-            
+            const myReaction = userReacted.get(data[commentMongo.FIELDS.ID].toString());
+
             return {
               "commentId": data[commentMongo.FIELDS.ID],
               "feedId": data[commentMongo.FIELDS.POST_ID],
@@ -101,6 +113,7 @@ var wrapper = async (total, data) =>{
               "createdAt": data[commentMongo.FIELDS.CREATED_AT],
               "replies": allReplies && allReplies.length ? allReplies.map(reply=>formatTuple(reply, profiles, replies)):[],
               "reactionCount":reactionCountVal ? reactionCountVal : 0,
+              "myReaction": myReaction ? myReaction : 0,
               "user": profiles.get(data[commentMongo.FIELDS.USER_ID])
             }
           }
