@@ -15,7 +15,7 @@ const updatePost = {};
 updatePost.validate = (req, res, next) => {
   const {privacy, feedId} = req.body;
   const userId = req.headers._id;
-  if(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].PRIVATE !== privacy || !feedId) return next(new ApiError(400, 'E0010004'));
+  if(![ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].PRIVATE, ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].FRIENDS].includes(privacy) || !feedId) return next(new ApiError(400, 'E0010004'));
 
   const [_id, date] = feedId.split(':');
 
