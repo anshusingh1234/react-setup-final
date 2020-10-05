@@ -58,31 +58,29 @@ var wrapper = async (userId, total, data) =>{
     let userIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.USER_ID]))];
     const commentIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.ID].toString()))];
 
-    let userProfiles = [], replies = [], reactionCount = 0, replyReactionCount = 0, userReacted = [];
+    let userProfiles = [], replies = [], reactionCount = 0, replyReactionCount = 0, userReacted = [], allCommentReplyIDs = [];
 
     async.series({
       replies: cb => {
         commentMongo.instance.replies(commentIds).then(res=>{
           replies = res;
+
+          let replyIDs = [...new Set((([...replies.values()]).map(repliesArray => {
+            return repliesArray.map(obj => obj._id.toString())
+          })).reduce((x, z) => x.concat(z), []))]
+
+          allCommentReplyIDs = commentIds.concat(replyIDs);
           cb();
         })
       },
       reactionCount: cb => {
-        let replyIDs = [...new Set((([...replies.values()]).map(repliesArray => {
-          return repliesArray.map(obj => obj._id.toString())
-        })).reduce((x, z) => x.concat(z), []))]
-
-        reactionMongo.instance.getCount(commentIds.concat(replyIDs)).then(res=>{
+        reactionMongo.instance.getCount(allCommentReplyIDs).then(res=>{
           reactionCount = res;
           cb();
         })
       },
       checkIfUserReacted: cb => {
-        let replyIDs = [...new Set((([...replies.values()]).map(repliesArray => {
-          return repliesArray.map(obj => obj._id.toString())
-        })).reduce((x, z) => x.concat(z), []))]
-
-        reactionMongo.instance.checkIfUserReacted(commentIds.concat(replyIDs), userId).then(res=>{
+        reactionMongo.instance.checkIfUserReacted(allCommentReplyIDs, userId, 'comment').then(res=>{
           userReacted = res;
           cb();
         })

@@ -127,13 +127,13 @@ class Reactions extends MongoDB {
     })
   }
 
-  async checkIfUserReacted(commentIDs, userId){
+  async checkIfUserReacted(entityIds, userId, entityType){
     return new Promise((resolve, reject) => {
       let map = new Map();
      const project = [
       {$match: {
-          [FIELDS.ENTITY_ID]: {$in:commentIDs},
-          [FIELDS.ENTITY_TYPE]: 'comment',
+          [FIELDS.ENTITY_ID]: {$in:entityIds},
+          [FIELDS.ENTITY_TYPE]: entityType,
       }},
       {$project: {
           reaction: {$filter: {
@@ -142,7 +142,7 @@ class Reactions extends MongoDB {
               cond: {$eq: [`$$${FIELDS.REACTION}.${FIELDS.REACTION_USERID}`, userId]}
           }},
           _id: 0,
-          'commentId':`$${FIELDS.ENTITY_ID}`,
+          'entityId':`$${FIELDS.ENTITY_ID}`,
       }}
     ]
      this.collection.aggregate(project).toArray((err, data)=>{
@@ -150,7 +150,7 @@ class Reactions extends MongoDB {
 
       data.map(el=>{
         if(el.reaction && el.reaction[0] && el.reaction[0].reaction)
-        map.set(el.commentId, el.reaction[0].reaction);
+        map.set(el.entityId, el.reaction[0].reaction);
       })
       return resolve(map);
      });
