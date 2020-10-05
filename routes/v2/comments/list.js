@@ -3,6 +3,7 @@ const async = require("async");
 const {feeds} = require("../../../core/elasticsearch");
 const {user} = require("./../../../core/Redis");
 const {comments: commentMongo} = require("../../../core/mongo");
+const {reactions: reactionMongo} = require("../../../core/mongo");
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const ApiError = require("../ApiError");
 const { countBy } = require("lodash");
@@ -54,14 +55,24 @@ const comments = {
 var wrapper = async (total, data) =>{
   return new Promise ((resolve, reject) => {
     let userIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.USER_ID]))];
-    const commentIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.ID]))];
+    const commentIds = [...new Set(data.map(_obj => _obj[commentMongo.FIELDS.ID].toString()))];
 
-    let userProfiles = [], replies = [];
+    let userProfiles = [], replies = [], reactionCount = 0, replyReactionCount = 0;
 
     async.series({
       replies: cb => {
         commentMongo.instance.replies(commentIds).then(res=>{
           replies = res;
+          cb();
+        })
+      },
+      reactionCount: cb => {
+        let replyIDs = [...new Set((([...replies.values()]).map(repliesArray => {
+          return repliesArray.map(obj => obj._id.toString())
+        })).reduce((x, z) => x.concat(z), []))]
+
+        reactionMongo.instance.getCount(commentIds.concat(replyIDs)).then(res=>{
+          reactionCount = res;
           cb();
         })
       },
@@ -80,15 +91,16 @@ var wrapper = async (total, data) =>{
       let response =  data.map( _obj => {
         var formatTuple = (data, profiles, replies) =>{
           if(data && data[commentMongo.FIELDS.ID]){
-            const allReplies = replies.get(data[commentMongo.FIELDS.ID]);
+            const allReplies = replies.get(data[commentMongo.FIELDS.ID].toString());
+            const reactionCountVal = reactionCount.get(data[commentMongo.FIELDS.ID].toString());
+            
             return {
               "commentId": data[commentMongo.FIELDS.ID],
               "feedId": data[commentMongo.FIELDS.POST_ID],
               "comment": data[commentMongo.FIELDS.COMMENT],
               "createdAt": data[commentMongo.FIELDS.CREATED_AT],
               "replies": allReplies && allReplies.length ? allReplies.map(reply=>formatTuple(reply, profiles, replies)):[],
-              "reactionCount":0,
-              "topReactions":[],
+              "reactionCount":reactionCountVal ? reactionCountVal : 0,
               "user": profiles.get(data[commentMongo.FIELDS.USER_ID])
             }
           }

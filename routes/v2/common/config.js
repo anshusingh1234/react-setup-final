@@ -90,7 +90,10 @@ const config = {
           privacy:'This is dynamic privacy content',
           tnc:'This is dynamic Terms & Conditions content'
         },
-        maxMediaAllowed:9
+        maxMediaAllowed:9,
+        otherIcons:{
+          verified: 'https://static10.tgstat.ru/channels/_0/ac/accb9f7e8ed3975ad224d836411b4415.jpg'
+        }
       }  
       res.status(200).send(config);
       next();

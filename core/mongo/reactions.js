@@ -63,9 +63,6 @@ class Reactions extends MongoDB {
     });
   }
 
-
-  
-
   async delete(entity, userId) {
     return new Promise((resolve, reject) => {
       const uniqueReactionContraint = {
@@ -106,6 +103,29 @@ class Reactions extends MongoDB {
     });
   }
 
+  async getCount(commentIDs){
+    return new Promise((resolve, reject) => {
+      let map = new Map();
+
+      const project =  [
+        { '$match': {
+              [FIELDS.ENTITY_ID]: {$in:commentIDs},
+              [FIELDS.ENTITY_TYPE]: 'comment'
+         },
+        },
+        {$project: {  'commentId':`$${FIELDS.ENTITY_ID}`,count: { $size:`$${FIELDS.REACTION}` }}}
+     ]
+     this.collection.aggregate(project).toArray((err, data)=>{
+      if(err) return reject(err);
+
+      data.map(el=>{
+        map.set(el.commentId, el.count);
+      })
+
+      return resolve(map);
+     });
+    })
+  }
 }
 
 module.exports = {
