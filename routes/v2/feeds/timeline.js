@@ -5,7 +5,7 @@ const TYPES_ALLOWED = Object.values(C.TIMELINE.TYPES_ALLOWED);
 const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const ApiError = require("../ApiError");
 const {user} = require("../../../core/Redis");
-const {reactions: mongoReactions} = require("../../../core/mongo");
+const {reactions: mongoReactions, users: mongoUsers} = require("../../../core/mongo");
 
 const timeline = {};
 
@@ -14,39 +14,61 @@ timeline.validate = (req, res, next) => {
   const other = req.query.other;
   const type = req.query.type;
 
+  if(userId === other) req._self = true;
+
   req._userToFetch = other || userId;
   if(!TYPES_ALLOWED.includes(type)) return next(new ApiError(400, 'E0010009'));
   next();
 }
 
+timeline.checkProfileVisibiility = async(req, res, next) => {
+  if(req._self) return next();
+  try{
+    const {friends = [], profilePrivacy} = await mongoUsers.instance.getFriendsAndFollowings(req._userToFetch) || {};
+    if(profilePrivacy === 'PUBLIC') return next();
+    if(friends.includes(req._userId)) return next();
+    req._emptyList = true;
+    next();
+  }catch(e){
+    return next(new ApiError(500, 'E0010002', {debug: e}));
+  }
+}
+
 timeline.search = async (req, res, next) => {
-  const userId = req.headers._id;
-  const type = req.query.type;
-  let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
-  const searchResult  = await feedsInstance.timeline(req._userToFetch, userId, true, type, C.TIMELINE.DEFAULT_HIDE_TIME);
-  req._searchResult = (searchResult && searchResult.hits.hits && searchResult.hits.hits.map(obj => obj._source)) || [];
-  next();
+  if(req._emptyList) return next();
+  try{
+    const userId = req.headers._id;
+    const type = req.query.type;
+    let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
+    const searchResult  = await feedsInstance.timeline(req._userToFetch, userId, true, type, C.TIMELINE.DEFAULT_HIDE_TIME);
+    req._searchResult = (searchResult && searchResult.hits.hits && searchResult.hits.hits.map(obj => obj._source)) || [];
+    next();
+  }catch(e){
+    return next(new ApiError(500, 'E0010002', {debug: e}));
+  }
 }
 
 timeline.fetchDetails = async(req, res, next) => {
   const searchResult = req._searchResult;
-  let response;
-  switch(req.query.type){
-    case C.TIMELINE.TYPES_ALLOWED.GALLERY:
-    response = _galleryWrapper(searchResult);
-    break;
+  let response = [];
+  if(!req._emptyList){
+    switch(req.query.type){
+      case C.TIMELINE.TYPES_ALLOWED.GALLERY:
+      response = _galleryWrapper(searchResult);
+      break;
 
-    case C.TIMELINE.TYPES_ALLOWED.GALLERY_SET:
-    response = _gallerySetWrapper(searchResult);
-    break;
+      case C.TIMELINE.TYPES_ALLOWED.GALLERY_SET:
+      response = _gallerySetWrapper(searchResult);
+      break;
 
-    case C.TIMELINE.TYPES_ALLOWED.FEEDS:
-    response = await _feedsWrapper(searchResult, req._userId);
-    break;
+      case C.TIMELINE.TYPES_ALLOWED.FEEDS:
+      response = await _feedsWrapper(searchResult, req._userId);
+      break;
 
-    default:
-    response = [];
-    break;
+      default:
+      response = [];
+      break;
+    }
   }
   res.status(200).send({
     total: response.length,
