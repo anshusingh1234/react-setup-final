@@ -4,6 +4,7 @@ const C = require("../../../constants");
 const TYPES_ALLOWED = Object.values(C.TIMELINE.TYPES_ALLOWED);
 const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const ApiError = require("../ApiError");
+const {user} = require("../../../core/Redis");
 
 
 const timeline = {};
@@ -40,7 +41,7 @@ timeline.fetchDetails = async(req, res, next) => {
     break;
 
     case C.TIMELINE.TYPES_ALLOWED.FEEDS:
-    response = _feedsWrapper(searchResult, req._userId);
+    response = await _feedsWrapper(searchResult, req._userId);
     break;
 
     default:
@@ -99,35 +100,50 @@ const _gallerySetWrapper = (result) => {
 }
 
 const _feedsWrapper = (result, userId) => {
-  return result.map(_obj => {
-    return {
-      "type": _obj[ES_FEEDS_FIELDS.TYPE],
-      "data": {
-        "author": {
-          "userId": _obj[ES_FEEDS_FIELDS.AUTHOR]
-        },
-        "privacy": _obj[ES_FEEDS_FIELDS.PRIVACY],
-        "createdAt": _obj[ES_FEEDS_FIELDS.CREATED_AT],
-        "id": _obj[ES_FEEDS_FIELDS.FEED_ID],
-        "commentsCount": _obj[ES_FEEDS_FIELDS.COMMENTS_COUNT],
-        "reactionsCount": _obj[ES_FEEDS_FIELDS.REACTIONS_COUNT],
-        "detail": {..._obj[ES_FEEDS_FIELDS.DATA],
-          "media": _obj[ES_FEEDS_FIELDS.MEDIA],
-        },
-        "checkIn": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS] && {
-          "geoPoints": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS],
-          "text": _obj[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
-        },
-        "taggedUsers": (_obj[ES_FEEDS_FIELDS.TAGGED_USERS] && _obj[ES_FEEDS_FIELDS.TAGGED_USERS].length) ? _obj[ES_FEEDS_FIELDS.TAGGED_USERS].map(_userId => {
-          return {
-            "userId": _userId
+  return new Promise(async(resolve, reject) => {
+    let _allUserIds = [];
+    result.forEach(_obj => {
+      const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
+      const _tagged = _obj[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
+      _allUserIds = _allUserIds.concat([_author], _tagged);
+    })
+    _allUserIds = [... new Set(_allUserIds)];
+    const userMap = await user.getAllUsersProfile(_allUserIds);
+
+    let _return = result.map(_obj => {
+      const user = userMap.get(_obj[ES_FEEDS_FIELDS.AUTHOR]);
+      user && delete user.name;
+      const taggedUsers = (_obj[ES_FEEDS_FIELDS.TAGGED_USERS] || []).length && _obj[ES_FEEDS_FIELDS.TAGGED_USERS].map(_id => userMap.get(_id)).filter(el => el);
+      if(user){
+        if(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS]){
+          _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat + "";
+          _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon + "";
+        }
+        return {
+          "type": _obj[ES_FEEDS_FIELDS.TYPE],
+          "data": {
+            "author": user,
+            "privacy": _obj[ES_FEEDS_FIELDS.PRIVACY],
+            "createdAt": _obj[ES_FEEDS_FIELDS.CREATED_AT],
+            "id": _obj[ES_FEEDS_FIELDS.FEED_ID],
+            "commentsCount": _obj[ES_FEEDS_FIELDS.COMMENTS_COUNT],
+            "reactionsCount": _obj[ES_FEEDS_FIELDS.REACTIONS_COUNT],
+            "detail": {..._obj[ES_FEEDS_FIELDS.DATA],
+              "media": _obj[ES_FEEDS_FIELDS.MEDIA],
+            },
+            "checkIn": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS] && {
+              "geoPoints": _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS],
+              "text": _obj[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
+            },
+            "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
+            "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === userId ? {
+              "reactions": [1,2,3],
+              "message": "Ankit, Josh and 3 others participated"
+            } : undefined
           }
-        }) : undefined,
-        "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === userId ? {
-          "reactions": [1,2,3],
-          "message": "Ankit, Josh and 3 others participated"
-        } : undefined
+        }
       }
-    }
-  });
+    }).filter(el => el);
+    resolve(_return)
+  })
 }
