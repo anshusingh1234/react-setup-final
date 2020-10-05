@@ -45,7 +45,7 @@ class Reactions extends MongoDB {
       const uniqueReactionContraint = {
         ...entity,
         [`${FIELDS.REACTION}.${[FIELDS.REACTION_USERID]}`]:reactionObj[FIELDS.REACTION_USERID]
-      } 
+      }
 
       const pullParams = {
         [FIELDS.REACTION] : {
@@ -68,7 +68,7 @@ class Reactions extends MongoDB {
       const uniqueReactionContraint = {
         ...entity,
         [`${FIELDS.REACTION}.${[FIELDS.REACTION_USERID]}`]:userId
-      } 
+      }
 
       const pullParams = {
         [FIELDS.REACTION] : {
@@ -88,12 +88,12 @@ class Reactions extends MongoDB {
       const uniqueReactionContraint = {
         ...entity,
         [`${FIELDS.REACTION}.${[FIELDS.REACTION_USERID]}`]:userId
-      } 
-      const selectField = { 
-        projection: 
-        { 
+      }
+      const selectField = {
+        projection:
+        {
           [FIELDS.ID]:1
-        } 
+        }
       }
 
       this.collection.findOne(uniqueReactionContraint,selectField, (err, data)=>{

@@ -5,7 +5,7 @@ const TYPES_ALLOWED = Object.values(C.TIMELINE.TYPES_ALLOWED);
 const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const ApiError = require("../ApiError");
 const {user} = require("../../../core/Redis");
-
+const {reactions: mongoReactions} = require("../../../core/mongo");
 
 const timeline = {};
 
@@ -71,12 +71,14 @@ const _gallerySetWrapper = (result) => {
   let _return = [];
   result.forEach(obj => {
     let media = obj[ES_FEEDS_FIELDS.MEDIA];
-    let postedOn = obj[ES_FEEDS_FIELDS.CREATED_AT];
-    const date = moment(postedOn*1000).format("DD-MM-YYYY");
+    if(media && media.length){
+      let postedOn = obj[ES_FEEDS_FIELDS.CREATED_AT];
+      const date = moment(postedOn*1000).format("DD-MM-YYYY");
 
-    let currDateItems = dateMap.get(date) || [];
-    currDateItems = currDateItems.concat(media);
-    dateMap.set(date, currDateItems);
+      let currDateItems = dateMap.get(date) || [];
+      currDateItems = currDateItems.concat(media);
+      dateMap.set(date, currDateItems);
+    }
   })
   const _allDates = ([...dateMap.keys()]);
   _allDates.forEach(_date => {
@@ -102,13 +104,18 @@ const _gallerySetWrapper = (result) => {
 const _feedsWrapper = (result, userId) => {
   return new Promise(async(resolve, reject) => {
     let _allUserIds = [];
+    let _allPostIds = [];
+
     result.forEach(_obj => {
       const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
       const _tagged = _obj[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
       _allUserIds = _allUserIds.concat([_author], _tagged);
+      _allPostIds.push(_obj[ES_FEEDS_FIELDS.FEED_ID]);
     })
     _allUserIds = [... new Set(_allUserIds)];
     const userMap = await user.getAllUsersProfile(_allUserIds);
+
+    const reactionMap = await mongoReactions.instance.checkIfUserReacted([...new Set(_allPostIds)], userId, 'post');
 
     let _return = result.map(_obj => {
       const user = userMap.get(_obj[ES_FEEDS_FIELDS.AUTHOR]);
@@ -119,6 +126,8 @@ const _feedsWrapper = (result, userId) => {
           _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat + "";
           _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon + "";
         }
+        const myReaction = reactionMap.get(_obj[ES_FEEDS_FIELDS.FEED_ID].toString());
+
         return {
           "type": _obj[ES_FEEDS_FIELDS.TYPE],
           "data": {
@@ -136,6 +145,7 @@ const _feedsWrapper = (result, userId) => {
               "text": _obj[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
             },
             "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
+            "myReaction": myReaction ? myReaction : '0',
             "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === userId ? {
               "reactions": [1,2,3],
               "message": "Ankit, Josh and 3 others participated"
