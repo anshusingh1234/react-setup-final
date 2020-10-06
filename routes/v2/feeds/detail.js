@@ -1,9 +1,9 @@
 const {feeds} = require("../../../core/elasticsearch");
 const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FEED_FIELDS_VALUES} = require("../../../core/elasticsearch/templates/index/feeds/v1");
-const moment = require("moment");
 const {user} = require("../../../core/Redis");
 const {users: mongoUsers, reactions: mongoReactions} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
+const postHelper = require("./postHelper");
 
 const detail = {};
 
@@ -59,9 +59,14 @@ detail.fetchDetails = async(req, res, next) => {
     const detail = req._detail;
 
     let _allUserIds = [];
+    let _myPostIds = [];
+
     const _author = detail[ES_FEEDS_FIELDS.AUTHOR];
     const _tagged = detail[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
     _allUserIds = _allUserIds.concat([_author], _tagged);
+    if(_author === req._userId) _myPostIds.push(detail[ES_FEEDS_FIELDS.FEED_ID]);
+    req._participatingInfo = await postHelper.fetch(_myPostIds);
+
 
     _allUserIds = [... new Set(_allUserIds)];
     const userMap = await user.getAllUsersProfile(_allUserIds);
@@ -98,8 +103,8 @@ detail.buildResponse = (req, res, next) => {
       "privacy": detail[ES_FEEDS_FIELDS.PRIVACY],
       "createdAt": detail[ES_FEEDS_FIELDS.CREATED_AT],
       "id": detail[ES_FEEDS_FIELDS.FEED_ID],
-      "commentsCount": detail[ES_FEEDS_FIELDS.COMMENTS_COUNT] || 0,
-      "reactionsCount": detail[ES_FEEDS_FIELDS.REACTIONS_COUNT] || 0,
+      "commentsCount": postHelper.getPostActivitiesCountString(detail[ES_FEEDS_FIELDS.COMMENTS_COUNT]),
+      "reactionsCount": postHelper.getPostActivitiesCountString(detail[ES_FEEDS_FIELDS.REACTIONS_COUNT]),
       "detail": {...detail[ES_FEEDS_FIELDS.DATA],
         "media": detail[ES_FEEDS_FIELDS.MEDIA],
       },
@@ -109,10 +114,7 @@ detail.buildResponse = (req, res, next) => {
       },
       "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
       "myReaction": myReaction ? myReaction : '0',
-      "participatingDetails": detail[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? {
-        "reactions": [1,2,3],
-        "message": "Ankit, Josh and 3 others participated"
-      } : undefined
+      "participatingDetails": detail[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? req._participatingInfo.get(detail[ES_FEEDS_FIELDS.FEED_ID]) : undefined
     }
   }
   res.status(200).send(response);

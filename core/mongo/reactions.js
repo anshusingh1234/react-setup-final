@@ -109,13 +109,13 @@ class Reactions extends MongoDB {
 
       const project =  [
         { '$match': {
-              [FIELDS.ENTITY_ID]: {$in:commentIDs},
-              [FIELDS.ENTITY_TYPE]: 'comment'
-         },
+          [FIELDS.ENTITY_ID]: {$in:commentIDs},
+          [FIELDS.ENTITY_TYPE]: 'comment'
         },
-        {$project: {  'commentId':`$${FIELDS.ENTITY_ID}`,count: { $size:`$${FIELDS.REACTION}` }}}
-     ]
-     this.collection.aggregate(project).toArray((err, data)=>{
+      },
+      {$project: {  'commentId':`$${FIELDS.ENTITY_ID}`,count: { $size:`$${FIELDS.REACTION}` }}}
+    ]
+    this.collection.aggregate(project).toArray((err, data)=>{
       if(err) return reject(err);
 
       data.map(el=>{
@@ -123,29 +123,29 @@ class Reactions extends MongoDB {
       })
 
       return resolve(map);
-     });
-    })
-  }
+    });
+  })
+}
 
-  async checkIfUserReacted(entityIds, userId, entityType){
-    return new Promise((resolve, reject) => {
-      let map = new Map();
-     const project = [
+async checkIfUserReacted(entityIds, userId, entityType){
+  return new Promise((resolve, reject) => {
+    let map = new Map();
+    const project = [
       {$match: {
-          [FIELDS.ENTITY_ID]: {$in:entityIds},
-          [FIELDS.ENTITY_TYPE]: entityType,
+        [FIELDS.ENTITY_ID]: {$in:entityIds},
+        [FIELDS.ENTITY_TYPE]: entityType,
       }},
       {$project: {
-          reaction: {$filter: {
-              input: `$${FIELDS.REACTION}`,
-              as: `${FIELDS.REACTION}`,
-              cond: {$eq: [`$$${FIELDS.REACTION}.${FIELDS.REACTION_USERID}`, userId]}
-          }},
-          _id: 0,
-          'entityId':`$${FIELDS.ENTITY_ID}`,
+        reaction: {$filter: {
+          input: `$${FIELDS.REACTION}`,
+          as: `${FIELDS.REACTION}`,
+          cond: {$eq: [`$$${FIELDS.REACTION}.${FIELDS.REACTION_USERID}`, userId]}
+        }},
+        _id: 0,
+        'entityId':`$${FIELDS.ENTITY_ID}`,
       }}
     ]
-     this.collection.aggregate(project).toArray((err, data)=>{
+    this.collection.aggregate(project).toArray((err, data)=>{
       if(err) return reject(err);
 
       data.map(el=>{
@@ -153,9 +153,48 @@ class Reactions extends MongoDB {
         map.set(el.entityId, el.reaction[0].reaction);
       })
       return resolve(map);
-     });
+    });
+  })
+}
+
+async reactionsWithTotal(entityIds, entityType){
+  const reactionUserKey = `${FIELDS.REACTION}.${FIELDS.REACTION_USERID}`;
+  const reactionReactionKey = `${FIELDS.REACTION}.${FIELDS.REACTION_TYPE}`;
+  return new Promise((resolve, reject) => {
+    const matchQuery = {
+      [FIELDS.ENTITY_ID]: {
+        $in: entityIds
+      },
+      [FIELDS.ENTITY_TYPE]: entityType
+    }
+    this.collection.aggregate([{
+      $facet: {
+        allData: [{
+          $match: matchQuery
+        },{
+          $sort: {
+            [FIELDS.REACTION_CREATED_AT]: -1
+          }
+        },{
+          $project: {
+            "_id": 0,
+            [reactionUserKey]: 1,
+            [reactionReactionKey]: 1,
+            [FIELDS.ENTITY_ID]: 1,
+          }
+        }]
+      }
+    }]).toArray((error, result = []) => {
+      let map = new Map();
+      if(result){
+        result[0].allData.forEach(_obj => {
+          map.set(_obj[FIELDS.ENTITY_ID], _obj[FIELDS.REACTION]);
+        })
+      }
+      return resolve(map);
     })
-  }
+  })
+}
 }
 
 module.exports = {

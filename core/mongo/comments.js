@@ -68,7 +68,7 @@ class Comments extends MongoDB {
     });
   }
 
-  
+
 
   async delete(params) {
     return new Promise((resolve, reject) => {
@@ -97,11 +97,11 @@ class Comments extends MongoDB {
         _id: commentId
       }
 
-      const selectField = { 
-        projection: 
-        { 
+      const selectField = {
+        projection:
+        {
           [FIELDS.USER_ID]:1
-        } 
+        }
       }
 
       this.collection.findOne(where, selectField, (err, data)=> {
@@ -129,6 +129,40 @@ class Comments extends MongoDB {
     })
   }
 
+  async commentsWithTotal(postIds){
+    return new Promise((resolve, reject) => {
+      const query = {
+        [FIELDS.POST_ID]: {
+          $in: postIds
+        }
+      };
+      this.collection.aggregate([{
+        $facet: {
+          allData: [{
+            $match: query
+          },{
+            $sort: {
+              [FIELDS.CREATED_AT]: -1
+            }
+          },{
+            $project: {
+              "_id": 0,
+              [FIELDS.USER_ID]: 1,
+              [FIELDS.POST_ID]: 1
+            }
+          }]
+        }
+      }]).toArray((error, result = []) => {
+        let map = new Map();
+        if(result){
+          result[0].allData.forEach(_obj => {
+            map.set(_obj[FIELDS.POST_ID], _obj[FIELDS.USER_ID]);
+          })
+        }
+        return resolve(map);
+      })
+    })
+  }
 }
 
 module.exports = {
