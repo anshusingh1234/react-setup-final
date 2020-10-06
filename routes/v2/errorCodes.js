@@ -245,6 +245,19 @@ const _errors = {
     }
   },
 
+  E0060004: {
+    title: 'Invalid Username',
+    message: 'Invalid Username',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+
   
 
 
