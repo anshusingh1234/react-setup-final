@@ -161,19 +161,27 @@ class Users extends MongoDB {
         if(err) return reject(err);
         let friends = [];
         let followings = [];
+        let followers = [];
         friends = (data && Array.isArray(data.friends)) ? data.friends.map(_obj => {
           if(_obj.status === 'ACTIVE'){
             return _obj.friendId.toString();
           }
         }).filter(el => el): [];
-        followings = (data && Array.isArray(data.followings)) ? data.followings.map(_obj => {
+        followings = (data && Array.isArray(data.following)) ? data.following.map(_obj => {
           if(_obj.status === 'ACTIVE'){
             return _obj.followingId.toString();
           }
         }).filter(el => el) : [];
+        followers = (data && Array.isArray(data.follower)) ? data.follower.map(_obj => {
+          if(_obj.status === 'ACTIVE'){
+            return _obj.followerId.toString();
+          }
+        }).filter(el => el) : [];
         resolve({
           friends: [...new Set(friends)],
-          followings: [...new Set(followings)]
+          followings: [...new Set(followings)],
+          followers: [...new Set(followers)],
+          profilePrivacy: data.profilePrivacy
         })
       })
     })

@@ -2,7 +2,7 @@ const {feeds} = require("../../../core/elasticsearch");
 const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const moment = require("moment");
 const {user} = require("../../../core/Redis");
-const {users: mongoUsers} = require("../../../core/mongo");
+const {users: mongoUsers, reactions: mongoReactions} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
 
 const feedsSearch = {};
@@ -21,17 +21,27 @@ feedsSearch.search = async (req, res, next) => {
 }
 
 feedsSearch.fetchDetails = async(req, res, next) => {
-  let _allUserIds = [];
-  req._searchResult.forEach(_obj => {
-    _obj = _obj._source;
-    const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
-    const _tagged = _obj[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
-    _allUserIds = _allUserIds.concat([_author], _tagged);
-  })
-  _allUserIds = [... new Set(_allUserIds)];
-  const userMap = await user.getAllUsersProfile(_allUserIds);
-  req._userMap = userMap;
-  next();
+  try{
+    let _allUserIds = [];
+    let _allPostIds = [];
+    req._searchResult.forEach(_obj => {
+      _obj = _obj._source;
+      const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
+      const _tagged = _obj[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
+      _allUserIds = _allUserIds.concat([_author], _tagged);
+      _allPostIds.push(_obj[ES_FEEDS_FIELDS.FEED_ID]);
+    })
+    _allUserIds = [... new Set(_allUserIds)];
+    const userMap = await user.getAllUsersProfile(_allUserIds);
+    req._userMap = userMap;
+
+    const reactionMap = await mongoReactions.instance.checkIfUserReacted([...new Set(_allPostIds)], req._userId, 'post');
+    req._reactionMap = reactionMap;
+    next();
+  }catch(e){
+    console.log("/feeds fetchDetails()", e);
+    return next(new ApiError(500, 'E0010002', {debug: e}));
+  }
 }
 
 feedsSearch.buildResponse = (req, res, next) => {
@@ -45,6 +55,7 @@ feedsSearch.buildResponse = (req, res, next) => {
         _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat + "";
         _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon + "";
       }
+      const myReaction = req._reactionMap.get(_obj[ES_FEEDS_FIELDS.FEED_ID].toString());
       return {
         "type": _obj[ES_FEEDS_FIELDS.TYPE],
         "data": {
@@ -63,6 +74,7 @@ feedsSearch.buildResponse = (req, res, next) => {
             "text": _obj[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
           },
           "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
+          "myReaction": myReaction ? myReaction : '0',
           "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? {
             "reactions": [1,2,3],
             "message": "Ankit, Josh and 3 others participated"

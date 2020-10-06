@@ -2,7 +2,7 @@ const {feeds} = require("../../../core/elasticsearch");
 const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FEED_FIELDS_VALUES} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const moment = require("moment");
 const {user} = require("../../../core/Redis");
-const {users: mongoUsers} = require("../../../core/mongo");
+const {users: mongoUsers, reactions: mongoReactions} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
 
 const detail = {};
@@ -55,17 +55,25 @@ detail.checkForPrivacy = async(req, res, next) => {
 }
 
 detail.fetchDetails = async(req, res, next) => {
-  const detail = req._detail;
+  try{
+    const detail = req._detail;
 
-  let _allUserIds = [];
-  const _author = detail[ES_FEEDS_FIELDS.AUTHOR];
-  const _tagged = detail[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
-  _allUserIds = _allUserIds.concat([_author], _tagged);
+    let _allUserIds = [];
+    const _author = detail[ES_FEEDS_FIELDS.AUTHOR];
+    const _tagged = detail[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
+    _allUserIds = _allUserIds.concat([_author], _tagged);
 
-  _allUserIds = [... new Set(_allUserIds)];
-  const userMap = await user.getAllUsersProfile(_allUserIds);
-  req._userMap = userMap;
-  next();
+    _allUserIds = [... new Set(_allUserIds)];
+    const userMap = await user.getAllUsersProfile(_allUserIds);
+    req._userMap = userMap;
+
+    const reactionMap = await mongoReactions.instance.checkIfUserReacted([req.query.id], req._userId, 'post');
+    req._reactionMap = reactionMap;
+    next();
+  }catch(e){
+    console.log("/detail fetchDetails()", e);
+    return next(new ApiError(500, 'E0010002', {debug: e}));
+  }
 }
 
 detail.buildResponse = (req, res, next) => {
@@ -81,6 +89,7 @@ detail.buildResponse = (req, res, next) => {
     detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat = Number.isInteger(detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat) ? `${detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat}.0` : detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lat + "";
     detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon = Number.isInteger(detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon) ? `${detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon}.0` : detail[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon + "";
   }
+  const myReaction = req._reactionMap.get(detail[ES_FEEDS_FIELDS.FEED_ID].toString());
 
   let response = {
     "type": detail[ES_FEEDS_FIELDS.TYPE],
@@ -99,6 +108,7 @@ detail.buildResponse = (req, res, next) => {
         "text": detail[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
       },
       "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
+      "myReaction": myReaction ? myReaction : '0',
       "participatingDetails": detail[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? {
         "reactions": [1,2,3],
         "message": "Ankit, Josh and 3 others participated"

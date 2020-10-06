@@ -45,6 +45,7 @@ error);
 router.get(`/timeline`,
 auth,
 timeline.validate,
+timeline.checkProfileVisibiility,
 timeline.search,
 timeline.fetchDetails,
 error);
