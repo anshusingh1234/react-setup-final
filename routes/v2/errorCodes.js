@@ -166,6 +166,42 @@ const _errors = {
       }
     }
   },
+  E0030007: {
+    title: 'Invalid Entity ID',
+    message: 'Invalid Entity ID',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0030008: {
+    title: 'Invalid Entity Type',
+    message: 'Invalid Entity Type',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0030009: {
+    title: 'Invalid Reaction',
+    message: 'Invalid Reaction',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
 
 
   //Users related errors
@@ -248,6 +284,45 @@ const _errors = {
   E0060004: {
     title: 'Invalid Username',
     message: 'Invalid Username',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+
+
+  //EVENTS related errors
+  E0070001: {
+    title: 'Invalid Event Type',
+    message: 'Invalid Event Type',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0070002: {
+    title: 'Invalid Age',
+    message: 'Invalid Age',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
+  E0070003: {
+    title: 'Invalid Gender',
+    message: 'Invalid Gender',
     info: {
       type: "fullScreen",
       data: {

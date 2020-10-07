@@ -40,7 +40,6 @@ module.exports = {
                     response(res, ErrorCode.NOT_FOUND, [], ErrorMessage.USER_NOT_FOUND);
                 }
                 else {
-                  console.log('COMPLETE REQUEST', req);
                     var hour = req.body.time.match(/(\d+)/);
                     var hours = parseInt(hour[0])
                     var newDate = new Date(req.body.date)
@@ -216,6 +215,7 @@ module.exports = {
                             title: req.body.title,
                             participant: req.body.participant,
                             description: req.body.description,
+                            defaultImage: req.body.defaultImage,
                             date: req.body.date,
                             time: req.body.time,
                             expiryDate: req.body.expiryDate,

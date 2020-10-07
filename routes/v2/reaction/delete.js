@@ -17,8 +17,10 @@ const deleteReaction = {
       [reactionMongo.FIELDS.ENTITY_ID]: entityId,
       [reactionMongo.FIELDS.ENTITY_TYPE]: entityType
     }
-    if(!entityId) return response(res, 400, null, "invalid/missing entityId");
-    if(!entityType) return response(res, 400, null, "invalid/missing entityType");
+   
+    if(!entityId) return next(new ApiError(400, 'E0030007'));
+    if(!entityType) return next(new ApiError(400, 'E0030008'));
+
     const alreadyReacted = await reactionMongo.instance.checkIfAlreadyReacted(entity, userId);
     if(alreadyReacted){
       next();
