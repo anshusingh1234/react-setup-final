@@ -6,6 +6,7 @@ const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates
 const ApiError = require("../ApiError");
 const {user} = require("../../../core/Redis");
 const {reactions: mongoReactions, users: mongoUsers} = require("../../../core/mongo");
+const postHelper = require("./postHelper");
 
 const timeline = {};
 
@@ -14,7 +15,7 @@ timeline.validate = (req, res, next) => {
   const other = req.query.other;
   const type = req.query.type;
 
-  if(userId === other) req._self = true;
+  if(userId === other || !other) req._self = true;
 
   req._userToFetch = other || userId;
   if(!TYPES_ALLOWED.includes(type)) return next(new ApiError(400, 'E0010009'));
@@ -127,15 +128,18 @@ const _feedsWrapper = (result, userId) => {
   return new Promise(async(resolve, reject) => {
     let _allUserIds = [];
     let _allPostIds = [];
+    let _myPostIds = [];
 
     result.forEach(_obj => {
       const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
       const _tagged = _obj[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
       _allUserIds = _allUserIds.concat([_author], _tagged);
       _allPostIds.push(_obj[ES_FEEDS_FIELDS.FEED_ID]);
+      if(_author === userId) _myPostIds.push(_obj[ES_FEEDS_FIELDS.FEED_ID]);
     })
     _allUserIds = [... new Set(_allUserIds)];
     const userMap = await user.getAllUsersProfile(_allUserIds);
+    const participatingInfo = await postHelper.fetch(_myPostIds);
 
     const reactionMap = await mongoReactions.instance.checkIfUserReacted([...new Set(_allPostIds)], userId, 'post');
 
@@ -157,8 +161,8 @@ const _feedsWrapper = (result, userId) => {
             "privacy": _obj[ES_FEEDS_FIELDS.PRIVACY],
             "createdAt": _obj[ES_FEEDS_FIELDS.CREATED_AT],
             "id": _obj[ES_FEEDS_FIELDS.FEED_ID],
-            "commentsCount": _obj[ES_FEEDS_FIELDS.COMMENTS_COUNT],
-            "reactionsCount": _obj[ES_FEEDS_FIELDS.REACTIONS_COUNT],
+            "commentsCount": postHelper.getPostActivitiesCountString(_obj[ES_FEEDS_FIELDS.COMMENTS_COUNT]),
+            "reactionsCount": postHelper.getPostActivitiesCountString(_obj[ES_FEEDS_FIELDS.REACTIONS_COUNT]),
             "detail": {..._obj[ES_FEEDS_FIELDS.DATA],
               "media": _obj[ES_FEEDS_FIELDS.MEDIA],
             },
@@ -168,10 +172,8 @@ const _feedsWrapper = (result, userId) => {
             },
             "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
             "myReaction": myReaction ? myReaction : '0',
-            "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === userId ? {
-              "reactions": [1,2,3],
-              "message": "Ankit, Josh and 3 others participated"
-            } : undefined
+            "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === userId ? participatingInfo.get(_obj[ES_FEEDS_FIELDS.FEED_ID]) : undefined
+
           }
         }
       }
