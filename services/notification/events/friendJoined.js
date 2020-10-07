@@ -3,9 +3,9 @@ const async = require('async');
 const sender = require("../sender");
 const notificationConstants = require("../constants");
 
-const friendRequest = {};
+const friendJoined = {};
 
-friendRequest.send = (from, to) => {
+friendJoined.send = (from, to) => {
   return new Promise(async (resolve, reject) => {
     try{
       if(!from || !to) return resolve();
@@ -41,15 +41,15 @@ friendRequest.send = (from, to) => {
   })
 }
 
-module.exports = friendRequest;
+module.exports = friendJoined;
 
 const _createPayload = (from, to, userMap) => {
   const fromUserDetail = typeof from === 'string' ? userMap.get(from): from;
   const toUserDetail = typeof to === 'string' ? userMap.get(to): to;
   const title = `Hey ${toUserDetail.name}!`;
-  const subTitle = `${fromUserDetail.name} has sent you a friend request`;
+  const subTitle = `${fromUserDetail.name} has just joined Jigrr! Lets say hi!`;
   const payloadData = {
-    notificationType: notificationConstants.NOTIFICATION_TYPES.FRIEND_REQUEST,
+    notificationType: notificationConstants.NOTIFICATION_TYPES.REFERRAL_JOINED,
     title,
     subTitle,
     screenType: notificationConstants.SCREEN_TYPES.USER_PROFILE,
