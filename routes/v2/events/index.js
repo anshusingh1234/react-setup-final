@@ -8,7 +8,7 @@ const error = require('../error');
 router.get(`/match/search`,
 auth,
 match.validateBody,
-match.search,
+match.oneToOneSearch,
 error
 )
 

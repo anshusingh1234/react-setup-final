@@ -40,9 +40,21 @@ module.exports = {
 
   keys: (pattern, callback) => {
     const client = RedisConnection.getInstance();
-
+    console.log('APAPAPAP', pattern);
     if (client) {
       client.keys(pattern, (error, reply) => {
+        return callback(error, reply);
+      });
+    } else {
+      return callback("error in getting redis client", null);
+    }
+  },
+
+  scan: (cursor, pattern, count, callback) => {
+    const client = RedisConnection.getInstance();
+    console.log('ALL DATAT', cursor, pattern, count);
+    if (client) {
+      client.scan(cursor, 'MATCH',pattern,'COUNT', count, (error, reply) => {
         return callback(error, reply);
       });
     } else {
