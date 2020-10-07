@@ -17,9 +17,10 @@ add.validateBody = async (req, res, next) => {
   const {entityId, entityType, reaction} = req.body;
   const userId = req.headers._id;
 
-  if(!entityId) return response(res, 400, null, "invalid/missing entityId");
-  if(!entityType) return response(res, 400, null, "invalid/missing entityType");
-  if(!reaction) return response(res, 400, null, "invalid/missing reaction");
+  if(!entityId) return next(new ApiError(400, 'E0030007'));
+  if(!entityType) return next(new ApiError(400, 'E0030008'));
+  if(!reaction) return next(new ApiError(400, 'E0030009'));
+
   req.body.createdAt = moment().unix();
 
   const entity={

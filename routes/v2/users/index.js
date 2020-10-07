@@ -40,7 +40,6 @@ error
 )
 
 router.get(`/validateUsername`,
-auth,
 username.validate,
 username.suggest,
 error

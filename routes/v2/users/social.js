@@ -5,8 +5,9 @@ const {users: userMongo} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
 const Facebook = require("./../../../core/social/facebook");
 const Instagram = require("./../../../core/social/instagram");
+const Twitter = require("./../../../core/social/twitter");
 
-const VALID_SOCIAL = ['Facebook', 'Instagram']
+const VALID_SOCIAL = ['Facebook', 'Instagram', 'Twitter']
 
 const social = {
 
@@ -31,6 +32,12 @@ const social = {
       checkVerified: cb => {
         if(type == 'Facebook'){
           Facebook.isVerified(token, accountId).then(isVerified=>{
+            accountVerified = isVerified
+            cb()
+          })
+        }
+        else if(type == 'Twitter'){
+          Twitter.isVerified(token, accountId).then(isVerified=>{
             accountVerified = isVerified
             cb()
           })

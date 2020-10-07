@@ -66,6 +66,9 @@ const eventModel = new schema({
     date: {
         type: String
     },
+    defaultImage: {
+      type: String
+    },
     time: {
         type: String
     },
