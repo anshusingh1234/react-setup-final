@@ -3793,34 +3793,51 @@ module.exports = {
                                     //         response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
                                     //     }
                                     //     else {
-                                    var notification = {
-                                        userId: req.body.friendRequestUserId,
-                                        senderId: req.headers._id,
-                                        title: "Your friend request was rejected by " + success1.name,
-                                        body: "Your friend request was rejected by " + success1.name,
-                                        notificationType: "Friend Request Rejected",
-                                        requestFor: "REJECTFRIENDREQUEST"
-
-                                    }
-                                    var notify = new notificationModel(notification)
-                                    notify.save((SaveError, save) => {
-                                        if (SaveError) {
-                                            response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
-
+                                    const friendId = req.body.friendRequestUserId;
+                                    const userId = req.headers._id;
+                                    userModel.findOneAndUpdate({ _id: userId }, { $pull: { friendRequestSentList: { friendRequestSentId: friendId } } }, { new: true }, (pullErr, pullResult) => {
+                                        if (pullErr) {
+                                            response(res, ErrorCode.INTERNAL_ERROR, [], ErrorMessage.INTERNAL_ERROR);
                                         }
                                         else {
-                                            notificationModel.findOneAndUpdate({ _id: req.body.notiicationId, status: "ACTIVE" }, { $set: { status: "DELETE" } }, { new: true }, (notErr, notData) => {
-                                                if (notErr) {
-                                                    response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
-
+                                            userModel.findOneAndUpdate({ _id: friendId }, { $pull: { friendRequestList: { friendRequestUserId: userId } } }, { new: true }, (removeErr, removeResult) => {
+                                                if (removeErr) {
+                                                    response(res, ErrorCode.INTERNAL_ERROR, [], ErrorMessage.INTERNAL_ERROR);
                                                 }
                                                 else {
-                                                    response(res, SuccessCode.SUCCESS, save, SuccessMessage.UPDATE_SUCCESS)
+                                                  var notification = {
+                                                    userId: req.body.friendRequestUserId,
+                                                    senderId: req.headers._id,
+                                                    title: "Your friend request was rejected by " + success1.name,
+                                                    body: "Your friend request was rejected by " + success1.name,
+                                                    notificationType: "Friend Request Rejected",
+                                                    requestFor: "REJECTFRIENDREQUEST"
+            
+                                                  }
+                                                  var notify = new notificationModel(notification)
+                                                  notify.save((SaveError, save) => {
+                                                      if (SaveError) {
+                                                          response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
+              
+                                                      }
+                                                      else {
+                                                          notificationModel.findOneAndUpdate({ _id: req.body.notiicationId, status: "ACTIVE" }, { $set: { status: "DELETE" } }, { new: true }, (notErr, notData) => {
+                                                              if (notErr) {
+                                                                  response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
+              
+                                                              }
+                                                              else {
+                                                                  response(res, SuccessCode.SUCCESS, save, SuccessMessage.UPDATE_SUCCESS)
+              
+                                                              }
+                                                          })
+                                                          // response(res, SuccessCode.SUCCESS, save, SuccessMessage.UPDATE_SUCCESS)
+              
+                                                      }
+                                                  })
 
                                                 }
                                             })
-                                            // response(res, SuccessCode.SUCCESS, save, SuccessMessage.UPDATE_SUCCESS)
-
                                         }
                                     })
                                     //     }
