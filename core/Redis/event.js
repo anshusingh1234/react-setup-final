@@ -44,8 +44,10 @@ const event = {
         if(result && result.length >= numberOfUsers){
           const selectedKeys = selectedUsers = result.slice(0, numberOfUsers);
           query.mget(selectedKeys, (err, userIDs)=>{
-            //@todo Delete users after selecting from list
-            return resolve(userIDs);
+            query.del(selectedKeys, (err, deleted)=>{
+              console.log('ALL KEYSSS DELETEDDD', err, deleted);
+              return resolve(userIDs);
+            })            
           })
         }
         else{
