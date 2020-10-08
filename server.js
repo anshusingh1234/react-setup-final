@@ -64,7 +64,8 @@ app.use('/api/v2', v2Routes)
 
 mongo.initMongoDB().then(() => {
   app.listen(jConfig.PORT, function () {
-    console.log("Server is listening on", jConfig.PORT)
+    console.log("Server is listening on", jConfig.PORT);
+    // require("./services/notification/events").friendJoined.send("5f7a1f9e1378b64bbea3e7c6", "5f790e091378b64bbea3e7c5")
   });
 }).catch(err=> {
   console.log("Error while initializing mongo", err);

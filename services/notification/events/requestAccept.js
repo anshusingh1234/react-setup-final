@@ -8,6 +8,8 @@ const requestAccepted = {};
 requestAccepted.send = (from, to) => {
   return new Promise(async (resolve, reject) => {
     try{
+      if(!from || !to) return resolve();
+
       const fromUserId = typeof from === 'string' ? from : from._id;
       const toUserId = typeof to === 'string' ? to : to._id;
       let userIdsToFetch = [];
@@ -30,7 +32,7 @@ requestAccepted.send = (from, to) => {
       const {clevertapId} = typeof to === 'string' ? userMap.get(to) : to;
       if(!clevertapId) return resolve();
       const clevertapIds = [...new Set(clevertapId.map(_obj => _obj.id))];
-      
+
       usersMongo.instance.incrementBadgeCount(toUserId);
       sender.sendPushNotificationToMultipleTokens(clevertapIds, payload, () => resolve());
     }catch(e){
@@ -47,7 +49,7 @@ const _createPayload = (from, to, userMap) => {
   const title = `Hey ${toUserDetail.name}!`;
   const subTitle = `${fromUserDetail.name} has accepted you request`;
   const payloadData = {
-    notificationType: notificationConstants.NOTIFICATION_TYPES.FRIEND_REQUEST,
+    notificationType: notificationConstants.NOTIFICATION_TYPES.REQUEST_ACCEPT,
     title,
     subTitle,
     screenType: notificationConstants.SCREEN_TYPES.USER_PROFILE,
@@ -57,6 +59,7 @@ const _createPayload = (from, to, userMap) => {
       name: fromUserDetail.name,
       profilePic: fromUserDetail.profilePic
     },
+    data: {},
     badge_count: toUserDetail.badgeCount || 1
   };
   let payload = {
