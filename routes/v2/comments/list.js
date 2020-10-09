@@ -111,7 +111,7 @@ var wrapper = async (userId, total, data) =>{
               "createdAt": data[commentMongo.FIELDS.CREATED_AT],
               "replies": allReplies && allReplies.length ? allReplies.map(reply=>formatTuple(reply, profiles, replies)):[],
               "reactionCount":reactionCountVal ? reactionCountVal : 0,
-              "myReaction": myReaction ? myReaction : '0',
+              "myReaction": myReaction ? myReaction.toString() : '0',
               "user": profiles.get(data[commentMongo.FIELDS.USER_ID])
             }
           }

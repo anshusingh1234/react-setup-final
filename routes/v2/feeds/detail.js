@@ -113,7 +113,7 @@ detail.buildResponse = (req, res, next) => {
         "text": detail[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
       },
       "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
-      "myReaction": myReaction ? myReaction : '0',
+      "myReaction": myReaction ? myReaction.toString() : '0',
       "participatingDetails": detail[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? req._participatingInfo.get(detail[ES_FEEDS_FIELDS.FEED_ID]) : undefined
     }
   }
