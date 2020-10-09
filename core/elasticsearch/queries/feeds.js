@@ -5,6 +5,7 @@ const query = {};
 query.searchFeeds = (userId, options) => {
   let shouldArray = [];
   let mustArray = [];
+  let mustNotArray = [];
 
   mustArray.push({
     "term": {
@@ -110,9 +111,16 @@ query.searchFeeds = (userId, options) => {
     }
   })
 
+  mustNotArray.push({
+    "term": {
+      [FEEDS_FIELDS.HIDDEN_BY]: userId
+    }
+  })
+
   return {
     "bool": {
-      "must": mustArray
+      "must": mustArray,
+      "must_not": mustNotArray
     }
   }
 }

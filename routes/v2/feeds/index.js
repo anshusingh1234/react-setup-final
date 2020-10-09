@@ -7,6 +7,7 @@ const deletePost = require("./deletePost");
 const updatePost = require("./updatePost");
 const detail = require("./detail");
 const report = require("./report");
+const hide = require("./hide");
 const auth = require('../auth');
 const error = require('../error');
 const mediaUploader = require("../common/mediaUploader");
@@ -62,6 +63,12 @@ detail.validate,
 detail.checkForPrivacy,
 detail.fetchDetails,
 detail.buildResponse,
+error);
+
+router.patch(`/post/hide`,
+auth,
+hide.validate,
+hide.save,
 error);
 
 module.exports = router;

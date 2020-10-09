@@ -290,6 +290,20 @@ class FeedsElasticsearch extends AbstractElasticsearch {
       resolve(_return);
     }));
   }
+
+  /**
+  * Adding user id if they hide a post
+  * @param {*} feedId
+  * @param {*} userId
+  */
+  hiddenBy(feedId, userId){
+    if (!feedId || !userId) {
+      throw new Error('Invalid argument(s)');
+    }
+    return new Promise((resolve, reject) => {
+      super.addToken(feedId, FEEDS_FIELDS.HIDDEN_BY, userId, _fulfillPromiseCallback(resolve, reject));
+    })
+  }
 }
 
 module.exports = {

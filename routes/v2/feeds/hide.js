@@ -1,11 +1,10 @@
-const moment = require("moment");
 const {feeds} = require("../../../core/elasticsearch");
-const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FIELDS_VALUES} = require("../../../core/elasticsearch/templates/index/feeds/v1");
+const {FIELDS: ES_FEEDS_FIELDS, FIELDS_VALUES: ES_FEED_FIELDS_VALUES} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const ApiError = require("../ApiError");
 
-const report = {};
+const hide = {};
 
-report.validate = (req, res, next) => {
+hide.validate = (req, res, next) => {
   const userId = req.headers._id;
   const {feedId} = req.body;
 
@@ -14,18 +13,18 @@ report.validate = (req, res, next) => {
 }
 
 /**
-* saving the user id in es and changing the status based on max reports allowed
+* saving the user id in es
 * @param {*} req
 * @param {*} res
 * @param {*} next
 */
-report.save = async(req, res, next) => {
+hide.save = async(req, res, next) => {
   const userId = req.headers._id;
   const feedId = req.body.feedId;
 
   const instance = feeds.forId(feedId);
   try{
-    await instance.reportPost(feedId, userId);
+    await instance.hiddenBy(feedId, userId);
     res.status(200).send();
     next();
   }catch(e){
@@ -33,4 +32,4 @@ report.save = async(req, res, next) => {
   }
 }
 
-module.exports = report;
+module.exports = hide;

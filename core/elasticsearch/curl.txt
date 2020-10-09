@@ -80,7 +80,7 @@ curl -X PUT \
 curl -X PUT "http://127.0.0.1:9200/feeds-20*/_mapping?pretty" -H 'Content-Type: application/json' -d'
 {
   "properties": {
-    "sub_type": {
+    "hidden_by": {
       "type": "keyword"
     }
   }

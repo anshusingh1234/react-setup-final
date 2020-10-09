@@ -18,7 +18,8 @@ const FIELDS = {
   COMMENTS_COUNT: 'comments_count',
   REACTIONS_COUNT: 'reactions_count',
   STATUS: 'status',
-  REPORTED_BY: 'reported_by'
+  REPORTED_BY: 'reported_by',
+  HIDDEN_BY: 'hidden_by'
 }
 
 const FIELDS_VALUES = {
@@ -105,6 +106,9 @@ const MAPPING = {
         type: "keyword"
       },
       [FIELDS.REPORTED_BY]: {
+        type: "keyword"
+      },
+      [FIELDS.HIDDEN_BY]: {
         type: "keyword"
       }
     }
