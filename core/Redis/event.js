@@ -45,7 +45,6 @@ const event = {
           const selectedKeys = selectedUsers = result.slice(0, numberOfUsers);
           query.mget(selectedKeys, (err, userIDs)=>{
             query.del(selectedKeys, (err, deleted)=>{
-              console.log('ALL KEYSSS DELETEDDD', err, deleted);
               return resolve(userIDs);
             })            
           })

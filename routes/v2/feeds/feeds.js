@@ -80,7 +80,7 @@ feedsSearch.buildResponse = (req, res, next) => {
             "text": _obj[ES_FEEDS_FIELDS.CHECK_IN_TEXT]
           },
           "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
-          "myReaction": myReaction ? myReaction : '0',
+          "myReaction": myReaction ? myReaction.toString() : '0',
           "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === req._userId ? req._participatingInfo.get(_obj[ES_FEEDS_FIELDS.FEED_ID]) : undefined
         }
       }
