@@ -5,6 +5,8 @@ const {feeds: feedsMongo} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
 const multiparty = require("multiparty");
 const C = require("../../../constants");
+const {tagUser: tagUserPushNotification} = require("../../../services/notification/events");
+const async = require('async');
 
 const createPost = {};
 
@@ -82,9 +84,6 @@ createPost.validateBody = (req, res, next) => {
   }else{
     delete req.body.taggedUsers;
   }
-  //verifying taggedUsers ends
-
-  //TODO: verify media array
 
   req.body.createdAt = moment().unix();
   next();
@@ -117,8 +116,8 @@ createPost.saveInMongo = async (req, res, next) => {
     [feedsMongo.FIELDS.TAGGED_USERS]: req.body.taggedUsers,
   };
   const mongoResult = await feedsMongo.instance.insertPost(toAdd);
-  mongoResult && mongoResult.originalData && (req._groupId = feedsMongo.instance.getStringFromObjectId(mongoResult.originalData._id));
-  if(!req._groupId) return next(new ApiError(500, 'E0010002'));
+  mongoResult && mongoResult.originalData && (req._id = feedsMongo.instance.getStringFromObjectId(mongoResult.originalData._id));
+  if(!req._id) return next(new ApiError(500, 'E0010002', {debug: "mongo _id missing"}));
   next();
 }
 
@@ -129,7 +128,9 @@ createPost.saveInMongo = async (req, res, next) => {
 * @param {*} next
 */
 createPost.saveInES = (req, res, next) => {
-  const feedId = req._groupId;
+  const _dateRef = moment().format("YYYY-MM-DD");
+  const feedId = `${req._id}:${_dateRef}`;
+  req._feedId = feedId;
   const toAdd = {
     [ES_FEEDS_FIELDS.FEED_ID]: feedId,
     [ES_FEEDS_FIELDS.TYPE]: 'post',
@@ -145,10 +146,12 @@ createPost.saveInES = (req, res, next) => {
     [ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS]: req.body.checkInGeoPoints,
     [ES_FEEDS_FIELDS.TAGGED_USERS]: req.body.taggedUsers,
   }
-  const feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
+  const feedsInstance = feeds.forDate(_dateRef);
   feedsInstance.indexDoc(toAdd, (error, result) => {
-    if(error) console.log(error)
-    if(result && result.feedId) req._feedId = result.feedId;
+    console.log("---------------------", error, result)
+    if(error){
+      return next(new ApiError(500, 'E0010002', {debug: error}))
+    }
     next();
   })
 }
@@ -159,7 +162,19 @@ createPost.buildResponse = (req, res, next) => {
     data: {
       id: req._feedId
     }
-  })
+  });
+  next();
+}
+
+createPost.tagPushNotification = (req, res, next) => {
+  next();
+  if(Array.isArray(req.body.taggedUsers)){
+    let scripts = [];
+    req.body.taggedUsers.forEach(to => {
+      scripts.push(cb => tagUserPushNotification.send(req._userId, to, req._feedId).then(() => cb()))
+    })
+    async.parallelLimit(scripts, 10, () => {});
+  }
 }
 
 module.exports = createPost;

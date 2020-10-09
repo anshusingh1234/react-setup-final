@@ -20,6 +20,7 @@ mediaUploader.uploadReqFiles,
 createPost.saveInMongo,
 createPost.saveInES,
 createPost.buildResponse,
+createPost.tagPushNotification,
 error);
 
 router.get(`/search`,

@@ -36,6 +36,7 @@ router.patch(`/referrals`,
 auth,
 referrals.validate,
 referrals.save,
+referrals.pushNotification,
 error
 )
 

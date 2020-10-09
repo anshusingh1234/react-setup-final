@@ -30,7 +30,7 @@ const self = module.exports = {
       json: notificationBody
     };
 
-    console.log(`[${dateTimeHelper.getIndiaCurrentTime()}] sending notification to: ${clevertapId}`, JSON.stringify(payload, null, 2));
+    console.log(`[${dateTimeHelper.getIndiaCurrentTime()}] sending notification to: ${clevertapId}`, JSON.stringify(notificationBody, null, 2));
     request(options, (error, response, body) => {
       if (error) {
         console.log(`[${dateTimeHelper.getIndiaCurrentTime()}] Error in sending notification: ${error}`);

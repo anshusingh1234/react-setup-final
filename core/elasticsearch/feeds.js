@@ -94,14 +94,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
 
     data[FEEDS_FIELDS.STATUS] = FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE;
 
-    const _id = `${data[FEEDS_FIELDS.FEED_ID]}:${this.dateTag}`;
-    data[FEEDS_FIELDS.FEED_ID] = _id;
-    super.indexDoc(_id, data, (error, result) => {
-      if(result && typeof result === 'object'){
-        result.feedId = _id;
-      }
-      callback(error, result);
-    });
+    super.indexDoc(data[FEEDS_FIELDS.FEED_ID], data, callback);
   }
 
   /**

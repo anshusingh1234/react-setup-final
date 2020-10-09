@@ -1,6 +1,7 @@
 const C = require("../../../constants");
 const ApiError = require("../ApiError");
 const {users} = require("../../../core/mongo");
+const {referralJoined: referralJoinedNotification} = require("../../../services/notification/events");
 
 const referrals = {};
 
@@ -24,6 +25,13 @@ referrals.save = async (req, res, next) => {
   }
   res.status(200).send();
   next();
+}
+
+referrals.pushNotification = async(req, res, next) => {
+  next();
+  const from = req._userId;
+  const to = req.body.referredBy;
+  referralJoinedNotification.send(from, to);
 }
 
 

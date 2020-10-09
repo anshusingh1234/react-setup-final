@@ -2,10 +2,11 @@ const {users: usersMongo} = require("../../../core/mongo");
 const async = require('async');
 const sender = require("../sender");
 const notificationConstants = require("../constants");
+const stringHelper = require("../../../helper/stringHelper");
 
 const comment = {};
 
-comment.send = (from, to, feedId, commentId) => {
+comment.send = (from, to, feedId, commentId, text) => {
   return new Promise(async (resolve, reject) => {
     try{
       if(!from || !to || !feedId || !commentId) return resolve();
@@ -28,7 +29,7 @@ comment.send = (from, to, feedId, commentId) => {
         const _um = await _fetchUserDetail(userIdsToFetch);
         userMap = new Map([...userMap, ..._um]);
       }
-      const payload = _createPayload(from, to, userMap, feedId, commentId);
+      const payload = _createPayload(from, to, userMap, feedId, commentId, text);
       const {clevertapId} = typeof to === 'string' ? userMap.get(to) : to;
       if(!clevertapId) return resolve();
       const clevertapIds = [...new Set(clevertapId.map(_obj => _obj.id))];
@@ -43,11 +44,11 @@ comment.send = (from, to, feedId, commentId) => {
 
 module.exports = comment;
 
-const _createPayload = (from, to, userMap, feedId, commentId) => {
+const _createPayload = (from, to, userMap, feedId, commentId, text) => {
   const fromUserDetail = typeof from === 'string' ? userMap.get(from): from;
   const toUserDetail = typeof to === 'string' ? userMap.get(to): to;
   const title = `${fromUserDetail.name} commented`;
-  const subTitle = `on your post`;
+  const subTitle = `"${stringHelper.getSubString(text, 20)}" on your post`;
   const payloadData = {
     notificationType: notificationConstants.NOTIFICATION_TYPES.COMMENT,
     title,
