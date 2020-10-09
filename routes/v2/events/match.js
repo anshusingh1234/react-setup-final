@@ -29,10 +29,15 @@ const match = {
 
     if(eventType == 'ONLINE_GENERAL'){
       let matchParams = {eventType, age, gender, userId};
-      const peopleRequired = 1;
+      const peopleRequired = 2;
       let userMatched = [], userProfiles = [];
 
       async.series({
+        saveMatch: cb =>{
+          event.saveMatch(matchParams).then(res=>{
+            cb();
+          })
+        },
         checkMatchComplete: cb => {
           event.checkMatchComplete(peopleRequired, matchParams).then(res=>{
             userMatched = res;
@@ -49,7 +54,7 @@ const match = {
         },
         getUserProfiles: cb =>{
           if(userMatched.length){
-            const userIDs = userMatched.map(userId=>JSON.parse(userId));
+            const userIDs = userMatched.map(id=>JSON.parse(id)).filter(indivID=>indivID!==userId);
             user.getAllUsersProfile(userIDs).then(res=>{
               userProfiles = [...res.values()];
               cb();
@@ -60,7 +65,7 @@ const match = {
       },
       (error, result) => {
         const response = {
-          waitTime: userMatched.length ? 0 : 120,
+          waitTime: userMatched.length ? 0 : C.EVENT_MATCH_WAITTIME,
           userMatch:userProfiles
         }
         res.status(200).send(response);
