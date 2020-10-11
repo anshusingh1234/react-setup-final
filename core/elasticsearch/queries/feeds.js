@@ -13,6 +13,18 @@ query.searchFeeds = (userId, options) => {
     }
   })
 
+  if(options.keyword && typeof options.keyword === 'string'){
+    mustArray.push({
+      "wildcard": {
+        [FEEDS_FIELDS.SEARCHABLE_CONTENT]: {
+          "value": `*${options.keyword}*`,
+          "boost": 1.0,
+          "rewrite": "constant_score"
+        }
+      }
+    })
+  }
+
   shouldArray.push({
     "term": {
       [FEEDS_FIELDS.AUTHOR]: userId

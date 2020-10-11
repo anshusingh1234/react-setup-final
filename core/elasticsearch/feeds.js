@@ -92,6 +92,10 @@ class FeedsElasticsearch extends AbstractElasticsearch {
       delete data[FEEDS_FIELDS.DATA].media;
     }
 
+    if(data[FEEDS_FIELDS.DATA] && data[FEEDS_FIELDS.DATA].content){
+      data[FEEDS_FIELDS.SEARCHABLE_CONTENT] = data[FEEDS_FIELDS.DATA].content;
+    }
+
     data[FEEDS_FIELDS.STATUS] = FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE;
 
     super.indexDoc(data[FEEDS_FIELDS.FEED_ID], data, callback);
@@ -103,9 +107,9 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   * @param {*} friends friends of the user
   * @param {*} following following list of the user
   */
-  searchFeed(userId, friends = [], following = []){
+  searchFeed(userId, friends = [], following = [], keyword){
     const query = FEEDS_QUERY.searchFeeds(userId, {
-      friends, following
+      friends, following, keyword
     });
     const _body = {
       size: 100,

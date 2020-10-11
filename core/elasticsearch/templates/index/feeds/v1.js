@@ -19,7 +19,8 @@ const FIELDS = {
   REACTIONS_COUNT: 'reactions_count',
   STATUS: 'status',
   REPORTED_BY: 'reported_by',
-  HIDDEN_BY: 'hidden_by'
+  HIDDEN_BY: 'hidden_by',
+  SEARCHABLE_CONTENT: 'searchable_content'
 }
 
 const FIELDS_VALUES = {
@@ -110,6 +111,15 @@ const MAPPING = {
       },
       [FIELDS.HIDDEN_BY]: {
         type: "keyword"
+      },
+      [FIELDS.SEARCHABLE_CONTENT]: {
+        type: "text",
+        fields: {
+          english: {
+            type: "text",
+            analyzer: "english"
+          }
+        }
       }
     }
   }
