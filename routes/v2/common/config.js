@@ -100,7 +100,10 @@ const config = {
         update:{
           available: true,
           type:'force',
-          message: 'New update is available!'
+          message:{
+            type:'fullscreen',
+            message: 'New update is available!'
+          }
         }
       }
       res.status(200).send(config);
