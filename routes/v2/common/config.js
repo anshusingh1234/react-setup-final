@@ -2,6 +2,7 @@ const moment = require("moment");
 const ApiError = require("../ApiError");
 const async = require("async");
 const {user, HASH_FIELDS} = require("./../../../core/Redis");
+const {users} = require("./../../../core/mongo");
 
 const config = {
   /**
@@ -15,19 +16,21 @@ const config = {
 
     let userProfile = {};
 
+    userId && users.instance.resetBadgeCount(userId);
+
     async.series({
       getUserProfile: cb => {
         if(userId){
           user.getUserProfile(userId).then(profile=>{
             userProfile = profile;
             cb();
-          }) 
+          })
         }
         else cb();
       },
     },
     (error, result) => {
-      
+
       const privacyOptions = userProfile && userProfile[user.HASH_FIELDS.VERIFIED] ? [{label:'Public', value:0, icon:'https://i.pinimg.com/474x/ea/c0/0d/eac00d6c59ecfa8218fc414f8bdfbe3d--internet-network-sign-painting.jpg'}] : [];
 
       const config = {
@@ -84,7 +87,7 @@ const config = {
             "height": 417,
             "url": "https://image.freepik.com/free-vector/friends-video-calling-concept_23-2148504259.jpg",
           }
-          
+
         ],
         staticPages:{
           privacy:'This is dynamic privacy content',
@@ -94,12 +97,12 @@ const config = {
         otherIcons:{
           verified: 'https://static10.tgstat.ru/channels/_0/ac/accb9f7e8ed3975ad224d836411b4415.jpg'
         }
-      }  
+      }
       res.status(200).send(config);
       next();
     })
   },
-  
+
 }
 
 
