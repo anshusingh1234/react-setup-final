@@ -3,6 +3,9 @@ const ApiError = require("../ApiError");
 const async = require("async");
 const {user, HASH_FIELDS} = require("./../../../core/Redis");
 const {users} = require("./../../../core/mongo");
+const {isUserOnOldVersion} = require('./../../../helper/helper');
+
+const FORCEUPDATE_VERSION = '1.0.0';
 
 const config = {
   /**
@@ -13,6 +16,7 @@ const config = {
   */
   getConfig: (req, res, next) => {
     const userId = req.headers._id;
+    const version = req.headers.version;
 
     let userProfile = {};
 
@@ -32,6 +36,7 @@ const config = {
     (error, result) => {
 
       const privacyOptions = userProfile && userProfile[user.HASH_FIELDS.VERIFIED] ? [{label:'Public', value:0, icon:'https://i.pinimg.com/474x/ea/c0/0d/eac00d6c59ecfa8218fc414f8bdfbe3d--internet-network-sign-painting.jpg'}] : [];
+      const forceUpdate = getUpdateData(version);
 
       const config = {
         privacyOptions:[
@@ -97,14 +102,7 @@ const config = {
         otherIcons:{
           verified: 'https://static10.tgstat.ru/channels/_0/ac/accb9f7e8ed3975ad224d836411b4415.jpg'
         },
-        update:{
-          available: true,
-          type:'force',
-          message:{
-            type:'fullscreen',
-            message: 'New update is available!'
-          }
-        }
+        update: forceUpdate
       }
       res.status(200).send(config);
       next();
@@ -114,6 +112,21 @@ const config = {
 }
 
 
+const getUpdateData = (version) =>{
+  const isForceUpdate = isUserOnOldVersion(version, FORCEUPDATE_VERSION);
+  let _return = { available: false};
+  if(isForceUpdate){
+    _return = {
+      available: isForceUpdate,
+      type:'force',
+      message:{
+        type:'fullscreen',
+        message: isForceUpdate ? 'New update is available!' : ''
+      }
+    }
+  }
+  return _return;
+}
 
 
 
