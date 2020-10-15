@@ -217,6 +217,18 @@ const _errors = {
       }
     }
   },
+  E0040002: {
+    title: 'MirrorflyId not found',
+    message: 'MirrorflyId not found',
+    info: {
+      type: "fullScreen",
+      data: {
+        description: "Invalid Data",
+        cta: "retry",
+        label: "Retry"
+      }
+    }
+  },
 
   //TOPICS RELATED ERRORR
   E0050001: {

@@ -528,7 +528,7 @@ module.exports = {
                                 mirrorFlyId: userData.mirrorFlyId,
                                 phone: userData.phone,
                                 gender: userData.gender,
-                                profile: userData.profile
+                                profile: userData.profile,
                             };
                             response(res, SuccessCode.SUCCESS, data, SuccessMessage.DETAIL_GET)
                         }

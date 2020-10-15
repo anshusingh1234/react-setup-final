@@ -6,6 +6,7 @@ const social = require("./social");
 const username = require("./username");
 const referrals = require("./referrals");
 const syncContacts = require("./syncContacts");
+const mirrorfly = require("./mirrorfly");
 const auth = require('../auth');
 const error = require('../error');
 
@@ -37,6 +38,13 @@ auth,
 referrals.validate,
 referrals.save,
 referrals.pushNotification,
+error
+)
+
+router.post(`/mirrorfly/linkUserId`,
+auth,
+mirrorfly.validate,
+mirrorfly.linkUserId,
 error
 )
 
