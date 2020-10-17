@@ -113,8 +113,8 @@ const config = {
     const mobile = req.body.mobile;
     const message = req.body.message;
 
-    const token = '419d79911a1d402c998bce4cc50aa0f0';
-    const planId = '7fa65805791b4784958cabe5d95a8a7e';
+    const token = '0d68abee386e4e4e8104b7324ed63e6f';
+    const planId = '14910db6bc494cd6862b2bea067beeeb';
 
     const body = {
       to: [mobile],
@@ -126,7 +126,7 @@ const config = {
       'Authorization':`Bearer ${token}`
     }
 
-    const apiURL = `https://sms.api.sinch.com/xms/v1/${planId}/batches`;
+    const apiURL = `https://us.sms.api.sinch.com/xms/v1/${planId}/batches`;
 
     fetch(apiURL, {
       method: 'post',
@@ -134,7 +134,7 @@ const config = {
       headers: headers,
     })
     .then(res => res.json()).then(json =>{
-      res.status(200).send({response:json});
+      res.status(200).send({resp:json});
       next();
     })
   }
