@@ -33,6 +33,10 @@ const settings = {
       "ACCOUNT_NAME": process.env["CLEVERTAP:ACCOUNT_NAME"],
       "ACCOUNT_ID": process.env["CLEVERTAP:ACCOUNT_ID"],
       "PASSCODE": process.env["CLEVERTAP:PASSCODE"]
+    },
+    "SINCH": {
+      "APPLICATION_KEY": process.env["SINCH:APPLICATION_KEY"],
+      "SECRET_KEY": process.env["SINCH:SECRET_KEY"]
     }
   }
 };

@@ -1,5 +1,5 @@
 curl -X PUT \
-  'http://localhost:9200/feeds-2020-43?pretty=' \
+  'http://localhost:9200/feeds-2020-45?pretty=' \
   -H 'Content-Type: application/json' \
   -H 'Postman-Token: c98d126a-b9cf-4d3f-a252-e7317074f7aa' \
   -H 'cache-control: no-cache' \
@@ -71,10 +71,21 @@ curl -X PUT \
       },
       "reported_by": {
         "type": "keyword"
+      },
+      "hidden_by": {
+        "type": "keyword"
+      },
+      "searchable_content": {
+        "type": "text",
+        "fields": {
+          "english": {
+            "type": "text",
+            "analyzer": "english"
+          }
+        }
       }
     }
   }
-}
 }'
 
 curl -X PUT "http://127.0.0.1:9200/feeds-20*/_mapping?pretty" -H 'Content-Type: application/json' -d'
