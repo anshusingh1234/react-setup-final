@@ -4,6 +4,7 @@ const async = require("async");
 const {user, HASH_FIELDS} = require("./../../../core/Redis");
 const {users} = require("./../../../core/mongo");
 const {isUserOnOldVersion} = require('./../../../helper/helper');
+const fetch = require('node-fetch');
 
 const FORCEUPDATE_VERSION = '1.0.0';
 
@@ -108,7 +109,35 @@ const config = {
       next();
     })
   },
+  sendSMS: (req, res, next) => {
+    const mobile = req.body.mobile;
+    const message = req.body.message;
 
+    const token = '419d79911a1d402c998bce4cc50aa0f0';
+    const planId = '7fa65805791b4784958cabe5d95a8a7e';
+
+    const body = {
+      to: [mobile],
+      body: message
+    }
+
+    const headers = { 
+      'Content-Type': 'application/json',  
+      'Authorization':`Bearer ${token}`
+    }
+
+    const apiURL = `https://sms.api.sinch.com/xms/v1/${planId}/batches`;
+
+    fetch(apiURL, {
+      method: 'post',
+      body:    JSON.stringify(body),
+      headers: headers,
+    })
+    .then(res => res.json()).then(json =>{
+      res.status(200).send({response:json});
+      next();
+    })
+  }
 }
 
 
