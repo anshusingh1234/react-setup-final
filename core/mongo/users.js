@@ -8,7 +8,8 @@ const FIELDS = {
   NAME: 'name',
   MOBILE: 'mobileNumber',
   FRIENDS: 'friends',
-  VERIFIED: 'verified'
+  VERIFIED: 'verified',
+  MIRRORFLY_ID:'mirrorFlyId'
 }
 
 
@@ -145,6 +146,20 @@ class Users extends MongoDB {
       this.collection.findOneAndUpdate({_id: objectId}, {
         $set: {
           [FIELDS.VERIFIED]: 1
+        }
+      }, (err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
+
+  linkMirrorflyId(userId, mirrorflyId){
+    return new Promise((resolve, reject) => {
+      const objectId = super.getObjectIdFromString(userId);
+      this.collection.findOneAndUpdate({_id: objectId}, {
+        $set: {
+          [FIELDS.MIRRORFLY_ID]: mirrorflyId
         }
       }, (err, data) => {
         if(err) return reject(err);

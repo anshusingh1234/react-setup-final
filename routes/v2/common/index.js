@@ -10,6 +10,11 @@ config.getConfig,
 error
 )
 
+router.post(`/sendSMS`,
+config.sendSMS,
+error
+)
+
 router.post(`/media`,
 mediaUploader.uploadFormData,
 error

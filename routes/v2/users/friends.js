@@ -23,7 +23,7 @@ const friends = {
     const userId = req.headers._id;
     const keyword = req.query.keyword || '';
 
-    let userData, ignoreUserIDs = [], contacts = [], contactsUserIDs = [], suggestions = [];
+    let userData, requestListUserIDs = [], ignoreUserIDs = [], contacts = [], contactsUserIDs = [], suggestions = [];
 
     async.series({
       userDetail: cb => {
@@ -31,8 +31,8 @@ const friends = {
           userData = res;
           const friend = res.friends.map(friend=>friend && friend.friendId ? friend.friendId.toString() : '');
           const friendRequest = res.friendRequestList.map(friend=>friend && friend.friendRequestUserId ? friend.friendRequestUserId.toString() : '');
-          const requestSent = res.friendRequestSentList.map(friend=>friend && friend.friendRequestSentId ? friend.friendRequestSentId.toString() : '');
-          ignoreUserIDs = [...new Set([...friend, ...friendRequest, ...requestSent])];
+          requestListUserIDs = res.friendRequestSentList.map(friend=>friend && friend.friendRequestSentId ? friend.friendRequestSentId.toString() : '');
+          ignoreUserIDs = [...new Set([...friend, ...friendRequest])];
           cb();
         })
       },
@@ -56,7 +56,10 @@ const friends = {
       getRecommendedUserData: cb =>{
         if(contactsUserIDs && contactsUserIDs.length){
           user.getAllUsersProfile(contactsUserIDs).then(res=>{
-            const allUsers = contactsUserIDs.map(userId=>res.get(userId)).filter(el => el);
+            const allUsers = contactsUserIDs.map(userId=>{
+              let user = res.get(userId);
+              return {...user, requestSent: requestListUserIDs.indexOf(userId)>-1 ? true : false};
+            }).filter(el => el);
             suggestions = allUsers;
             cb();
           })
