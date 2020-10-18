@@ -21,6 +21,8 @@ cloudinary.config({
   api_secret: 'kG5j1sXJT3eeNAp5CtpZgIdfQzM'
 });
 
+const fetch = require('node-fetch');
+const jConfig = require("../config/jigrrConfig").getConfig();
 
 
 // // const accountSid = 'AC596ef7dbd338dc52c4c1e41bd0fc477d';
@@ -45,16 +47,43 @@ module.exports = {
       }
     })
   },
+  // sendSMSOTPSNS: function sendSMS(PhoneNumber, message, cb) {
+  //   console.log("CC1111111C",message,PhoneNumber)
+  //   sns.publish({
+  //     Message: message,
+  //     Subject: 'Jgrr Enterprises Otp',
+  //     PhoneNumber: PhoneNumber
+  //   }, (error, result) => {
+  //     console.log(`SNS: `, error, result);
+  //     cb(error, result);
+  //   });
+  // },
   sendSMSOTPSNS: function sendSMS(PhoneNumber, message, cb) {
-    console.log("CC1111111C",message,PhoneNumber)
-    sns.publish({
-      Message: message,
-      Subject: 'Jgrr Enterprises Otp',
-      PhoneNumber: PhoneNumber
-    }, (error, result) => {
-      console.log(`SNS: `, error, result);
-      cb(error, result);
-    });
+    const token = jConfig.SINCH.TOKEN;
+    const planId = jConfig.SINCH.PLAN_ID;
+
+    const body = {
+      to: [PhoneNumber],
+      body: message
+    }
+    console.log(`----SINCH----`, Date.now(), JSON.stringify(body, null, 2))
+    const headers = { 
+      'Content-Type': 'application/json',  
+      'Authorization':`Bearer ${token}`
+    }
+
+    const apiURL = `https://us.sms.api.sinch.com/xms/v1/${planId}/batches`;
+
+    fetch(apiURL, {
+      method: 'post',
+      body:    JSON.stringify(body),
+      headers: headers,
+    })
+    .then(res => res.json()).then(json =>{
+      return cb(null, json)
+    }).catch(e => {
+      return cb(e, null);
+    })
   },
   getOTP() {
     var otp = Math.floor(1000 + Math.random() * 9000);

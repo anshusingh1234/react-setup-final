@@ -36,7 +36,9 @@ const settings = {
     },
     "SINCH": {
       "APPLICATION_KEY": process.env["SINCH:APPLICATION_KEY"],
-      "SECRET_KEY": process.env["SINCH:SECRET_KEY"]
+      "SECRET_KEY": process.env["SINCH:SECRET_KEY"],
+      "TOKEN": process.env["SINCH:TOKEN"],
+      "PLAN_ID": process.env["SINCH:PLAN_ID"]
     }
   }
 };
