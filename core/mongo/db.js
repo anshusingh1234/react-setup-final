@@ -44,7 +44,7 @@ class MongoDB {
       }
       
       console.log("MongoDB url", url);
-      const client = new MongoClient(url);
+      const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
       // Use connect method to connect to the Server
       client.connect((err) => {
         if(err) {

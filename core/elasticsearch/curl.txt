@@ -1,5 +1,5 @@
 curl -X PUT \
-  'http://localhost:9200/feeds-2020-45?pretty=' \
+  'https://vpc-jigrr-elastic-search-bg7quua73e77ei7cwv7n6qpup4.ap-south-1.es.amazonaws.com/feeds-2020-43?pretty=' \
   -H 'Content-Type: application/json' \
   -H 'Postman-Token: c98d126a-b9cf-4d3f-a252-e7317074f7aa' \
   -H 'cache-control: no-cache' \
