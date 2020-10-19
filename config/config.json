@@ -42,8 +42,8 @@
     "production": {
         "config_id": "production",
         "node_port": 1801,
-        "database": "build-socialMedia-web",
-        "host": "localhost",
+        "database": "jigrr-prod",
+        "host": "mongodb+srv://admin:bgry7mwcwgx2qrpj@jigrr-mongo.hyhef.mongodb.net/jigrrapi?retryWrites=true&w=majority",
         "basicAuthUser": "",
         "user": "node-trainee@mobiloitte.com",
         "pass": "Mobiloitte1",

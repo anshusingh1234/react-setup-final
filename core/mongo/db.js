@@ -28,16 +28,21 @@ class MongoDB {
     return new Promise((resolve) => {
       console.log("Starting conn");
       if(this.db) return resolve(this.db);
-
-      const authString = `${user}:${pass}@`
-      let url=`mongodb://`;
+      let url;
+      if(jConfig.ENV === 'prod'){
+        url = host;
+      }else{
+        const authString = `${user}:${pass}@`
+        url=`mongodb://`;
       if(user && pass) {
         url = `${url}${authString}`;
       }
       url = `${url}${host}/${dbName}`;
-      if(replicaSet) {
+      if(replicaSet){
         url = `${url}&replicaSet=${replicaSet}`;
+        }
       }
+      
       console.log("MongoDB url", url);
       const client = new MongoClient(url);
       // Use connect method to connect to the Server
