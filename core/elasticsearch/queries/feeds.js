@@ -191,7 +191,7 @@ query.timeline = (author, userId, isFriend, hideTime) => {
     }
   });
 
-  mustArray.push({
+  hideTime && mustArray.push({
     "range": {
       [FEEDS_FIELDS.CREATED_AT]: {
         "gte": `now-${hideTime}`

@@ -42,6 +42,7 @@ timeline.search = async (req, res, next) => {
     const type = req.query.type;
     let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
     const searchResult  = await feedsInstance.timeline(req._userToFetch, userId, true, type, C.TIMELINE.DEFAULT_HIDE_TIME);
+    console.log(JSON.stringify(searchResult, null, 2))
     req._searchResult = (searchResult && searchResult.hits.hits && searchResult.hits.hits.map(obj => obj._source)) || [];
     next();
   }catch(e){
