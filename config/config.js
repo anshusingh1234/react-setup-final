@@ -1,9 +1,12 @@
 const _ = require('lodash');
-console.log("==============")
 const config = require('./config.json');
+const envFile = `${__dirname }/../.env`;
+const fs = require("fs");
+
+
 const defaultConfig = config.development
-// const environment = process.env.Node_ENV || 'development';
-const environment= process.env.Node_ENV || 'staging';    
+const environment = JSON.parse(fs.readFileSync(envFile).toString());
+//const environment= process.env.Node_ENV || 'staging';    
 const environmentConfig = config[environment]
 const finalConfig = _.merge(defaultConfig,environmentConfig)
 global.gConfig = finalConfig;

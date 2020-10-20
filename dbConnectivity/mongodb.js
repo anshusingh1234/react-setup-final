@@ -3,7 +3,7 @@ global.Promise=mongoose.Promise;
 const config = require('../config/config')
 const db_name = `${global.gConfig.database}`;
 const host = `${global.gConfig.host}`;
-const DB_URL = `mongodb://${host}/${db_name}`
+const DB_URL = `mongodb+srv://${host}/${db_name}`;
 
 mongoose.set('useFindAndModify', false);
 mongoose.connection.openUri(DB_URL,{ useNewUrlParser: true , useUnifiedTopology:true})
