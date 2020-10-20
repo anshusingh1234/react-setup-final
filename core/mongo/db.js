@@ -29,19 +29,17 @@ class MongoDB {
       console.log("Starting conn");
       if(this.db) return resolve(this.db);
       let url;
-      if(jConfig.ENV === 'prod'){
-        url = host;
-      }else{
-        const authString = `${user}:${pass}@`
-        url=`mongodb://`;
+      
+      const authString = `${user}:${pass}@`
+      url=`mongodb+srv://`;
       if(user && pass) {
         url = `${url}${authString}`;
       }
       url = `${url}${host}/${dbName}`;
       if(replicaSet){
         url = `${url}&replicaSet=${replicaSet}`;
-        }
       }
+
       
       console.log("MongoDB url", url);
       const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
