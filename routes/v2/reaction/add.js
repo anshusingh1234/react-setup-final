@@ -4,6 +4,7 @@ const {reactions: reactionMongo} = require("../../../core/mongo");
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const validations  = require('./../../../helper/validations');
 const ApiError = require("../ApiError");
+const postHelper = require("./../feeds/postHelper");
 
 const add = {};
 
@@ -68,10 +69,8 @@ add.saveInMongo = async (req, res, next) => {
 * @param {*} next
 */
 add.saveInES = async (req, res, next) => {
-  res.status(200).send({response_message:'Reaction posted successfully!'});
-  next();
-
   const {entityId, entityType, alreadyReacted} = req.body;
+
   const userId = req.headers._id;
   if(entityType == 'post'){
     if(!alreadyReacted){
@@ -79,7 +78,15 @@ add.saveInES = async (req, res, next) => {
       feedsInstance.incrementReactionCount(entityId, 1)
       feedsInstance.reactedBy(entityId, userId)
     }
+    const participatingInfo = await postHelper.fetch([entityId]);
+    const participatingDetails = participatingInfo.get(entityId);
+    res.status(200).send({response_message:'Reaction posted successfully!', participatingDetails});
   }
+  else{
+    res.status(200).send({response_message:'Reaction posted successfully!'});
+  }
+  
+  next();
 }
 
 module.exports = add;

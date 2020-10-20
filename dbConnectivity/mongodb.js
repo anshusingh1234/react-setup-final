@@ -1,15 +1,17 @@
 const mongoose = require('mongoose')
 global.Promise=mongoose.Promise;
 const config = require('../config/config')
-const db_name = `${global.gConfig.database}`;
-const host = `${global.gConfig.host}`;
-const DB_URL = `mongodb+srv://${host}/${db_name}`;
+const host = `${global.gConfig.mongoHost}`;
+const DB_URL = host;
+
 
 mongoose.set('useFindAndModify', false);
 mongoose.connection.openUri(DB_URL,{ useNewUrlParser: true , useUnifiedTopology:true})
+mongoose.set('useCreateIndex', true);
 /******************************** Events of mongoose connection. ******************************************************/
 // CONNECTION EVENTS
 // When successfully connected
+
 mongoose.connection.on('connected',()=>{
 console.log('success', 'Mongoose default connection open to ' +DB_URL)
 });

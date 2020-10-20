@@ -1,6 +1,5 @@
 const { MongoClient, ObjectID} = require("mongodb");
 const jConfig = require("../../config/jigrrConfig").getConfig();
-
 const host = jConfig.MONGO.HOST || "localhost";
 const dbName = jConfig.MONGO.DB_NAME || "build-socialMedia-stag";
 const user = jConfig.MONGO.USER;
@@ -31,7 +30,8 @@ class MongoDB {
       let url;
       
       const authString = `${user}:${pass}@`
-      url=`mongodb+srv://`;
+      url = jConfig.ENV == 'prod' ? 'mongodb+srv://': 'mongodb://';
+      
       if(user && pass) {
         url = `${url}${authString}`;
       }

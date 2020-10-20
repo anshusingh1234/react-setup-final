@@ -24,6 +24,7 @@ friendRequest.send = (from, to) => {
       }else{
         userMap.set(to.id, to);
       }
+      
       if(userIdsToFetch.length){
         const _um = await _fetchUserDetail(userIdsToFetch);
         userMap = new Map([...userMap, ..._um]);

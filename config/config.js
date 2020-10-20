@@ -5,8 +5,8 @@ const fs = require("fs");
 
 
 const defaultConfig = config.development
-const environment = JSON.parse(fs.readFileSync(envFile).toString());
-//const environment= process.env.Node_ENV || 'staging';    
+const environmentObj = JSON.parse(fs.readFileSync(envFile).toString());
+const environment = environmentObj.NODE_ENV;
 const environmentConfig = config[environment]
 const finalConfig = _.merge(defaultConfig,environmentConfig)
 global.gConfig = finalConfig;

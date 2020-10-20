@@ -27,6 +27,7 @@ const notificationModel = require('../models/notificationModel')
 const moment = require('moment');
 
 const { user } = require("./../core/Redis");
+const {friendRequest, requestAccept} = require('./../services/notification/events');
 
 
 module.exports = {
@@ -3553,7 +3554,7 @@ module.exports = {
                                             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
                                         } else {
                                             var newId = success.friendRequestList.pop()
-                                            console.log("dffggggg", newId._id)
+                                            friendRequest.send(req.headers._id.toString(), req.body.friendId.toString());
                                             //return
                                             // commonFunction.pushNotification(success.deviceToken, "Friend Request", success.name + "has sent you a friend request", (err, notificationResult) => {
                                             //     if (err) {
@@ -3630,6 +3631,8 @@ module.exports = {
                                                         response(res, ErrorCode.INTERNAL_ERROR, [], ErrorMessage.INTERNAL_ERROR);
                                                     }
                                                     else {
+
+                                                       requestAccept.send(req.headers._id.toString(), req.body.friendRequestUserId.toString());
                                                         notificationModel.findOneAndUpdate({ _id: req.body.notiicationId, status: "ACTIVE" }, { $set: { status: "DELETE" } }, { new: true }, (notErr, notData) => {
                                                             if (notErr) {
                                                                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
