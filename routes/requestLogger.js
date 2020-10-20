@@ -1,9 +1,9 @@
 const logger = require('../logger');
-const shortUuid = require('short-uuid');
+const {nanoid} = require('nanoid');
 
 module.exports = (options) => {
   return (req, res, next) => {
-    req.requestId = req.headers['x-jigrr-request-id'] || shortUuid.generate();
+    req.requestId = req.headers['x-jigrr-request-id'] || nanoid();
     res.set('x-jigrr-request-id', req.requestId);
 
     req.logger = logger.child({
