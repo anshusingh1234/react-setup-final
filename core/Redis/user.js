@@ -65,7 +65,7 @@ const user = {
             [HASH_FIELDS.FIRSTNAME]: result[HASH_FIELDS.FIRSTNAME],
             [HASH_FIELDS.LASTNAME]: result[HASH_FIELDS.LASTNAME],
             [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE],
-            [HASH_FIELDS.VERIFIED]: result[HASH_FIELDS.VERIFIED] ? result[HASH_FIELDS.VERIFIED] : 0
+            [HASH_FIELDS.VERIFIED]: result[HASH_FIELDS.VERIFIED] ? Number(result[HASH_FIELDS.VERIFIED]) : 0
           }
         }
         return resolve(shortDetail);
