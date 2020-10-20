@@ -9,7 +9,9 @@ let RedisConnection = (() => {
     return {
         getInstance: () => {
             if (client == null) {
-                client = redis.createClient({port: jConfig.REDIS.PORT, host: jConfig.REDIS.HOST, password: jConfig.REDIS.PASSWORD});
+              let createClientObj = {port: jConfig.REDIS.PORT, host: jConfig.REDIS.HOST};
+              if(jConfig.REDIS.PASSWORD) createClientObj = {...createClientObj, password:jConfig.REDIS.PASSWORD};
+                client = redis.createClient(createClientObj);
                 client.on("error", (err) => {
                     console.error("Error in redis:", err);
                 });
