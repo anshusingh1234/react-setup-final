@@ -5,15 +5,20 @@ const {user} = require("../../../core/Redis");
 const {users: mongoUsers, reactions: mongoReactions, comments: mongoComments} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
 const postHelper = require("./postHelper");
+const paginationHelper = require("./paginationHelper");
 
 const feedsSearch = {};
 
 feedsSearch.search = async (req, res, next) => {
   try{
+    const _next = req.query.next;
+    const paginationInfo = paginationHelper.getPaginationInfo(_next);
+    req._paginationInfo = paginationInfo;
     let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
     const keyword = req.query.keyword;
     const {friends = [], followings = []} = await mongoUsers.instance.getFriendsAndFollowings(req.headers._id) || {};
-    const searchResult  = await feedsInstance.searchFeed(req.headers._id, friends, followings, keyword);
+    const searchResult  = await feedsInstance.searchFeed(req.headers._id, friends, followings, keyword, paginationInfo.from, paginationInfo.size);
+    req._total = (searchResult && searchResult.hits && searchResult.hits.total.value) || 0;
     req._searchResult = (searchResult && searchResult.hits.hits) || [];
     next();
   }catch(e){
@@ -88,7 +93,7 @@ feedsSearch.buildResponse = (req, res, next) => {
     }
   }).filter(el => el);
   res.status(200).send({
-    next: "",
+    next: (req._paginationInfo.from + req._paginationInfo.size) >= req._total ? undefined : req._paginationInfo.cursor,
     feeds: searchResult
   });
   next();

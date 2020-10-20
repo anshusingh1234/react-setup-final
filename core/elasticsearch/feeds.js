@@ -107,12 +107,13 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   * @param {*} friends friends of the user
   * @param {*} following following list of the user
   */
-  searchFeed(userId, friends = [], following = [], keyword){
+  searchFeed(userId, friends = [], following = [], keyword, from, size){
     const query = FEEDS_QUERY.searchFeeds(userId, {
       friends, following, keyword
     });
     const _body = {
-      size: 100,
+      size,
+      from,
       query,
       sort: [{[FEEDS_FIELDS.UPDATED_AT]: "desc"}]
     };

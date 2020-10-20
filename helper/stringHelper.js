@@ -1,3 +1,5 @@
+const { Base64 } = require('js-base64');
+
 const stringHelper = {};
 
 stringHelper.getSubString = (old, limit) => {
@@ -16,6 +18,14 @@ stringHelper.getSubString = (old, limit) => {
     }
   }
   return (newString.length < old.length ? `${newString}...` : newString);
+}
+
+stringHelper.toBase64 = (string) => {
+  return Base64.encode(string);
+}
+
+stringHelper.fromBase64 = (string) => {
+  return Base64.decode(string);
 }
 
 module.exports = stringHelper;
