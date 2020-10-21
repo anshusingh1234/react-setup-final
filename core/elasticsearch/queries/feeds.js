@@ -191,13 +191,13 @@ query.timeline = (author, userId, isFriend, hideTime) => {
     }
   });
 
-  mustArray.push({
-    "range": {
-      [FEEDS_FIELDS.CREATED_AT]: {
-        "gte": `now-${hideTime}`
-      }
-    }
-  })
+  // hideTime && mustArray.push({
+  //   "range": {
+  //     [FEEDS_FIELDS.CREATED_AT]: {
+  //       "gte": `now-${hideTime}`
+  //     }
+  //   }
+  // })
 
   mustArray.push({
     "term": {

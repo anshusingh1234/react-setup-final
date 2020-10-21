@@ -2,4 +2,5 @@
 .DS_Store
 package-lock.json
 .env
+api.log
 remote.js
