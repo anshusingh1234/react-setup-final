@@ -227,6 +227,17 @@ class Users extends MongoDB {
       })
     })
   }
+
+  checkUsername(username){
+    return new Promise((resolve, reject) => {
+      this.collection.countDocuments({nickName: username}, (error, result) => {
+        if(error) return reject(error);
+        resolve(result);
+      })
+    })
+  }
+
+
 }
 
 module.exports = {

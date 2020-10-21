@@ -16,14 +16,12 @@ const username = {
     const {username} = req.query;
     const formattedUsername = username.replace(/\s/g,'');
 
+    const usernameCount = await userMongo.instance.checkUsername(formattedUsername);  
+
     const response = {
-      username,
-      isAvailable: false,
-      suggestions:[
-        `${formattedUsername}1`,
-        `${formattedUsername}2`,
-        `${formattedUsername}3`
-      ]
+      username:formattedUsername,
+      isAvailable: usernameCount > 0 ? false: true,
+      suggestions: usernameCount > 0 ? await getUniqueName(formattedUsername) : []
     }
 
     res.status(200).send(response);
@@ -31,6 +29,23 @@ const username = {
   }
 
 };
+
+const getUniqueName = async(name) =>{
+  const username1 = await generateUniqueAccountName(name);
+  const username2 = await generateUniqueAccountName(name);
+  const username3 = await generateUniqueAccountName(name);
+  return [username1, username2, username3];
+}
+
+const generateUniqueAccountName = async(proposedName)=> {
+  proposedName += Math.floor((Math.random() * 100) + 1);
+  const usernameCount = await userMongo.instance.checkUsername(proposedName);
+  if(usernameCount>0){
+    return generateUniqueAccountName(proposedName);
+  }
+  else return proposedName;
+}
+
 
 
 module.exports = username;
