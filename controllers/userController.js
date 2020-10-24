@@ -190,6 +190,7 @@ module.exports = {
                     console.log(">>>>>>", difference)
                     // if (difference < 60000) {
                     userModel.findByIdAndUpdate(result._id, { verifyOtp: true }, { new: true }, (updateErr, updateResult) => {
+                        console.log("----verifyOTP userModel.findByIdAndUpdate", updateErr, updateResult)
                         if (updateErr) {
                             response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR);
                         }
