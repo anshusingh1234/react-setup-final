@@ -49,7 +49,6 @@ const user = {
   isUserActive: (userId) => {
     return new Promise((resolve, reject) => {
       query.hget({key:key.USER_SHORT_DETAIL(userId), field:HASH_FIELDS.STATUS},(err, result)=>{
-        console.log("-----------------------", err, result)
         return resolve(result == 'ACTIVE' ? true : false);
       })
     })
