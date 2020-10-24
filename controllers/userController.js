@@ -184,7 +184,7 @@ module.exports = {
             else {
                 // user.saveUserProfile(result._id, updateData);
 
-                console.log("------verifyOtp----OTP---------", result.otp, req.body.otp)
+                console.log("------verifyOtp----OTP---------", JSON.stringify(result, null, 2), req.body.otp)
                 if (result.otp == req.body.otp || req.body.otp == 1234) {
                     var newTime = Date.now()
                     var difference = newTime - result.otpTime
