@@ -181,16 +181,12 @@ module.exports = {
             }
             else {
                 // user.saveUserProfile(result._id, updateData);
-                console.log("-------------------------------------------\n\n\n\n\n")
-                console.log(JSON.stringify(result, null, 2))
-                console.log("\n\n\n\n\n------------------------------")
                 if (result.otp == req.body.otp || req.body.otp == 1234) {
                     var newTime = Date.now()
                     var difference = newTime - result.otpTime
                     console.log(">>>>>>", difference)
                     // if (difference < 60000) {
                     userModel.findByIdAndUpdate(result._id, { verifyOtp: true }, { new: true }, (updateErr, updateResult) => {
-                        console.log("----verifyOTP userModel.findByIdAndUpdate", updateErr, updateResult)
                         if (updateErr) {
                             response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR);
                         }
