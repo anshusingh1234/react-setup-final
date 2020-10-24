@@ -13,7 +13,6 @@ feedsSearch.search = async (req, res, next) => {
   try{
     const _next = req.query.next;
     const paginationInfo = paginationHelper.getPaginationInfo(_next);
-    console.log("------------------------------",JSON.stringify(paginationInfo, null, 2))
     req._paginationInfo = paginationInfo;
     let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
     const keyword = req.query.keyword;
@@ -35,6 +34,7 @@ feedsSearch.fetchDetails = async(req, res, next) => {
     let _allUserIds = [];
     let _allPostIds = [];
     let _myPostIds = [];
+    const userId = req._userId;
     req._searchResult.forEach(_obj => {
       _obj = _obj._source;
       const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
@@ -51,7 +51,7 @@ feedsSearch.fetchDetails = async(req, res, next) => {
     const reactionMap = await mongoReactions.instance.checkIfUserReacted([...new Set(_allPostIds)], req._userId, 'post');
     req._reactionMap = reactionMap;
 
-    req._participatingInfo = await postHelper.fetch(_myPostIds);
+    req._participatingInfo = await postHelper.fetch(_myPostIds, userId);
     next();
   }catch(e){
     console.log("/feeds fetchDetails()", e);

@@ -4,7 +4,7 @@ const async = require('async');
 
 const info = {};
 
-info.fetch = async(postIds) => {
+info.fetch = async(postIds, userId) => {
   return new Promise((resolve, reject) => {
     let reactionMap = new Map();
     let commentMap = new Map();
@@ -21,6 +21,7 @@ info.fetch = async(postIds) => {
       const reactionIdsMap = new Map();
       const postUsersMap = new Map();
       let userIds = [];
+      userIds.push(userId);
       [...reactionMap.keys()].forEach(_postId => {
         const _det = reactionMap.get(_postId);
         reactionIdsMap.set(_postId, _det.map(_obj => _obj[mongoReactions.FIELDS.REACTION_TYPE]));
@@ -42,7 +43,7 @@ info.fetch = async(postIds) => {
       postIds.forEach(_postId => {
         let userIds = (postUsersMap.get(_postId) || []);
         userIds = [... new Set(userIds)];
-        const _text = _getText(userIds, userMap);
+        const _text = _getText(userIds, userMap, userId);
         if(_text){
           finalInfoMap.set(_postId, {
             "reactions": (reactionIdsMap.get(_postId) || []).map(_obj => Number(_obj)).slice(0, 2),
@@ -69,31 +70,31 @@ info.getPostActivitiesCountString = (count) => {
 
 module.exports = info;
 
-const _getText = (userIds, userMap) => {
+const _getText = (userIds, userMap, userId) => {
   switch(userIds.length){
     case 0: return ``;
     case 1: {
       const user = userMap.get(userIds[0]);
       if(user && (user.firstName || user.name)){
-        return `${user.firstName || user.name} is participating`;
+        return `${userIds[0] === userId ? 'You' : user.firstName || user.name} is participating`;
       }else{
         return '';
       }
     }
     case 2: {
       const user1 = userMap.get(userIds[0]);
-      const user2 = userMap.get(userIds[0]);
+      const user2 = userMap.get(userIds[1]);
       if(user1 && (user1.firstName || user1.name) && user2 && (user2.firstName || user2.name)){
-        return `${user1.firstName || user1.name} and ${user2.firstName || user2.name} are participating`;
+        return `${userIds[0] === userId ? 'You' : user1.firstName || user1.name} and ${userIds[1] === userId ? 'You' : user2.firstName || user2.name} are participating`;
       }else{
         return '';
       }
     }
     default: {
       const user1 = userMap.get(userIds[0]);
-      const user2 = userMap.get(userIds[0]);
+      const user2 = userMap.get(userIds[1]);
       if(user1 && (user1.firstName || user1.name) && user2 && (user2.firstName || user2.name)){
-        return `${user1.firstName || user1.name}, ${user2.firstName || user2.name} and ${userIds.length - 2} more are participating`;
+        return `${userIds[0] === userId ? 'You' : user1.firstName || user1.name}, ${userIds[1] === userId ? 'You' : user2.firstName || user2.name} and ${userIds.length - 2} more are participating`;
       }else{
         return '';
       }

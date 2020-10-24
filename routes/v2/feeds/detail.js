@@ -57,6 +57,7 @@ detail.checkForPrivacy = async(req, res, next) => {
 detail.fetchDetails = async(req, res, next) => {
   try{
     const detail = req._detail;
+    const userId = req._userId;
 
     let _allUserIds = [];
     let _myPostIds = [];
@@ -65,7 +66,7 @@ detail.fetchDetails = async(req, res, next) => {
     const _tagged = detail[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
     _allUserIds = _allUserIds.concat([_author], _tagged);
     if(_author === req._userId) _myPostIds.push(detail[ES_FEEDS_FIELDS.FEED_ID]);
-    req._participatingInfo = await postHelper.fetch(_myPostIds);
+    req._participatingInfo = await postHelper.fetch(_myPostIds, userId);
 
 
     _allUserIds = [... new Set(_allUserIds)];

@@ -78,7 +78,7 @@ add.saveInES = async (req, res, next) => {
       feedsInstance.incrementReactionCount(entityId, 1)
       feedsInstance.reactedBy(entityId, userId)
     }
-    const participatingInfo = await postHelper.fetch([entityId]);
+    const participatingInfo = await postHelper.fetch([entityId], userId);
     const participatingDetails = participatingInfo.get(entityId);
     res.status(200).send({response_message:'Reaction posted successfully!', participatingDetails});
   }

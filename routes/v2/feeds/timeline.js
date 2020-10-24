@@ -130,6 +130,7 @@ const _feedsWrapper = (result, userId) => {
     let _allUserIds = [];
     let _allPostIds = [];
     let _myPostIds = [];
+    const userId = req._userId;
 
     result.forEach(_obj => {
       const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
@@ -140,7 +141,7 @@ const _feedsWrapper = (result, userId) => {
     })
     _allUserIds = [... new Set(_allUserIds)];
     const userMap = await user.getAllUsersProfile(_allUserIds);
-    const participatingInfo = await postHelper.fetch(_myPostIds);
+    const participatingInfo = await postHelper.fetch(_myPostIds, userId);
 
     const reactionMap = await mongoReactions.instance.checkIfUserReacted([...new Set(_allPostIds)], userId, 'post');
 
