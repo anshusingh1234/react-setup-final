@@ -2102,8 +2102,10 @@ module.exports = {
        * @return response
      */
     myBlockUserList: (req, res) => {
+        console.log("----------myBlockUserList-------------", req.headers._id)
         try {
             userModel.findOne({ _id: req.headers._id, status: "ACTIVE", userType: "USER" }, (error, userData) => {
+        console.log("----------myBlockUserList-------------", JSON.stringify(error, null, 2), JSON.stringify(userData, null, 2))
                 if (error) {
                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
