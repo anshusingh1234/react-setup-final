@@ -46,20 +46,18 @@ module.exports = {
                 }
                 else if (userData) {
                     var otp = commonFunction.getOTP(4)
-                    console.log("--------------otpSent--------req.body-----", JSON.stringify(req.body, null, 2))
                     var phoneNumber = req.body.countryCode + req.body.mobileNumber
                     commonFunction.sendSMSOTPSNS(phoneNumber, `Your OTP for verification is ${otp}.Use this otp to verify its you.`, (err, otpSent) => {
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR)
                         }
                         else {
-                            userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber, countryCode: req.body.countryCode }, { $set: { otp: otp, verifyOtp: false, deviceToken: req.body.deviceToken } }, { new: true }, (updatedErr, updatedData) => {
+                            userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber, countryCode: req.body.countryCode, status: "ACTIVE" }, { $set: { otp: otp, verifyOtp: false, deviceToken: req.body.deviceToken } }, { new: true }, (updatedErr, updatedData) => {
                                 if (updatedErr) {
                                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
                                 }
                                 else {
-                                    console.log("--------------otpSent--------user detail-----", updatedData)
                                     response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
                                 }
                             })
@@ -172,7 +170,6 @@ module.exports = {
     verifyOtp: (req, res) => {
         const mobileNumber = req.body.mobileNumber;
         const countryCode = req.body.countryCode;
-        console.log("--------verifyOtp--req.body-------------", JSON.stringify(req.body, null, 2))
         if(!mobileNumber || !countryCode) return response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_CREDENTIAL);
         userModel.findOne({ mobileNumber, status: "ACTIVE", countryCode}, (err, result) => {
             if (err) {
@@ -184,7 +181,6 @@ module.exports = {
             else {
                 // user.saveUserProfile(result._id, updateData);
 
-                console.log("------verifyOtp----OTP---------", JSON.stringify(result, null, 2), req.body.otp)
                 if (result.otp == req.body.otp || req.body.otp == 1234) {
                     var newTime = Date.now()
                     var difference = newTime - result.otpTime
