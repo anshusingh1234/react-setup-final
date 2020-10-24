@@ -170,8 +170,11 @@ module.exports = {
        */
 
     verifyOtp: (req, res) => {
-        userModel.findOne({ mobileNumber: req.body.mobileNumber, status: "ACTIVE" }, (err, result) => {
-            console.log("----------req.body-------------", JSON.stringify(req.body, null, 2))
+        const mobileNumber = req.body.mobileNumber;
+        const countryCode = req.body.countryCode;
+        if(!mobileNumber || !countryCode) return response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_CREDENTIAL);
+        userModel.findOne({ mobileNumber, status: "ACTIVE", countryCode}, (err, result) => {
+            console.log("--------verifyOtp--req.body-------------", JSON.stringify(req.body, null, 2))
             if (err) {
                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
             }
@@ -181,7 +184,7 @@ module.exports = {
             else {
                 // user.saveUserProfile(result._id, updateData);
 
-                console.log("----------OTP---------", result.otp, req.body.otp)
+                console.log("------verifyOtp----OTP---------", result.otp, req.body.otp)
                 if (result.otp == req.body.otp || req.body.otp == 1234) {
                     var newTime = Date.now()
                     var difference = newTime - result.otpTime
