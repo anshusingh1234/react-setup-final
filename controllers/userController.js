@@ -53,7 +53,7 @@ module.exports = {
                             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR)
                         }
                         else {
-                            userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber }, { $set: { otp: otp, verifyOtp: false, deviceToken: req.body.deviceToken } }, { new: true }, (updatedErr, updatedData) => {
+                            userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber, countryCode: req.body.countryCode }, { $set: { otp: otp, verifyOtp: false, deviceToken: req.body.deviceToken } }, { new: true }, (updatedErr, updatedData) => {
                                 if (updatedErr) {
                                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
