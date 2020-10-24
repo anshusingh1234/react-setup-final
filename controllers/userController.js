@@ -46,11 +46,9 @@ module.exports = {
                 }
                 else if (userData) {
                     var otp = commonFunction.getOTP(4)
+                    console.log("--------------otpSent--------req.body-----", JSON.stringify(req.body, null, 2))
                     var phoneNumber = req.body.countryCode + req.body.mobileNumber
                     commonFunction.sendSMSOTPSNS(phoneNumber, `Your OTP for verification is ${otp}.Use this otp to verify its you.`, (err, otpSent) => {
-                        console.log("CCC", err, otpSent)
-                        // commonFunction.sendSMSOTPSNS(phoneNumber, otp, (err, otpSent) => {
-                        console.log("hhhh333hhhh", otp, otpSent, err)
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR)
                         }
@@ -61,7 +59,7 @@ module.exports = {
 
                                 }
                                 else {
-                                    console.log("send", updatedData)
+                                    console.log("--------------otpSent--------user detail-----", updatedData)
                                     response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
                                 }
                             })
