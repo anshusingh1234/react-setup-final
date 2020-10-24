@@ -10,6 +10,8 @@ module.exports = (req, res, next) => {
 
   req._userId = userId;
 
+  console.log(userId, platform, version)
+
   if(!userId || !Object.values(C.PLATFORM.SUPPORTED).includes(platform) || !version) return res.status(401).send();
 
   user.isUserActive(userId).then(isActive=>{
