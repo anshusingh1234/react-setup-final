@@ -130,7 +130,6 @@ const _feedsWrapper = (result, userId) => {
     let _allUserIds = [];
     let _allPostIds = [];
     let _myPostIds = [];
-    const userId = req._userId;
 
     result.forEach(_obj => {
       const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
