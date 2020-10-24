@@ -13,10 +13,13 @@ feedsSearch.search = async (req, res, next) => {
   try{
     const _next = req.query.next;
     const paginationInfo = paginationHelper.getPaginationInfo(_next);
+    console.log(JSON.stringify(paginationInfo, null, 2))
     req._paginationInfo = paginationInfo;
     let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
     const keyword = req.query.keyword;
     const {friends = [], followings = []} = await mongoUsers.instance.getFriendsAndFollowings(req.headers._id) || {};
+    console.log(JSON.stringify(friends, null, 2), JSON.stringify(followings, null, 2))
+
     const searchResult  = await feedsInstance.searchFeed(req.headers._id, friends, followings, keyword, paginationInfo.from, paginationInfo.size);
     req._total = (searchResult && searchResult.hits && searchResult.hits.total.value) || 0;
     req._searchResult = (searchResult && searchResult.hits.hits) || [];
