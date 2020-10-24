@@ -7,7 +7,9 @@ const paginationHelper = {};
 paginationHelper.getPaginationInfo = (current) => {
   let from;
   let size;
+  console.log("-----current, from, size------", current, from, size)
   if(!current){
+  console.log("-----current, from, size------", current, from, size)
     from = 0;
     size = DEFAULT_PAGE_SIZE;
   }else{
@@ -23,6 +25,8 @@ paginationHelper.getPaginationInfo = (current) => {
     }
   }
   const cursor = stringHelper.toBase64(`${from}:${size}`);
+  console.log("------cursor-----", cursor)
+
   return {cursor, from, size};
 }
 

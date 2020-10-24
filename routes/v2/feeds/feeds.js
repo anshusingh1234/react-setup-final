@@ -13,7 +13,7 @@ feedsSearch.search = async (req, res, next) => {
   try{
     const _next = req.query.next;
     const paginationInfo = paginationHelper.getPaginationInfo(_next);
-    console.log(JSON.stringify(paginationInfo, null, 2))
+    console.log("------------------------------",JSON.stringify(paginationInfo, null, 2))
     req._paginationInfo = paginationInfo;
     let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
     const keyword = req.query.keyword;
