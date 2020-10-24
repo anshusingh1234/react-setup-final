@@ -172,9 +172,9 @@ module.exports = {
     verifyOtp: (req, res) => {
         const mobileNumber = req.body.mobileNumber;
         const countryCode = req.body.countryCode;
+        console.log("--------verifyOtp--req.body-------------", JSON.stringify(req.body, null, 2))
         if(!mobileNumber || !countryCode) return response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_CREDENTIAL);
         userModel.findOne({ mobileNumber, status: "ACTIVE", countryCode}, (err, result) => {
-            console.log("--------verifyOtp--req.body-------------", JSON.stringify(req.body, null, 2))
             if (err) {
                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
             }
