@@ -173,6 +173,7 @@ module.exports = {
 
     verifyOtp: (req, res) => {
         userModel.findOne({ mobileNumber: req.body.mobileNumber, status: "ACTIVE" }, (err, result) => {
+            console.log("----------req.body-------------", JSON.stringify(req.body, null, 2))
             if (err) {
                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
             }
