@@ -62,6 +62,7 @@ module.exports = {
                                 }
                                 else {
                                     delete updatedData.otp;
+                                    console.log("---------------------",JSON.stringify(updatedData, null, 2))
                                     response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
                                 }
                             })
