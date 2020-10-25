@@ -39,6 +39,7 @@ module.exports = {
    */
     otpSent: (req, res) => {
         console.log("hhhhhhhh")
+        const platform = req.headers.platform;
         try {
             userModel.findOne({ mobileNumber: req.body.mobileNumber, status: "ACTIVE", userType: "USER" }, (error, userData) => {
                 if (error) {
@@ -46,8 +47,10 @@ module.exports = {
                 }
                 else if (userData) {
                     var otp = commonFunction.getOTP(4)
-                    var phoneNumber = req.body.countryCode + req.body.mobileNumber
-                    commonFunction.sendSMSOTPSNS(phoneNumber, `Your OTP for verification is ${otp}.Use this otp to verify its you.`, (err, otpSent) => {
+                    var phoneNumber = req.body.countryCode + req.body.mobileNumber;
+                    let smsContent = `Your OTP for verification is ${otp}.Use this otp to verify its you.`;
+                    platform === 'android' && (smsContent = `[2xza4yp11q0]`+smsContent);
+                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpSent) => {
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR)
                         }
@@ -215,6 +218,7 @@ module.exports = {
      */
     resendOtp: (req, res) => {
         console.log("hhhhhhhh", req.body)
+        const platform = req.headers.platform;
         userModel.findOne({ mobileNumber: req.body.mobileNumber }, (error, userData) => {
             if (error) {
                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
@@ -225,9 +229,10 @@ module.exports = {
             else {
                 var otp = commonFunction.getOTP(4)
                 var phoneNumber = userData.countryCode + req.body.mobileNumber
-
+                let smsContent = `Your OTP for verification is ${otp}.Use this otp to verify its you.`;
+                platform === 'android' && (smsContent = `[2xza4yp11q0]`+smsContent);
                 //commonFunction.sendSMS(phoneNumber, otp, (err, otpData) => {
-                commonFunction.sendSMSOTPSNS(phoneNumber, `Your OTP for verification is ${otp}.Use this otp to verify its you.`, (err, otpData) => {
+                commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpData) => {
                     if (err) {
                         response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
