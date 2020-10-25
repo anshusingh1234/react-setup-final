@@ -61,6 +61,7 @@ module.exports = {
 
                                 }
                                 else {
+                                    delete updatedData.otp;
                                     response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
                                 }
                             })
@@ -93,6 +94,8 @@ module.exports = {
                                     response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR)
                                 }
                                 else {
+                                    delete savedData.otp;
+
                                     response(res, SuccessCode.SUCCESS, savedData, SuccessMessage.OTP_SEND)
 
                                 }
@@ -234,7 +237,6 @@ module.exports = {
                 //commonFunction.sendSMS(phoneNumber, otp, (err, otpData) => {
                 commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpData) => {
                     if (err) {
-                        console.log(err)
                         response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
                     }
@@ -245,7 +247,7 @@ module.exports = {
 
                             }
                             else {
-                                console.log("send", updatedData)
+                                delete updatedData.otp;
                                 response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
                             }
                         })
