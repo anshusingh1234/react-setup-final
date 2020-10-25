@@ -79,7 +79,7 @@ module.exports = {
       body:    JSON.stringify(body),
       headers: headers,
     })
-    .then(res => res.json()).then(json =>{
+    .then(res => res).then(json =>{
       return cb(null, json)
     }).catch(e => {
       return cb(e, null);
