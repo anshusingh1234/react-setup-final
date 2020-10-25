@@ -234,6 +234,7 @@ module.exports = {
                 //commonFunction.sendSMS(phoneNumber, otp, (err, otpData) => {
                 commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpData) => {
                     if (err) {
+                        console.log(err)
                         response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
                     }
