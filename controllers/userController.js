@@ -41,7 +41,7 @@ module.exports = {
         console.log("hhhhhhhh")
         const platform = req.headers.platform;
         try {
-            userModel.findOne({ mobileNumber: req.body.mobileNumber, status: "ACTIVE", userType: "USER" }, (error, userData) => {
+            userModel.findOne({ mobileNumber: req.body.mobileNumber, status: "ACTIVE", userType: "USER", countryCode: req.body.countryCode }, (error, userData) => {
                 if (error) {
                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
                 }
@@ -219,7 +219,7 @@ module.exports = {
     resendOtp: (req, res) => {
         console.log("hhhhhhhh", req.body)
         const platform = req.headers.platform;
-        userModel.findOne({ mobileNumber: req.body.mobileNumber }, (error, userData) => {
+        userModel.findOne({ mobileNumber: req.body.mobileNumber , countryCode: req.body.countryCode, status: 'ACTIVE'}, (error, userData) => {
             if (error) {
                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
             }
@@ -228,7 +228,7 @@ module.exports = {
             }
             else {
                 var otp = commonFunction.getOTP(4)
-                var phoneNumber = userData.countryCode + req.body.mobileNumber
+                var phoneNumber = req.body.countryCode + req.body.mobileNumber
                 let smsContent = `Your OTP for verification is ${otp}.Use this otp to verify its you.`;
                 platform === 'android' && (smsContent = `<#>`+smsContent+`\n2xza4yp11q0`);
                 //commonFunction.sendSMS(phoneNumber, otp, (err, otpData) => {
