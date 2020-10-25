@@ -61,9 +61,7 @@ module.exports = {
 
                                 }
                                 else {
-                                    delete updatedData.otp;
-                                    console.log("---------------------",JSON.stringify(updatedData, null, 2))
-                                    response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
+                                    response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
                                 }
                             })
                         }
@@ -97,7 +95,7 @@ module.exports = {
                                 else {
                                     delete savedData.otp;
 
-                                    response(res, SuccessCode.SUCCESS, savedData, SuccessMessage.OTP_SEND)
+                                    response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
 
                                 }
                             })
@@ -249,7 +247,7 @@ module.exports = {
                             }
                             else {
                                 delete updatedData.otp;
-                                response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
+                                response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
                             }
                         })
                     }
