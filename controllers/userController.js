@@ -70,7 +70,7 @@ module.exports = {
                 }
                 else {
                     commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpSent) => {
-                        console.log("hhhh333hhhh", otp1, otpSent, err)
+                        console.log("hhhh333hhhh", otp, otpSent, err)
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR)
                         }
