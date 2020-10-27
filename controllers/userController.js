@@ -48,8 +48,8 @@ module.exports = {
                 else if (userData) {
                     var otp = commonFunction.getOTP(4)
                     var phoneNumber = req.body.countryCode + req.body.mobileNumber;
-                    let smsContent = `Your OTP for verification is ${otp}.Use this otp to verify its you.`;
-                    platform === 'android' && (smsContent = `<#>`+smsContent+`\n2xza4yp11q0`);
+                    let smsContent = `Your OTP for verification is: ${otp}. Use this otp to verify its you.`;
+                    platform === 'android' && (smsContent = smsContent+`\n2xza4yp11q0`);
                     commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpSent) => {
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR)
@@ -231,8 +231,8 @@ module.exports = {
             else {
                 var otp = commonFunction.getOTP(4)
                 var phoneNumber = req.body.countryCode + req.body.mobileNumber
-                let smsContent = `Your OTP for verification is ${otp}.Use this otp to verify its you.`;
-                platform === 'android' && (smsContent = `<#>`+smsContent+`\n2xza4yp11q0`);
+                let smsContent = `Your OTP for verification is: ${otp}. Use this otp to verify its you.`;
+                platform === 'android' && (smsContent = smsContent+`\n2xza4yp11q0`);
                 //commonFunction.sendSMS(phoneNumber, otp, (err, otpData) => {
                 commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpData) => {
                     if (err) {
