@@ -745,6 +745,15 @@ module.exports = {
                         if (req.body.socialId) {
                             set.socialId = req.body.socialId
                         }
+                        if (req.body.facebookLink) {
+                          set.facebookLink = req.body.facebookLink
+                        }
+                        if (req.body.instagramLink) {
+                          set.instagramLink = req.body.instagramLink
+                        }
+                        if (req.body.twitterLink) {
+                          set.twitterLink = req.body.twitterLink
+                        }
 
                         userModel.findOneAndUpdate({ _id: userData._id, status: "ACTIVE" }, { $set: set }, { new: true },
                             (err, result) => {
