@@ -39,30 +39,29 @@ module.exports = {
    */
     otpSent: (req, res) => {
         console.log("hhhhhhhh")
+        const platform = req.headers.platform;
+        var otp = commonFunction.getOTP(4)
+        var phoneNumber = req.body.countryCode + req.body.mobileNumber;
+        let smsContent = `Your OTP for verification is: ${otp} Use this otp to verify its you.`;
+        platform === 'android' && (smsContent = smsContent+`\n2xza4yp11q0`);
         try {
-            userModel.findOne({ mobileNumber: req.body.mobileNumber, status: "ACTIVE", userType: "USER" }, (error, userData) => {
+            userModel.findOne({ mobileNumber: req.body.mobileNumber, status: "ACTIVE", userType: "USER", countryCode: req.body.countryCode }, (error, userData) => {
                 if (error) {
                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
                 }
                 else if (userData) {
-                    var otp = commonFunction.getOTP(4)
-                    var phoneNumber = req.body.countryCode + req.body.mobileNumber
-                    commonFunction.sendSMSOTPSNS(phoneNumber, `Your OTP for verification is ${otp}.Use this otp to verify its you.`, (err, otpSent) => {
-                        console.log("CCC", err, otpSent)
-                        // commonFunction.sendSMSOTPSNS(phoneNumber, otp, (err, otpSent) => {
-                        console.log("hhhh333hhhh", otp, otpSent, err)
+                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpSent) => {
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR)
                         }
                         else {
-                            userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber }, { $set: { otp: otp, verifyOtp: false, deviceToken: req.body.deviceToken } }, { new: true }, (updatedErr, updatedData) => {
+                            userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber, countryCode: req.body.countryCode, status: "ACTIVE" }, { $set: { otp: otp, verifyOtp: false, deviceToken: req.body.deviceToken } }, { new: true }, (updatedErr, updatedData) => {
                                 if (updatedErr) {
                                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
                                 }
                                 else {
-                                    console.log("send", updatedData)
-                                    response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
+                                    response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
                                 }
                             })
                         }
@@ -70,18 +69,14 @@ module.exports = {
 
                 }
                 else {
-                    var otp1 = commonFunction.getOTP(4)
-                    console.log("SSSSSS", otp)
-                    var phoneNumber1 = req.body.countryCode + req.body.mobileNumber
-                    // commonFunction.sendSMS(phoneNumber1, otp1, (err, otpSent) => {
-                    commonFunction.sendSMSOTPSNS(phoneNumber1, `Your OTP for verification is ${otp1}.Use this otp to verify its you.`, (err, otpSent) => {
-                        console.log("hhhh333hhhh", otp1, otpSent, err)
+                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpSent) => {
+                        console.log("hhhh333hhhh", otp, otpSent, err)
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR)
                         }
                         else {
                             var obj = new userModel({
-                                otp: otp1,
+                                otp: otp,
                                 countryCode: req.body.countryCode,
                                 mobileNumber: req.body.mobileNumber,
                                 deviceToken: req.body.deviceToken,
@@ -94,7 +89,9 @@ module.exports = {
                                     response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR)
                                 }
                                 else {
-                                    response(res, SuccessCode.SUCCESS, savedData, SuccessMessage.OTP_SEND)
+                                    delete savedData.otp;
+
+                                    response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
 
                                 }
                             })
@@ -172,7 +169,10 @@ module.exports = {
        */
 
     verifyOtp: (req, res) => {
-        userModel.findOne({ mobileNumber: req.body.mobileNumber, status: "ACTIVE" }, (err, result) => {
+        const mobileNumber = req.body.mobileNumber;
+        const countryCode = req.body.countryCode;
+        if(!mobileNumber || !countryCode) return response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_CREDENTIAL);
+        userModel.findOne({ mobileNumber, status: "ACTIVE", countryCode}, (err, result) => {
             if (err) {
                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
             }
@@ -181,13 +181,10 @@ module.exports = {
             }
             else {
                 // user.saveUserProfile(result._id, updateData);
-                console.log("-------------------------------------------\n\n\n\n\n")
-                console.log(JSON.stringify(result, null, 2))
-                console.log("\n\n\n\n\n------------------------------")
+
                 if (result.otp == req.body.otp || req.body.otp == 1234) {
                     var newTime = Date.now()
                     var difference = newTime - result.otpTime
-                    console.log(">>>>>>", difference)
                     // if (difference < 60000) {
                     userModel.findByIdAndUpdate(result._id, { verifyOtp: true }, { new: true }, (updateErr, updateResult) => {
                         if (updateErr) {
@@ -219,7 +216,8 @@ module.exports = {
      */
     resendOtp: (req, res) => {
         console.log("hhhhhhhh", req.body)
-        userModel.findOne({ mobileNumber: req.body.mobileNumber }, (error, userData) => {
+        const platform = req.headers.platform;
+        userModel.findOne({ mobileNumber: req.body.mobileNumber , countryCode: req.body.countryCode, status: 'ACTIVE'}, (error, userData) => {
             if (error) {
                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
             }
@@ -228,10 +226,11 @@ module.exports = {
             }
             else {
                 var otp = commonFunction.getOTP(4)
-                var phoneNumber = userData.countryCode + req.body.mobileNumber
-
+                var phoneNumber = req.body.countryCode + req.body.mobileNumber
+                let smsContent = `Your OTP for verification is: ${otp} Use this otp to verify its you.`;
+                platform === 'android' && (smsContent = smsContent+`\n2xza4yp11q0`);
                 //commonFunction.sendSMS(phoneNumber, otp, (err, otpData) => {
-                commonFunction.sendSMSOTPSNS(phoneNumber, `Your OTP for verification is ${otp}.Use this otp to verify its you.`, (err, otpData) => {
+                commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpData) => {
                     if (err) {
                         response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
@@ -243,8 +242,8 @@ module.exports = {
 
                             }
                             else {
-                                console.log("send", updatedData)
-                                response(res, SuccessCode.SUCCESS, updatedData, SuccessMessage.OTP_SEND)
+                                delete updatedData.otp;
+                                response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
                             }
                         })
                     }
@@ -2115,8 +2114,10 @@ module.exports = {
        * @return response
      */
     myBlockUserList: (req, res) => {
+        console.log("----------myBlockUserList-------------", req.headers._id)
         try {
             userModel.findOne({ _id: req.headers._id, status: "ACTIVE", userType: "USER" }, (error, userData) => {
+        console.log("----------myBlockUserList-------------", JSON.stringify(error, null, 2), JSON.stringify(userData, null, 2))
                 if (error) {
                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 

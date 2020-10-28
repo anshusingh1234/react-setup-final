@@ -17,6 +17,8 @@ feedsSearch.search = async (req, res, next) => {
     let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
     const keyword = req.query.keyword;
     const {friends = [], followings = []} = await mongoUsers.instance.getFriendsAndFollowings(req.headers._id) || {};
+    console.log(JSON.stringify(friends, null, 2), JSON.stringify(followings, null, 2))
+
     const searchResult  = await feedsInstance.searchFeed(req.headers._id, friends, followings, keyword, paginationInfo.from, paginationInfo.size);
     req._total = (searchResult && searchResult.hits && searchResult.hits.total.value) || 0;
     req._searchResult = (searchResult && searchResult.hits.hits) || [];
@@ -32,6 +34,7 @@ feedsSearch.fetchDetails = async(req, res, next) => {
     let _allUserIds = [];
     let _allPostIds = [];
     let _myPostIds = [];
+    const userId = req._userId;
     req._searchResult.forEach(_obj => {
       _obj = _obj._source;
       const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
@@ -48,7 +51,7 @@ feedsSearch.fetchDetails = async(req, res, next) => {
     const reactionMap = await mongoReactions.instance.checkIfUserReacted([...new Set(_allPostIds)], req._userId, 'post');
     req._reactionMap = reactionMap;
 
-    req._participatingInfo = await postHelper.fetch(_myPostIds);
+    req._participatingInfo = await postHelper.fetch(_myPostIds, userId);
     next();
   }catch(e){
     console.log("/feeds fetchDetails()", e);

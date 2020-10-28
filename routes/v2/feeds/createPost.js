@@ -35,7 +35,7 @@ createPost.formDataWrapper = (req, res, next) => {
       ] : undefined,
       "checkInText": checkInText,
       "privacy": privacy,
-      "feelings": Number(feelings),
+      "feelings": feelings && Number(feelings),
       "taggedUsers": taggedUsers,
       "privateTo": privateTo
     }
