@@ -9,6 +9,7 @@ const HASH_FIELDS = {
   NAME: "name",
   FIRSTNAME: "firstName",
   LASTNAME: "lastName",
+  SURNAME: "surName",
   PICTURE: "picture",
   USER_TYPE: "userType",
   STATUS: "status",
@@ -16,9 +17,9 @@ const HASH_FIELDS = {
 }
 
 const user = {
-
+  
   HASH_FIELDS,
-
+  
   saveUserProfile: (userId, userData) => {
     return new Promise((resolve, reject) => {
       let firstName, lastName;
@@ -31,6 +32,7 @@ const user = {
         [HASH_FIELDS.NAME]: userData.name,
         [HASH_FIELDS.FIRSTNAME]: userData.firstName || firstName || userData.name,
         [HASH_FIELDS.LASTNAME]: userData.lastName || lastName || "",
+        [HASH_FIELDS.SURNAME]: userData.surName || "",
         [HASH_FIELDS.PICTURE]: userData.profilePic ? userData.profilePic : '',
         [HASH_FIELDS.USER_TYPE]: userData.userType,
         [HASH_FIELDS.STATUS]: userData.status,
@@ -38,14 +40,15 @@ const user = {
       !userProfile[HASH_FIELDS.FIRSTNAME] && delete userProfile[HASH_FIELDS.FIRSTNAME];
       !userProfile[HASH_FIELDS.LASTNAME] && delete userProfile[HASH_FIELDS.LASTNAME];
       !userProfile[HASH_FIELDS.NAME] && delete userProfile[HASH_FIELDS.NAME];
-
+      !userProfile[HASH_FIELDS.SURNAME] && delete userProfile[HASH_FIELDS.SURNAME];
+      
       query.hmset(key.USER_SHORT_DETAIL(userId), userProfile, (err, result)=>{
         if(err) return reject(err);
         else return resolve(result);
       });
     })
   },
-
+  
   isUserActive: (userId) => {
     return new Promise((resolve, reject) => {
       query.hget({key:key.USER_SHORT_DETAIL(userId), field:HASH_FIELDS.STATUS},(err, result)=>{
@@ -53,17 +56,24 @@ const user = {
       })
     })
   },
-
+  
   getUserProfile: (userId) => {
     return new Promise((resolve, reject) => {
-      query.hgetall(key.USER_SHORT_DETAIL(userId),(error, result)=>{
+      query.hgetall(key.USER_SHORT_DETAIL(userId), (error, result) => {
         let shortDetail;
         if(result){
+          let lastName;
+          if(result[HASH_FIELDS.LASTNAME] && result[HASH_FIELDS.SURNAME]){
+            lastName = result[HASH_FIELDS.LASTNAME] + " " + result[HASH_FIELDS.SURNAME];
+          }else{
+            lastName = result[HASH_FIELDS.LASTNAME] || result[HASH_FIELDS.SURNAME];
+          }
+          
           shortDetail = {
             [HASH_FIELDS.USER_ID]: result[HASH_FIELDS.USER_ID],
             [HASH_FIELDS.NAME]: result[HASH_FIELDS.NAME],
             [HASH_FIELDS.FIRSTNAME]: result[HASH_FIELDS.FIRSTNAME],
-            [HASH_FIELDS.LASTNAME]: result[HASH_FIELDS.LASTNAME],
+            [HASH_FIELDS.LASTNAME]: lastName,
             [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE],
             [HASH_FIELDS.VERIFIED]: result[HASH_FIELDS.VERIFIED] ? Number(result[HASH_FIELDS.VERIFIED]) : 0
           }
@@ -72,7 +82,7 @@ const user = {
       })
     })
   },
-
+  
   getAllUsersProfile: (userIds) =>{
     return new Promise ((resolve, reject) => {
       let map = new Map();
@@ -87,10 +97,10 @@ const user = {
       })
     })
   },
-
+  
   saveVerified: (userId) => {
     return new Promise((resolve, reject) => {
-
+      
       const hash = {
         key : key.USER_SHORT_DETAIL(userId),
         field : HASH_FIELDS.VERIFIED,
@@ -102,7 +112,7 @@ const user = {
       });
     })
   },
-
+  
 };
 
 module.exports = user;
