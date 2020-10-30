@@ -85,7 +85,8 @@ const user = {
             [HASH_FIELDS.FIRSTNAME]: result[HASH_FIELDS.FIRSTNAME],
             [HASH_FIELDS.LASTNAME]: lastName,
             [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE],
-            [HASH_FIELDS.VERIFIED]: result[HASH_FIELDS.VERIFIED] ? Number(result[HASH_FIELDS.VERIFIED]) : 0
+            [HASH_FIELDS.VERIFIED]: result[HASH_FIELDS.VERIFIED] ? Number(result[HASH_FIELDS.VERIFIED]) : 0,
+            [HASH_FIELDS.MIRRORFLY_ID]: result[HASH_FIELDS.MIRRORFLY_ID] || ""
           }
         }
         return resolve(shortDetail);
@@ -110,7 +111,6 @@ const user = {
   
   saveVerified: (userId) => {
     return new Promise((resolve, reject) => {
-      
       const hash = {
         key : key.USER_SHORT_DETAIL(userId),
         field : HASH_FIELDS.VERIFIED,
