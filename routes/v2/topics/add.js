@@ -4,8 +4,25 @@ const {topics: topicMongo} = require("../../../core/mongo");
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const validations  = require('./../../../helper/validations');
 const ApiError = require("../ApiError");
+const multiparty = require("multiparty");
 
 const add = {};
+
+add.formDataWrapper = async(req, res, next) => {
+  const form = new multiparty.Form();
+  form.parse(req, (error, fields, files) => {
+    if(error || !fields) return next(new ApiError(400, 'E0010004'));
+    console.log("ADD TOPIC FORM DATA", fields)
+    const topic = (Array.isArray(fields.topic) && fields.topic[0]) ? fields.topic[0] : undefined;
+    const language = (Array.isArray(fields.language)) ? fields.language[0] : undefined ;
+    req.body = {
+      "topic": topic,
+      "language": language
+    }
+    req._files = files;
+    next();
+  })
+}
 
 /**
 * Validating JSON Body
@@ -14,6 +31,7 @@ const add = {};
 * @param {*} next
 */
 add.validateBody = (req, res, next) => {
+  req.body.image = Array.isArray(req._media) && req._media[0] && req._media[0].url;
   const userId = req.headers._id;
   const {topic, language, image} = req.body;
 

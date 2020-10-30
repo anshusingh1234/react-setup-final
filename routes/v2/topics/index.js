@@ -6,10 +6,12 @@ const editTopic = require("./edit");
 const deleteTopic = require("./delete");
 const auth = require('../auth');
 const error = require('../error');
-
+const mediaUploader = require("../common/mediaUploader");
 
 router.post(`/add`,
 auth,
+addTopic.formDataWrapper,
+mediaUploader.uploadReqFiles,
 addTopic.validateBody,
 addTopic.saveInMongo,
 error
