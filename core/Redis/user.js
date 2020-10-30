@@ -56,6 +56,14 @@ const user = {
       })
     })
   },
+
+  getUserAllDetails: (userId) => {
+    return new Promise((resolve, reject) => {
+      query.hgetall(key.USER_SHORT_DETAIL(userId),(err, result)=>{
+        return resolve(result);
+      })
+    })
+  },
   
   getUserProfile: (userId) => {
     return new Promise((resolve, reject) => {

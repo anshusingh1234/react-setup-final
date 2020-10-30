@@ -52,8 +52,12 @@ createPost.formDataWrapper = (req, res, next) => {
 * @param {*} next
 */
 createPost.validateBody = (req, res, next) => {
+  if(req._userProfile.userType === 'ADMIN'){
+    req.body.privacy = ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].ADMIN;
+  }
+  
   console.log("CREATE POST JSON DATA", req.body)
-  const {privacy, data} = req.body;
+  let {privacy, data} = req.body;
   const userId = req.headers._id;
 
   if(!Object.values(ES_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY]).includes(privacy)) return next(new ApiError(400, 'E0010004', {debug: ""}));
@@ -148,7 +152,6 @@ createPost.saveInES = (req, res, next) => {
   }
   const feedsInstance = feeds.forDate(_dateRef);
   feedsInstance.indexDoc(toAdd, (error, result) => {
-    console.log("---------------------", error, result)
     if(error){
       return next(new ApiError(500, 'E0010002', {debug: error}))
     }

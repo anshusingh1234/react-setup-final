@@ -107,15 +107,15 @@ query.searchFeeds = (userId, options) => {
     }
   });
 
-  shouldArray.push({
-    "bool": {
-      "must": [{
-        "term": {
-          [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].ADMIN
-        }
-      }]
-    }
-  })
+  // shouldArray.push({
+  //   "bool": {
+  //     "must": [{
+  //       "term": {
+  //         [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].ADMIN
+  //       }
+  //     }]
+  //   }
+  // })
 
   mustArray.push({
     "bool": {
