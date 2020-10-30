@@ -65,7 +65,7 @@ module.exports = {
   hset: (hash, callback) => {
     const client = RedisConnection.getInstance();
     if (client && hash.key && hash.field) {
-      client.hset(hash.key, hash.field, JSON.stringify(hash.value), (error, result) => {
+      client.hset(hash.key, hash.field, hash.value, (error, result) => {
         return callback(error, result);
       });
     } else {

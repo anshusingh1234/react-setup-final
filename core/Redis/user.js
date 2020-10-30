@@ -13,7 +13,8 @@ const HASH_FIELDS = {
   PICTURE: "picture",
   USER_TYPE: "userType",
   STATUS: "status",
-  VERIFIED: "verified"
+  VERIFIED: "verified",
+  MIRRORFLY_ID: "mirrorflyId"
 }
 
 const user = {
@@ -36,6 +37,7 @@ const user = {
         [HASH_FIELDS.PICTURE]: userData.profilePic ? userData.profilePic : '',
         [HASH_FIELDS.USER_TYPE]: userData.userType,
         [HASH_FIELDS.STATUS]: userData.status,
+        [HASH_FIELDS.MIRRORFLY_ID]: userData.mirrorFlyId || "",
       }
       !userProfile[HASH_FIELDS.FIRSTNAME] && delete userProfile[HASH_FIELDS.FIRSTNAME];
       !userProfile[HASH_FIELDS.LASTNAME] && delete userProfile[HASH_FIELDS.LASTNAME];
@@ -113,6 +115,21 @@ const user = {
         key : key.USER_SHORT_DETAIL(userId),
         field : HASH_FIELDS.VERIFIED,
         value : 1
+      }
+      query.hset(hash, (err, result)=>{
+        if(err) return reject(err);
+        else return resolve(result);
+      });
+    })
+  },
+
+  linkMirrorflyId: (userId, mirrorFlyId) => {
+    return new Promise((resolve, reject) => {
+      
+      const hash = {
+        key : key.USER_SHORT_DETAIL(userId),
+        field : HASH_FIELDS.MIRRORFLY_ID,
+        value : mirrorFlyId
       }
       query.hset(hash, (err, result)=>{
         if(err) return reject(err);
