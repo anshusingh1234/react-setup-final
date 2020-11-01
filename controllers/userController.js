@@ -25,6 +25,7 @@ const favouriteModel = require('../models/favouriteModel')
 const foodModel = require('../models/foodModel')
 const notificationModel = require('../models/notificationModel')
 const moment = require('moment');
+const firebaseVerification = require("./../core/firebase/verification");
 
 const { user } = require("./../core/Redis");
 const {friendRequest, requestAccept} = require('./../services/notification/events');
@@ -169,9 +170,12 @@ module.exports = {
        */
 
     verifyOtp: (req, res) => {
-        const mobileNumber = req.body.mobileNumber;
-        const countryCode = req.body.countryCode;
+      const {mobileNumber, countryCode, token, otp} = req.body;
+
         if(!mobileNumber || !countryCode) return response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_CREDENTIAL);
+        if(!token && !otp) return response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_CREDENTIAL);
+
+
         userModel.findOne({ mobileNumber, status: "ACTIVE", countryCode}, (err, result) => {
             if (err) {
                 response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
@@ -180,12 +184,12 @@ module.exports = {
                 response(res, ErrorCode.NOT_FOUND, [], ErrorMessage.MOBILE_NOT_FOUND);
             }
             else {
-                // user.saveUserProfile(result._id, updateData);
+                user.saveUserProfile(result._id, result);
 
-                if (result.otp == req.body.otp || req.body.otp == 1234) {
-                    var newTime = Date.now()
-                    var difference = newTime - result.otpTime
-                    // if (difference < 60000) {
+                firebaseVerification.verifyToken(token, (error, uid)=>{
+                  if(error && token) response(res, ErrorCode.SOMETHING_WRONG, [], error);
+
+                  else if (uid || otp == 1234) {
                     userModel.findByIdAndUpdate(result._id, { verifyOtp: true }, { new: true }, (updateErr, updateResult) => {
                         if (updateErr) {
                             response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR);
@@ -194,16 +198,11 @@ module.exports = {
                             response(res, SuccessCode.SUCCESS, updateResult, SuccessMessage.VERIFY_OTP);
                         }
                     })
-                    // }
-                    // else {
-                    //     response(res, ErrorCode.NOT_FOUND, [], ErrorMessage.OTP_EXPIRED);
-
-                    // }
-
-                }
-                else {
-                    response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_OTP);
-                }
+                  }
+                  else {
+                      response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_OTP);
+                  }
+                });
             }
         })
     },

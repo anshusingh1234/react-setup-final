@@ -39,7 +39,22 @@ const settings = {
       "SECRET_KEY": process.env["SINCH:SECRET_KEY"],
       "TOKEN": process.env["SINCH:TOKEN"],
       "PLAN_ID": process.env["SINCH:PLAN_ID"]
-    }
+    },
+    "FIREBASE": {
+      "DATABASE_URL": process.env["FIREBASE_DB_URL"],
+      "SERVICE_ACCOUNT_KEYS": {
+        "type": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_type"],
+        "project_id": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_project_id"],
+        "private_key_id": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_private_key_id"],
+        "private_key": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_private_key"],
+        "client_email": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_client_email"],
+        "client_id": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_client_id"],
+        "auth_uri": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_auth_uri"],
+        "token_uri": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_token_uri"],
+        "auth_provider_x509_cert_url": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_auth_provider_x509_cert_url"],
+        "client_x509_cert_url": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_client_x509_cert_url"]
+      }
+    },
   }
 };
 
