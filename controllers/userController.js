@@ -26,6 +26,7 @@ const foodModel = require('../models/foodModel')
 const notificationModel = require('../models/notificationModel')
 const moment = require('moment');
 const firebaseVerification = require("./../core/firebase/verification");
+const ssoHelper = require("./../helper/ssoHelper")
 
 const { user } = require("./../core/Redis");
 const {friendRequest, requestAccept} = require('./../services/notification/events');
@@ -188,16 +189,19 @@ module.exports = {
 
                 firebaseVerification.verifyToken(token, (error, uid)=>{
                   if(error && token) response(res, ErrorCode.SOMETHING_WRONG, [], error);
-
                   else if (uid || otp == 1234) {
-                    userModel.findByIdAndUpdate(result._id, { verifyOtp: true }, { new: true }, (updateErr, updateResult) => {
+                    ssoHelper.generateAndSave(result._id).then(jigrrToken=>{
+                      userModel.findByIdAndUpdate(result._id, { verifyOtp: true }, { new: true }, (updateErr, updateResult) => {
                         if (updateErr) {
                             response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR);
                         }
                         else {
-                            response(res, SuccessCode.SUCCESS, updateResult, SuccessMessage.VERIFY_OTP);
+                          const userData = {...updateResult._doc, jigrrToken};
+                          response(res, SuccessCode.SUCCESS, userData, SuccessMessage.VERIFY_OTP);
                         }
                     })
+                    });
+                    
                   }
                   else {
                       response(res, ErrorCode.INVALID_CREDENTIAL, [], ErrorMessage.INVALID_OTP);

@@ -6,7 +6,7 @@ const ssoHelper = {};
 ssoHelper.generateAndSave = async(userId) => {
   const token = randToken.generate(64);
   await ssoRedis.save(userId, token);
-  return;
+  return token;
 }
 
 ssoHelper.verify = async(token, userId) => {
