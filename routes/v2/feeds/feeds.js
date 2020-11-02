@@ -17,9 +17,9 @@ feedsSearch.search = async (req, res, next) => {
     let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
     const keyword = req.query.keyword;
     const {friends = [], followings = []} = await mongoUsers.instance.getFriendsAndFollowings(req.headers._id) || {};
-    console.log(JSON.stringify(friends, null, 2), JSON.stringify(followings, null, 2))
+    const language = req.headers.language || 'en';
 
-    const searchResult  = await feedsInstance.searchFeed(req.headers._id, friends, followings, keyword, paginationInfo.from, paginationInfo.size);
+    const searchResult  = await feedsInstance.searchFeed(req.headers._id, friends, followings, keyword, language, paginationInfo.from, paginationInfo.size);
     req._total = (searchResult && searchResult.hits && searchResult.hits.total.value) || 0;
     req._searchResult = (searchResult && searchResult.hits.hits) || [];
     next();

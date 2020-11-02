@@ -114,6 +114,7 @@ createPost.saveInMongo = async (req, res, next) => {
     [feedsMongo.FIELDS.CHECK_IN_TEXT]: req.body.checkInText,
     [feedsMongo.FIELDS.CHECK_IN_GEO_POINTS]: req.body.checkInGeoPoints,
     [feedsMongo.FIELDS.TAGGED_USERS]: req.body.taggedUsers,
+    [feedsMongo.FIELDS.LANGUAGE]: req.headers.language || 'en',
   };
   const mongoResult = await feedsMongo.instance.insertPost(toAdd);
   mongoResult && mongoResult.originalData && (req._id = feedsMongo.instance.getStringFromObjectId(mongoResult.originalData._id));
@@ -144,11 +145,10 @@ createPost.saveInES = (req, res, next) => {
     [ES_FEEDS_FIELDS.FEELINGS]: req.body.feelings,
     [ES_FEEDS_FIELDS.CHECK_IN_TEXT]: req.body.checkInText,
     [ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS]: req.body.checkInGeoPoints,
-    [ES_FEEDS_FIELDS.TAGGED_USERS]: req.body.taggedUsers,
+    [ES_FEEDS_FIELDS.LANGUAGE]: req.headers.language,
   }
   const feedsInstance = feeds.forDate(_dateRef);
   feedsInstance.indexDoc(toAdd, (error, result) => {
-    console.log("---------------------", error, result)
     if(error){
       return next(new ApiError(500, 'E0010002', {debug: error}))
     }

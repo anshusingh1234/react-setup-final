@@ -6,13 +6,13 @@ query.searchFeeds = (userId, options) => {
   let shouldArray = [];
   let mustArray = [];
   let mustNotArray = [];
-
+  
   mustArray.push({
     "term": {
       [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
     }
   })
-
+  
   if(options.keyword && typeof options.keyword === 'string'){
     mustArray.push({
       "wildcard": {
@@ -24,13 +24,13 @@ query.searchFeeds = (userId, options) => {
       }
     })
   }
-
+  
   shouldArray.push({
     "term": {
       [FEEDS_FIELDS.AUTHOR]: userId
     }
   });
-
+  
   shouldArray.push({
     "bool": {
       "must": [{
@@ -44,13 +44,13 @@ query.searchFeeds = (userId, options) => {
       }]
     }
   });
-
+  
   shouldArray.push({
     "bool": {
       "must": [{
         "term": {
           [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].PUBLIC
-        }
+        },
       },{
         "bool": {
           "should": [{
@@ -71,10 +71,14 @@ query.searchFeeds = (userId, options) => {
             }
           }]
         }
+      }, {
+        "term": {
+          [FEEDS_FIELDS.LANGUAGE]: options.language || FEEDS_FIELDS_VALUES[FEEDS_FIELDS.LANGUAGE].DEFAULT
+        }
       }]
     }
   });
-
+  
   shouldArray.push({
     "bool": {
       "must": [{
@@ -88,7 +92,7 @@ query.searchFeeds = (userId, options) => {
       }]
     }
   })
-
+  
   shouldArray.push({
     "bool": {
       "must": [{
@@ -106,7 +110,7 @@ query.searchFeeds = (userId, options) => {
       }]
     }
   });
-
+  
   shouldArray.push({
     "bool": {
       "must": [{
@@ -116,19 +120,19 @@ query.searchFeeds = (userId, options) => {
       }]
     }
   })
-
+  
   mustArray.push({
     "bool": {
       "should": shouldArray
     }
   })
-
+  
   mustNotArray.push({
     "term": {
       [FEEDS_FIELDS.HIDDEN_BY]: userId
     }
   })
-
+  
   return {
     "bool": {
       "must": mustArray,
@@ -140,13 +144,13 @@ query.searchFeeds = (userId, options) => {
 query.timeline = (author, userId, isFriend, hideTime) => {
   let shouldArray = [];
   let mustArray = [];
-
+  
   mustArray.push({
     "term": {
       [FEEDS_FIELDS.AUTHOR]: author
     }
   });
-
+  
   (userId === author) && shouldArray.push({
     "bool": {
       "must": [{
@@ -156,7 +160,7 @@ query.timeline = (author, userId, isFriend, hideTime) => {
       }]
     }
   });
-
+  
   shouldArray.push({
     "bool": {
       "must": [{
@@ -166,7 +170,7 @@ query.timeline = (author, userId, isFriend, hideTime) => {
       }]
     }
   });
-
+  
   isFriend && shouldArray.push({
     "bool": {
       "must": [{
@@ -176,7 +180,7 @@ query.timeline = (author, userId, isFriend, hideTime) => {
       }]
     }
   })
-
+  
   shouldArray.push({
     "bool": {
       "must": [{
@@ -190,7 +194,7 @@ query.timeline = (author, userId, isFriend, hideTime) => {
       }]
     }
   });
-
+  
   // hideTime && mustArray.push({
   //   "range": {
   //     [FEEDS_FIELDS.CREATED_AT]: {
@@ -198,13 +202,13 @@ query.timeline = (author, userId, isFriend, hideTime) => {
   //     }
   //   }
   // })
-
+  
   mustArray.push({
     "term": {
       [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
     }
   })
-
+  
   return {
     "bool": {
       "should": shouldArray,
@@ -215,19 +219,19 @@ query.timeline = (author, userId, isFriend, hideTime) => {
 
 query.timelineRewards = () => {
   let mustArray = [];
-
+  
   mustArray.push({
     "term": {
       [FEEDS_FIELDS.PRIVACY]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.PRIVACY].ADMIN
     }
   });
-
+  
   mustArray.push({
     "term": {
       [FEEDS_FIELDS.STATUS]: FEEDS_FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE
     }
   })
-
+  
   return {
     "bool": {
       "must": mustArray

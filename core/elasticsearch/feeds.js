@@ -97,6 +97,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
     }
 
     data[FEEDS_FIELDS.STATUS] = FIELDS_VALUES[FEEDS_FIELDS.STATUS].LIVE;
+    data[FEEDS_FIELDS.LANGUAGE] = data[FEEDS_FIELDS.LANGUAGE] || FIELDS_VALUES[FEEDS_FIELDS.LANGUAGE].DEFAULT;
 
     super.indexDoc(data[FEEDS_FIELDS.FEED_ID], data, callback);
   }
@@ -107,9 +108,9 @@ class FeedsElasticsearch extends AbstractElasticsearch {
   * @param {*} friends friends of the user
   * @param {*} following following list of the user
   */
-  searchFeed(userId, friends = [], following = [], keyword, from, size){
+  searchFeed(userId, friends = [], following = [], keyword, language, from, size){
     const query = FEEDS_QUERY.searchFeeds(userId, {
-      friends, following, keyword
+      friends, following, keyword, language
     });
     const _body = {
       size,
@@ -117,6 +118,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
       query,
       sort: [{[FEEDS_FIELDS.UPDATED_AT]: "desc"}]
     };
+    console.log(JSON.stringify(_body, null, 2))
     return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }
 

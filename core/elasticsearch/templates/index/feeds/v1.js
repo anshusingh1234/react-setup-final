@@ -20,7 +20,8 @@ const FIELDS = {
   STATUS: 'status',
   REPORTED_BY: 'reported_by',
   HIDDEN_BY: 'hidden_by',
-  SEARCHABLE_CONTENT: 'searchable_content'
+  SEARCHABLE_CONTENT: 'searchable_content',
+  LANGUAGE: 'language'
 }
 
 const FIELDS_VALUES = {
@@ -37,6 +38,9 @@ const FIELDS_VALUES = {
   [FIELDS.STATUS]: {
     LIVE: 1,
     REPORTED: 2
+  },
+  [FIELDS.LANGUAGE]: {
+    DEFAULT: 'en'
   }
 }
 
@@ -120,6 +124,9 @@ const MAPPING = {
             analyzer: "english"
           }
         }
+      },
+      [FIELDS.LANGUAGE]: {
+        type: "keyword"
       }
     }
   }
