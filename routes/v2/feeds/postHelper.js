@@ -76,7 +76,7 @@ const _getText = (userIds, userMap, userId) => {
     case 1: {
       const user = userMap.get(userIds[0]);
       if(user && (user.firstName || user.name)){
-        return `${userIds[0] === userId ? 'You' : user.firstName || user.name} is participating`;
+        return `${userIds[0] === userId ? 'You are' : (user.firstName || user.name) + " is"} participating`;
       }else{
         return '';
       }

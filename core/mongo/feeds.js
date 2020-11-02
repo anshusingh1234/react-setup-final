@@ -11,7 +11,8 @@ const FIELDS = {
   CHECK_IN_GEO_POINTS: 'check_in_geo_points',
   AUTHOR: 'author',
   PRIVACY: 'privacy',
-  PRIVATE_TO: 'private_to'
+  PRIVATE_TO: 'private_to',
+  LANGUAGE: 'language'
 }
 
 class Feeds extends MongoDB {
