@@ -30,6 +30,7 @@ const ssoHelper = require("./../helper/ssoHelper")
 
 const { user } = require("./../core/Redis");
 const {friendRequest, requestAccept} = require('./../services/notification/events');
+const jConfig = require("../config/jigrrConfig").getConfig();
 
 
 module.exports = {
@@ -52,7 +53,7 @@ module.exports = {
                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
                 }
                 else if (userData) {
-                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpSent) => {
+                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, jConfig.ENV, (err, otpSent) => {
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR)
                         }
@@ -71,8 +72,7 @@ module.exports = {
 
                 }
                 else {
-                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpSent) => {
-                        console.log("hhhh333hhhh", otp, otpSent, err)
+                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, jConfig.ENV, (err, otpSent) => {
                         if (err) {
                             response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR)
                         }
@@ -233,7 +233,7 @@ module.exports = {
                 let smsContent = `Your OTP for verification is: ${otp} Use this otp to verify its you.`;
                 platform === 'android' && (smsContent = smsContent+`\n2xza4yp11q0`);
                 //commonFunction.sendSMS(phoneNumber, otp, (err, otpData) => {
-                commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, (err, otpData) => {
+                commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, jConfig.ENV, (err, otpData) => {
                     if (err) {
                         response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 

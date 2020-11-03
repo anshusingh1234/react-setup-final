@@ -58,7 +58,8 @@ module.exports = {
   //     cb(error, result);
   //   });
   // },
-  sendSMSOTPSNS: function sendSMS(PhoneNumber, message, cb) {
+  sendSMSOTPSNS: function sendSMS(PhoneNumber, message, env, cb) {
+    if(env !== 'prod') return cb();
     const token = jConfig.SINCH.TOKEN;
     const planId = jConfig.SINCH.PLAN_ID;
 
