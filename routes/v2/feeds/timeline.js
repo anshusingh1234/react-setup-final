@@ -119,7 +119,7 @@ const _gallerySetWrapper = (result) => {
     let currYearItems = yearMap.get(year) || [];
     const totalPosts = (dateMap.get(_date) || []).length;
     currYearItems = currYearItems.concat({
-      date: moment(_date, "DD-MM-YYYY").format("DD MMMM"),
+      date: moment(_date, "DD-MM-YYYY").format("DD MMM"),
       meta: `${totalPosts} ${totalPosts > 1 ? 'Posts': 'Post'}`,
       list: dateMap.get(_date)
     });
