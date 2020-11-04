@@ -24,7 +24,7 @@ const match = {
   },
 
   oneToOneSearch: async(req, res, next) =>{
-    const {eventType, age, gender} = req.query;
+    const {eventType, age, gender, topicId} = req.query;
     const userId = req.headers._id;
 
     if(eventType == 'ONLINE_GENERAL'){
