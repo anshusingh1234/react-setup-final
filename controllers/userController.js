@@ -460,8 +460,17 @@ module.exports = {
                         else {
                             var isRequested= false;
                             var isFollowing= false;
+                            var isFriend = false;
+                            var isPending= false;
+
                             if (userData.friendRequestList.map(el => el.friendRequestUserId).includes(result._id)) {
-                                isRequested = true;
+                              isRequested = true;
+                            }
+                            if (userData.friends.map(el => el.friendId).includes(result._id)) {
+                              isFriend = true;
+                            }
+                            if (userData.friendRequestSentList.map(el => el.friendRequestSentId).includes(result._id)) {
+                              isPending = true;
                             }
                             if (userData.follower.map(el => el.followerId).includes(result._id)) {
                                 isFollowing = true;
@@ -476,6 +485,8 @@ module.exports = {
                             var data = {
                                 isRequested: isRequested,
                                 isFollowing: isFollowing,
+                                isPending,
+                                isFriend,
                                 deviceToken: userData.deviceToken,
                                 image: userData.image,
                                 isFirstTime: userData.isFirstTime,

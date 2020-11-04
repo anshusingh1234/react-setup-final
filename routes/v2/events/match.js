@@ -14,7 +14,7 @@ const match = {
   * @param {*} next
   */
   validateBody: (req, res, next) => {
-    const {eventType, age, gender} = req.query;
+    const {eventType, age, gender, topicId} = req.query;
 
     if(!eventType) return next(new ApiError(400, 'E0070001'));
     if(!age) return next(new ApiError(400, 'E0070002'));
@@ -28,7 +28,7 @@ const match = {
     const userId = req.headers._id;
 
     if(eventType == 'ONLINE_GENERAL'){
-      let matchParams = {eventType, age, gender, userId};
+      let matchParams = {eventType, age, gender, topicId, userId};
       const peopleRequired = 2;
       let userMatched = [], userProfiles = [];
 

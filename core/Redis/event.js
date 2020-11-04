@@ -23,8 +23,8 @@ const event = {
 
   saveMatch: (data) => {
     return new Promise((resolve, reject) => {
-      const {eventType, age, gender, userId} = data;
-      const keyString = key.EVENT_MATCH(eventType, age, gender);
+      const {eventType, age, gender, topicId, userId} = data;
+      const keyString = key.EVENT_MATCH(eventType, age, gender, topicId);
 
       query.set(`${keyString}:${userId}`, userId, (err, result)=>{
         query.expire(keyString, EXPIRY_SECONDS);
@@ -36,9 +36,9 @@ const event = {
 
   checkMatchComplete: (numberOfUsers, data) => {
     return new Promise((resolve, reject) => {
-      const {eventType, age, gender, userId} = data;
+      const {eventType, age, gender, topicId, userId} = data;
 
-      const keyString = key.EVENT_MATCH(eventType, age, gender)
+      const keyString = key.EVENT_MATCH(eventType, age, gender, topicId)
 
       query.keys(`${keyString}:*`,(err, result)=>{
         if(result && result.length >= numberOfUsers){
