@@ -14,9 +14,9 @@ timeline.validate = (req, res, next) => {
   const userId = req.headers._id;
   const other = req.query.other;
   const type = req.query.type;
-
+  
   if(userId === other || !other) req._self = true;
-
+  
   req._userToFetch = other || userId;
   if(!TYPES_ALLOWED.includes(type)) return next(new ApiError(400, 'E0010009'));
   next();
@@ -42,7 +42,6 @@ timeline.search = async (req, res, next) => {
     const type = req.query.type;
     let feedsInstance = feeds.forDate(moment().format("YYYY-MM-DD"));
     const searchResult  = await feedsInstance.timeline(req._userToFetch, userId, true, type, C.TIMELINE.DEFAULT_HIDE_TIME);
-    console.log(JSON.stringify(searchResult, null, 2))
     req._searchResult = (searchResult && searchResult.hits.hits && searchResult.hits.hits.map(obj => obj._source)) || [];
     next();
   }catch(e){
@@ -58,15 +57,15 @@ timeline.fetchDetails = async(req, res, next) => {
       case C.TIMELINE.TYPES_ALLOWED.GALLERY:
       response = _galleryWrapper(searchResult);
       break;
-
+      
       case C.TIMELINE.TYPES_ALLOWED.GALLERY_SET:
       response = _gallerySetWrapper(searchResult);
       break;
-
+      
       case C.TIMELINE.TYPES_ALLOWED.FEEDS:
       response = await _feedsWrapper(searchResult, req._userId);
       break;
-
+      
       default:
       response = [];
       break;
@@ -98,20 +97,31 @@ const _gallerySetWrapper = (result) => {
     if(media && media.length){
       let postedOn = obj[ES_FEEDS_FIELDS.CREATED_AT];
       const date = moment(postedOn*1000).format("DD-MM-YYYY");
-
+      
       let currDateItems = dateMap.get(date) || [];
-      currDateItems = currDateItems.concat(media);
+      currDateItems.push({
+        "type": obj[ES_FEEDS_FIELDS.TYPE],
+        "data": {
+          "detail": { ...obj[ES_FEEDS_FIELDS.DATA],
+            "media": obj[ES_FEEDS_FIELDS.MEDIA]
+          },
+          "commentsCount": obj[ES_FEEDS_FIELDS.COMMENTS_COUNT],
+          "reactionsCount": obj[ES_FEEDS_FIELDS.REACTIONS_COUNT],
+        }
+      });
       dateMap.set(date, currDateItems);
     }
   })
   const _allDates = ([...dateMap.keys()]);
   _allDates.forEach(_date => {
     const year = _date.split('-')[2];
-
+    
     let currYearItems = yearMap.get(year) || [];
+    const totalPosts = (dateMap.get(_date) || []).length;
     currYearItems = currYearItems.concat({
       date: moment(_date, "DD-MM-YYYY").format("DD MMMM"),
-      data: dateMap.get(_date)
+      meta: `${totalPosts} ${totalPosts > 1 ? 'Posts': 'Post'}`,
+      list: dateMap.get(_date)
     });
     yearMap.set(year, currYearItems);
   })
@@ -119,7 +129,7 @@ const _gallerySetWrapper = (result) => {
   _allYears.forEach(_year => {
     _return.push({
       year: _year,
-      data: yearMap.get(_year) || []
+      list: yearMap.get(_year) || []
     })
   })
   return _return;
@@ -130,7 +140,7 @@ const _feedsWrapper = (result, userId) => {
     let _allUserIds = [];
     let _allPostIds = [];
     let _myPostIds = [];
-
+    
     result.forEach(_obj => {
       const _author = _obj[ES_FEEDS_FIELDS.AUTHOR];
       const _tagged = _obj[ES_FEEDS_FIELDS.TAGGED_USERS] || [];
@@ -141,9 +151,9 @@ const _feedsWrapper = (result, userId) => {
     _allUserIds = [... new Set(_allUserIds)];
     const userMap = await user.getAllUsersProfile(_allUserIds);
     const participatingInfo = await postHelper.fetch(_myPostIds, userId);
-
+    
     const reactionMap = await mongoReactions.instance.checkIfUserReacted([...new Set(_allPostIds)], userId, 'post');
-
+    
     let _return = result.map(_obj => {
       const user = userMap.get(_obj[ES_FEEDS_FIELDS.AUTHOR]);
       user && delete user.name;
@@ -154,7 +164,7 @@ const _feedsWrapper = (result, userId) => {
           _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon = Number.isInteger(_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon) ? `${_obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon}.0` : _obj[ES_FEEDS_FIELDS.CHECK_IN_GEO_POINTS].lon + "";
         }
         const myReaction = reactionMap.get(_obj[ES_FEEDS_FIELDS.FEED_ID].toString());
-
+        
         return {
           "type": _obj[ES_FEEDS_FIELDS.TYPE],
           "data": {
@@ -174,7 +184,7 @@ const _feedsWrapper = (result, userId) => {
             "taggedUsers": (taggedUsers || []).length ? taggedUsers : undefined,
             "myReaction": myReaction ? myReaction.toString() : '0',
             "participatingDetails": _obj[ES_FEEDS_FIELDS.AUTHOR] === userId ? participatingInfo.get(_obj[ES_FEEDS_FIELDS.FEED_ID]) : undefined
-
+            
           }
         }
       }
