@@ -27,7 +27,7 @@ const event = {
       const keyString = key.EVENT_MATCH(eventType, age, gender);
 
       query.set(`${keyString}:${userId}`, userId, (err, result)=>{
-        query.expire(keyString, EXPIRY_SECONDS);
+        query.expire(`${keyString}:${userId}`, EXPIRY_SECONDS);
         if(err) return reject(err);
         else return resolve(result);
       });
