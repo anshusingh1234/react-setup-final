@@ -116,7 +116,7 @@ class FeedsElasticsearch extends AbstractElasticsearch {
       size,
       from,
       query,
-      sort: [{[FEEDS_FIELDS.CREATED_AT]: "desc"}]
+      sort: [{[FEEDS_FIELDS.UPDATED_AT]: "desc"}]
     };
     return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }
