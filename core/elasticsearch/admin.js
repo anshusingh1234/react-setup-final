@@ -19,9 +19,16 @@ const _createNewIndex = (indexName, callback) => {
   var headers = {
     'Content-Type': 'application/json'
   };
+  
+  let url = "";
+  if(config.ES_CONFIG.CONNECTION_STRING.startsWith("http")){
+    url = `${config.ES_CONFIG.CONNECTION_STRING}/${indexName}?pretty`
+  }else{
+    url = `http://${config.ES_CONFIG.CONNECTION_STRING.toString().split(",")[0]}/${indexName}?pretty`;
+  }
 
   var options = {
-    url: `http://${config.ES_CONFIG.CONNECTION_STRING.toString().split(",")[0]}/${indexName}?pretty`,
+    url,
     method: 'PUT',
     headers: headers,
     json: require("./templates/index/feeds/v1").MAPPING
