@@ -3,7 +3,8 @@ const KEYS = {
     return `USERS:${userId}`;
   },
   EVENT_MATCH: (eventType, age, gender, topicId) => {
-    return `EVENTMATCH:${eventType}:${age}:${gender}:${topicId}`;
+    const keyMatch = `${eventType}:${age}:${gender}:${topicId}`.toLowerCase();
+    return `EVENTMATCH:${keyMatch}`;
   },
   SSO_TOKEN: (token) => {
     return `SSO:${token}`;

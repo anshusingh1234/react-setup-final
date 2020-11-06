@@ -15,7 +15,7 @@ const HASH_FIELDS = {
   VERIFIED: "verified"
 }
 
-const EXPIRY_SECONDS = 120;
+const EXPIRY_SECONDS = 60;
 
 const event = {
 
