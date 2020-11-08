@@ -237,6 +237,27 @@ class Users extends MongoDB {
     })
   }
 
+  searchByName(keyword) {
+    return new Promise((resolve, reject) => {
+
+      const regex = new RegExp(`.*${keyword}.*`, "i")
+
+      const where = {
+        [FIELDS.NAME]: regex
+      }
+      const selectField = {
+        projection:
+        {
+          [FIELDS.ID]:1
+        }
+      }
+      this.collection.find(where, selectField).toArray((err, data) => {
+        if(err) return reject(err);
+        const userIDs = data && data.length ? data.map(user => super.getStringFromObjectId(user[FIELDS.ID])) : []
+        resolve(userIDs);
+      });
+    });
+  }
 
 }
 
