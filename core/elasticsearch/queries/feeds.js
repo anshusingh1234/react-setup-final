@@ -26,7 +26,8 @@ query.searchFeeds = (userId, options) => {
     });
     Array.isArray(options.authorsToSearch) && options.authorsToSearch.length && _searchShouldArray.push({
       terms: {
-        [FEEDS_FIELDS.AUTHOR]: options.authorsToSearch
+        [FEEDS_FIELDS.AUTHOR]: options.authorsToSearch,
+        "boost": 2.0
       }
     })
     mustArray.push({
