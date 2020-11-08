@@ -15,7 +15,7 @@ const HASH_FIELDS = {
   VERIFIED: "verified"
 }
 
-const EXPIRY_SECONDS = 120;
+const EXPIRY_SECONDS = 60;
 
 const event = {
 
@@ -27,7 +27,7 @@ const event = {
       const keyString = key.EVENT_MATCH(eventType, age, gender, topicId);
 
       query.set(`${keyString}:${userId}`, userId, (err, result)=>{
-        query.expire(keyString, EXPIRY_SECONDS);
+        query.expire(`${keyString}:${userId}`, EXPIRY_SECONDS);
         if(err) return reject(err);
         else return resolve(result);
       });
