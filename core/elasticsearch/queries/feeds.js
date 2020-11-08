@@ -1,4 +1,4 @@
-const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES} = require("../templates/index/feeds/v1");
+const {FIELDS: FEEDS_FIELDS, FIELDS_VALUES: FEEDS_FIELDS_VALUES, FIELDS} = require("../templates/index/feeds/v1");
 
 const query = {};
 
@@ -14,13 +14,24 @@ query.searchFeeds = (userId, options) => {
   })
   
   if(options.keyword && typeof options.keyword === 'string'){
-    mustArray.push({
+    let _searchShouldArray = [];
+    _searchShouldArray.push({
       "wildcard": {
         [FEEDS_FIELDS.SEARCHABLE_CONTENT]: {
           "value": `*${options.keyword}*`,
           "boost": 1.0,
           "rewrite": "constant_score"
         }
+      }
+    });
+    Array.isArray(options.authorsToSearch) && options.authorsToSearch.length && _searchShouldArray.push({
+      terms: {
+        [FEEDS_FIELDS.AUTHOR]: options.authorsToSearch
+      }
+    })
+    mustArray.push({
+      "bool": {
+        "should": _searchShouldArray
       }
     })
   }
