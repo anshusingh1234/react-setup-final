@@ -2,6 +2,8 @@ const query = require("./query");
 const key = require("./keys");
 const async = require("async");
 const { FIELDS } = require("../elasticsearch/templates/index/feeds/v1");
+const admin = require("../firebase/admin");
+const jConfig = require("../../config/jigrrConfig").getConfig();
 
 const HASH_FIELDS = {
   USER_ID: "id",
@@ -84,14 +86,14 @@ const user = {
           }else{
             lastName = result[HASH_FIELDS.LASTNAME] || result[HASH_FIELDS.SURNAME];
           }
-          
+         
           shortDetail = {
             [HASH_FIELDS.USER_ID]: result[HASH_FIELDS.USER_ID],
             [HASH_FIELDS.NAME]: result[HASH_FIELDS.NAME],
             [HASH_FIELDS.FIRSTNAME]: result[HASH_FIELDS.FIRSTNAME],
             [HASH_FIELDS.LASTNAME]: lastName,
             [HASH_FIELDS.PICTURE]: result[HASH_FIELDS.PICTURE],
-            [HASH_FIELDS.VERIFIED]: result[HASH_FIELDS.VERIFIED] ? Number(result[HASH_FIELDS.VERIFIED]) : 0,
+            [HASH_FIELDS.VERIFIED]:  formatVerifiedStatus(userId, result[HASH_FIELDS.VERIFIED]),
             [HASH_FIELDS.MIRRORFLY_ID]: result[HASH_FIELDS.MIRRORFLY_ID] || ""
           }
         }
@@ -145,5 +147,15 @@ const user = {
   },
   
 };
+
+const formatVerifiedStatus = (userId, verified)=>{
+  let _return = 0;
+
+  const adminUserIds = jConfig.ADMIN_USER_IDS;
+  if(adminUserIds.indexOf(userId) > -1) _return = 1;
+  else _return = verified ? Number(verified) : 0
+
+  return _return;
+}
 
 module.exports = user;

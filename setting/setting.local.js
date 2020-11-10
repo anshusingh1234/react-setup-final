@@ -55,6 +55,7 @@ const settings = {
         "client_x509_cert_url": process.env["FIREBASE_SERVICE_ACCOUNT_KEYS_client_x509_cert_url"]
       }
     },
+    "ADMIN_USER_IDS": process.env["ADMIN_USER_IDS"].split(',')
   }
 };
 
