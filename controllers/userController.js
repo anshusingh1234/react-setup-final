@@ -285,6 +285,15 @@ module.exports = {
                     if (req.body.mirrorFlyId) {
                         set.mirrorFlyId = req.body.mirrorFlyId
                     }
+                    if (req.body.dob) {
+                      set.dob = req.body.dob
+                    }
+                    if (req.body.gender) {
+                      set.gender = req.body.gender
+                    }
+                    if (req.body.applanguage) {
+                      set.applanguage = req.body.applanguage
+                    }
                     if (req.body.image) {
                         set.profilePic = await imgUpload(req.body.image)
                     }
@@ -543,6 +552,8 @@ module.exports = {
                                 phone: userData.phone,
                                 gender: userData.gender,
                                 profile: userData.profile,
+                                dob: userData.dob,
+                                applanguage: userData.applanguage,
                             };
                             response(res, SuccessCode.SUCCESS, data, SuccessMessage.DETAIL_GET)
                         }
@@ -625,6 +636,15 @@ module.exports = {
                     if (req.body.aboutMe) {
                         set.aboutMe = req.body.aboutMe
                     }
+                    if (req.body.dob) {
+                      set.dob = req.body.dob
+                    }
+                    if (req.body.gender) {
+                      set.gender = req.body.gender
+                    }
+                    if (req.body.applanguage) {
+                      set.applanguage = req.body.applanguage
+                   }
                     if (req.body.age) {
                         set.age = req.body.age
                     }

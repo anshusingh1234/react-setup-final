@@ -29,6 +29,9 @@ var userModel = new schema({
     image: [],
     userStatus: { type: String },
     phone: { type: String },
+    dob: { type: String },
+    gender: { type: String },
+    applanguage: { type: String },
     countryName: { type: String },
     firstName: {
         type: String

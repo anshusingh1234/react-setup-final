@@ -14,7 +14,10 @@ const HASH_FIELDS = {
   USER_TYPE: "userType",
   STATUS: "status",
   VERIFIED: "verified",
-  MIRRORFLY_ID: "mirrorflyId"
+  MIRRORFLY_ID: "mirrorflyId",
+  DOB: "dob",
+  GENDER: "gender",
+  LANGUAGE: "language",
 }
 
 const user = {
@@ -38,6 +41,9 @@ const user = {
         [HASH_FIELDS.USER_TYPE]: userData.userType,
         [HASH_FIELDS.STATUS]: userData.status,
         [HASH_FIELDS.MIRRORFLY_ID]: userData.mirrorFlyId || "",
+        [HASH_FIELDS.DOB]: userData.dob || "",
+        [HASH_FIELDS.GENDER]: userData.gender || "",
+        [HASH_FIELDS.LANGUAGE]: userData.applanguage || "",
       }
       !userProfile[HASH_FIELDS.FIRSTNAME] && delete userProfile[HASH_FIELDS.FIRSTNAME];
       !userProfile[HASH_FIELDS.LASTNAME] && delete userProfile[HASH_FIELDS.LASTNAME];
