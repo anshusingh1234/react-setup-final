@@ -320,7 +320,8 @@ var userModel = new schema({
         updatedAt: {
             type: Date,
             default: Date.now()
-        }
+        },
+        _id: false
     }],
     deviceId: [{
         id: {
@@ -329,7 +330,8 @@ var userModel = new schema({
         updatedAt: {
             type: Date,
             default: Date.now()
-        }
+        },
+        _id: false
     }]
 
 }, { timestamps: true });
