@@ -259,6 +259,27 @@ class Users extends MongoDB {
     });
   }
 
+  deleteClevertapIdDevideId(userId, clevertapId, deviceId){
+    return new Promise((resolve, reject) => {
+      let _pull = {};
+      if(clevertapId){
+        _pull["clevertapId"] = {
+          "id": clevertapId
+        }
+      }
+      if(deviceId){
+        _pull["deviceId"] = {
+          "id": deviceId
+        }
+      }
+
+      this.collection.update({_id: super.getObjectIdFromString(userId)}, {$pull: _pull}, (error, result) => {
+        if(error) return reject(error);
+        resolve(result);
+      })
+    })
+  }
+
 }
 
 module.exports = {

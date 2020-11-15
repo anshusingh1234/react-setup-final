@@ -7,6 +7,7 @@ const username = require("./username");
 const referrals = require("./referrals");
 const syncContacts = require("./syncContacts");
 const mirrorfly = require("./mirrorfly");
+const signOut = require("./signOut");
 const auth = require('../auth');
 const error = require('../error');
 
@@ -58,6 +59,12 @@ router.post(`/social/link`,
 auth,
 social.validate,
 social.link,
+error
+)
+
+router.patch(`/signOut`,
+auth,
+signOut.handle,
 error
 )
 
