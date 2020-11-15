@@ -44,6 +44,7 @@ const self = module.exports = {
 
   sendPushNotificationToMultipleTokens: (clevertapIds, payload, callback) => {
     let scripts = [];
+    clevertapIds = [... new Set(clevertapIds)];
 
     clevertapIds.forEach(id => {
       scripts.push(cb => {
