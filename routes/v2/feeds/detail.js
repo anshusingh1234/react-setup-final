@@ -36,13 +36,13 @@ detail.checkForPrivacy = async(req, res, next) => {
         return next();
       }
       case ES_FEED_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].FRIENDS: {
-        if(!friends.includes(detail[ES_FEEDS_FIELDS.AUTHOR])){
+        if(!friends.includes(detail[ES_FEEDS_FIELDS.AUTHOR]) && req._userId !== detail[ES_FEEDS_FIELDS.AUTHOR]){
           return next(new ApiError(400, 'E0020002'));
         }
         return next();
       }
       case ES_FEED_FIELDS_VALUES[ES_FEEDS_FIELDS.PRIVACY].CUSTOM:{
-        if(!detail[ES_FEEDS_FIELDS.PRIVATE_TO].includes(req._userId)){
+        if(!detail[ES_FEEDS_FIELDS.PRIVATE_TO].includes(req._userId) && req._userId !== detail[ES_FEEDS_FIELDS.AUTHOR]){
           return next(new ApiError(400, 'E0020002'));
         }
         return next();
