@@ -127,6 +127,29 @@ class Reactions extends MongoDB {
   })
 }
 
+
+async getUsersList(entityId, entityType){
+  return new Promise((resolve, reject) => {
+    const where = {
+      [FIELDS.ENTITY_ID]: entityId,
+      [FIELDS.ENTITY_TYPE]: entityType
+    }
+
+    const selectField = {
+      projection:
+      {
+        [FIELDS.REACTION]:1
+      }
+    }
+
+    this.collection.findOne(where,selectField, (err, data)=>{
+      if(err) return reject(err);
+      resolve(data);
+    });
+  });
+}
+
+
 async checkIfUserReacted(entityIds, userId, entityType){
   return new Promise((resolve, reject) => {
     let map = new Map();

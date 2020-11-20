@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const addReaction = require("./add");
 const deleteReaction = require("./delete");
+const listUsers = require("./list");
 const auth = require('../auth');
 const error = require('../error');
 
@@ -18,6 +19,14 @@ router.delete(`/delete`,
   deleteReaction.validateBody,
   deleteReaction.inMongo,
   deleteReaction.inElastic,
+  error
+)
+
+
+router.get(`/getUsers`,
+  auth,
+  listUsers.validateBody,
+  listUsers.inMongo,
   error
 )
 
