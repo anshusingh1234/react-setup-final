@@ -53,50 +53,35 @@ module.exports = {
                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
                 }
                 else if (userData) {
-                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, jConfig.ENV, (err, otpSent) => {
-                        if (err) {
-                            response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR)
+                    userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber, countryCode: req.body.countryCode, status: "ACTIVE" }, { $set: { otp: otp, verifyOtp: false, deviceToken: req.body.deviceToken } }, { new: true }, (updatedErr, updatedData) => {
+                        if (updatedErr) {
+                            response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
+
                         }
                         else {
-                            userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber, countryCode: req.body.countryCode, status: "ACTIVE" }, { $set: { otp: otp, verifyOtp: false, deviceToken: req.body.deviceToken } }, { new: true }, (updatedErr, updatedData) => {
-                                if (updatedErr) {
-                                    response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
-
-                                }
-                                else {
-                                    response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
-                                }
-                            })
+                            response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
                         }
                     })
-
                 }
                 else {
-                    commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, jConfig.ENV, (err, otpSent) => {
-                        if (err) {
+                    var obj = new userModel({
+                        otp: otp,
+                        countryCode: req.body.countryCode,
+                        mobileNumber: req.body.mobileNumber,
+                        deviceToken: req.body.deviceToken,
+                        userType: "USER"
+                    })
+                    obj.save((saveErr, savedData) => {
+                        console.log("hhhh333hhhh11111", error, savedData)
+
+                        if (error) {
                             response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR)
                         }
                         else {
-                            var obj = new userModel({
-                                otp: otp,
-                                countryCode: req.body.countryCode,
-                                mobileNumber: req.body.mobileNumber,
-                                deviceToken: req.body.deviceToken,
-                                userType: "USER"
-                            })
-                            obj.save((saveErr, savedData) => {
-                                console.log("hhhh333hhhh11111", error, savedData)
+                            delete savedData.otp;
 
-                                if (error) {
-                                    response(res, ErrorCode.SOMETHING_WRONG, ErrorMessage.INTERNAL_ERROR)
-                                }
-                                else {
-                                    delete savedData.otp;
+                            response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
 
-                                    response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
-
-                                }
-                            })
                         }
                     })
                 }
