@@ -127,6 +127,30 @@ class Reactions extends MongoDB {
   })
 }
 
+async getReactionsCount(entityType, IDs){
+  return new Promise((resolve, reject) => {
+    let map = new Map();
+
+    const project =  [
+      { '$match': {
+        [FIELDS.ENTITY_ID]: {$in:IDs},
+        [FIELDS.ENTITY_TYPE]: entityType
+      },
+    },
+    {$project: {  'entityId':`$${FIELDS.ENTITY_ID}`,count: { $size:`$${FIELDS.REACTION}` }}}
+  ]
+  this.collection.aggregate(project).toArray((err, data)=>{
+    if(err) return reject(err);
+
+    data.map(el=>{
+      map.set(el.entityId, el.count);
+    })
+
+    return resolve(map);
+  });
+})
+}
+
 
 async getUsersList(entityId, entityType){
   return new Promise((resolve, reject) => {
