@@ -218,24 +218,16 @@ module.exports = {
                 let smsContent = `Your OTP for verification is: ${otp} Use this otp to verify its you.`;
                 platform === 'android' && (smsContent = smsContent+`\n2xza4yp11q0`);
                 //commonFunction.sendSMS(phoneNumber, otp, (err, otpData) => {
-                commonFunction.sendSMSOTPSNS(phoneNumber, smsContent, jConfig.ENV, (err, otpData) => {
-                    if (err) {
-                        response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
+                    userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber }, { $set: { otp: otp, verifyOtp: false } }, { new: true }, (updatedErr, updatedData) => {
+                        if (updatedErr) {
+                            response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
-                    }
-                    else {
-                        userModel.findOneAndUpdate({ mobileNumber: req.body.mobileNumber }, { $set: { otp: otp, verifyOtp: false } }, { new: true }, (updatedErr, updatedData) => {
-                            if (updatedErr) {
-                                response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
-
-                            }
-                            else {
-                                delete updatedData.otp;
-                                response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
-                            }
-                        })
-                    }
-                })
+                        }
+                        else {
+                            delete updatedData.otp;
+                            response(res, SuccessCode.SUCCESS, {}, SuccessMessage.OTP_SEND)
+                        }
+                    })
             }
         })
     },
