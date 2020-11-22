@@ -217,10 +217,10 @@ class FeedsElasticsearch extends AbstractElasticsearch {
       sort: [{[FEEDS_FIELDS.UPDATED_AT]: "desc"}]
     };
     if(type === C.TIMELINE.TYPES_ALLOWED.GALLERY){
-      _body._source = [FEEDS_FIELDS.MEDIA, FEEDS_FIELDS.CREATED_AT];
+      _body._source = [FEEDS_FIELDS.MEDIA, FEEDS_FIELDS.CREATED_AT, FEEDS_FIELDS.FEED_ID];
     }
     if(type === C.TIMELINE.TYPES_ALLOWED.GALLERY_SET){
-      _body._source = [FEEDS_FIELDS.MEDIA, FEEDS_FIELDS.CREATED_AT, FEEDS_FIELDS.REACTIONS_COUNT, FEEDS_FIELDS.COMMENTS_COUNT, FEEDS_FIELDS.DATA, FEEDS_FIELDS.TYPE];
+      _body._source = [FEEDS_FIELDS.MEDIA, FEEDS_FIELDS.CREATED_AT, FEEDS_FIELDS.REACTIONS_COUNT, FEEDS_FIELDS.COMMENTS_COUNT, FEEDS_FIELDS.DATA, FEEDS_FIELDS.TYPE, FEEDS_FIELDS.FEED_ID];
     }
     return new Promise((resolve, reject) => super.indexSearch("feeds-*", _body, _fulfillPromiseCallback(resolve, reject)));
   }

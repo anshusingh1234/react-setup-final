@@ -83,7 +83,10 @@ module.exports = timeline;
 const _galleryWrapper = (result) => {
   let _return = [];
   result.forEach(obj => {
-    _return = _return.concat(obj[ES_FEEDS_FIELDS.MEDIA] || []);
+    _return = _return.concat((obj[ES_FEEDS_FIELDS.MEDIA] || []).map(_obj => {
+      _obj.id = obj[ES_FEEDS_FIELDS.FEED_ID];
+      return _obj;
+    }));
   })
   return _return;
 }
@@ -102,6 +105,7 @@ const _gallerySetWrapper = (result) => {
       currDateItems.push({
         "type": obj[ES_FEEDS_FIELDS.TYPE],
         "data": {
+          "id": obj[ES_FEEDS_FIELDS.FEED_ID],
           "detail": { ...obj[ES_FEEDS_FIELDS.DATA],
             "media": obj[ES_FEEDS_FIELDS.MEDIA]
           },
