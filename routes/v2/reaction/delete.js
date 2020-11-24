@@ -1,7 +1,9 @@
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const {feeds} = require("../../../core/elasticsearch");
+const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const {reactions: reactionMongo} = require("../../../core/mongo");
 const ApiError = require("../ApiError");
+const postHelper = require("./../feeds/postHelper");
 
 const deleteReaction = {
 
@@ -51,17 +53,36 @@ const deleteReaction = {
   /**
    * Decrement specific count in elastic
    */
-  inElastic: (req, res, next) => {
-    res.status(200).send({response_message:'Reaction deleted successfully!'});
-    next();
-
+  inElastic: async(req, res, next) => {
+    const userId = req.headers._id;
     const {entityId, entityType} = req.query;
     if(entityType == 'post'){
       const feedsInstance = feeds.forId(entityId);
-      feedsInstance.decrementReactionCount(entityId, 1)
+      feedsInstance.decrementReactionCount(entityId, 1);
+
+      const postAuthor = await getPostAuthor(entityId);
+      if(postAuthor === userId){
+        const participatingInfo = await postHelper.fetch([entityId], userId);
+        const participatingDetails = participatingInfo.get(entityId);
+        res.status(200).send({response_message:'Reaction deleted successfully!', participatingDetails});
+      }
+      else res.status(200).send({response_message:'Reaction deleted successfully!'});
     }
+    else res.status(200).send({response_message:'Reaction deleted successfully!'});
+
+    next();
   }
 };
+
+const getPostAuthor = (feedId) =>{
+  const feedsInstance = feeds.forId(feedId);
+  return new Promise((resolve, reject) => {
+    feedsInstance.getById(feedId, {_source: [ES_FEEDS_FIELDS.AUTHOR]}, (error, result)=>{
+      const author = result && result._source && result._source.author ? result._source.author : '';
+      resolve(author);
+    });
+  });
+}
 
 
 module.exports = deleteReaction;

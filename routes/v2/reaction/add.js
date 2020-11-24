@@ -1,10 +1,12 @@
 const moment = require("moment");
 const {feeds} = require("../../../core/elasticsearch");
+const {FIELDS: ES_FEEDS_FIELDS} = require("../../../core/elasticsearch/templates/index/feeds/v1");
 const {reactions: reactionMongo} = require("../../../core/mongo");
 const { commonResponse: response } = require('../../../helper/commonResponseHandler')
 const validations  = require('./../../../helper/validations');
 const ApiError = require("../ApiError");
 const postHelper = require("./../feeds/postHelper");
+const { user } = require("../../../core/Redis");
 
 const add = {};
 
@@ -70,23 +72,34 @@ add.saveInMongo = async (req, res, next) => {
 */
 add.saveInES = async (req, res, next) => {
   const {entityId, entityType, alreadyReacted} = req.body;
-
   const userId = req.headers._id;
+
   if(entityType == 'post'){
     if(!alreadyReacted){
       const feedsInstance = feeds.forId(entityId);
       feedsInstance.incrementReactionCount(entityId, 1)
       feedsInstance.reactedBy(entityId, userId)
     }
-    const participatingInfo = await postHelper.fetch([entityId], userId);
-    const participatingDetails = participatingInfo.get(entityId);
-    res.status(200).send({response_message:'Reaction posted successfully!', participatingDetails});
+    const postAuthor = await getPostAuthor(entityId);
+    if(postAuthor === userId){
+      const participatingInfo = await postHelper.fetch([entityId], userId);
+      const participatingDetails = participatingInfo.get(entityId);
+      res.status(200).send({response_message:'Reaction posted successfully!', participatingDetails});
+    }
+    else res.status(200).send({response_message:'Reaction posted successfully!'});
   }
-  else{
-    res.status(200).send({response_message:'Reaction posted successfully!'});
-  }
-  
+  else res.status(200).send({response_message:'Reaction posted successfully!'});
   next();
+}
+
+const getPostAuthor = (feedId) =>{
+  const feedsInstance = feeds.forId(feedId);
+  return new Promise((resolve, reject) => {
+    feedsInstance.getById(feedId, {_source: [ES_FEEDS_FIELDS.AUTHOR]}, (error, result)=>{
+      const author = result && result._source && result._source.author ? result._source.author : '';
+      resolve(author);
+    });
+  });
 }
 
 module.exports = add;
