@@ -49,6 +49,13 @@ mirrorfly.linkUserId,
 error
 )
 
+router.post(`/mirrorfly/getDetail`,
+auth,
+mirrorfly.validate,
+mirrorfly.getDetail,
+error
+)
+
 router.get(`/validateUsername`,
 username.validate,
 username.suggest,

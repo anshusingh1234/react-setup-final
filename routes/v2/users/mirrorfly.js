@@ -8,7 +8,6 @@ const mirrorfly = {
   
   validate: (req, res, next) => {
     const {mirroflyId} = req.body;
-    
     if(!mirroflyId) return next(new ApiError(400, 'E0040002'))
     next();
   },
@@ -16,10 +15,16 @@ const mirrorfly = {
   linkUserId: async (req, res, next) => {
     const userId = req.headers._id;
     const {mirroflyId} = req.body;
-    
     await userMongo.instance.linkMirrorflyId(userId, mirroflyId);
     await userRedis.linkMirrorflyId(userId, mirroflyId);
     res.status(200).send({response_message:'User linked successfully!',});
+    next();
+  },
+
+  getDetail: async (req, res, next) => {
+    const {mirroflyId} = req.body;
+    const userData = await userMongo.instance.getUserIdFromMirrorfly(mirroflyId);
+    res.status(200).send({user:userData ? userData : {}});
     next();
   }
   

@@ -33,22 +33,25 @@ const topics = {
     const total = await topicMongo.instance.countTopics(params);
     const mongoResult = await topicMongo.instance.list(params);
 
-    res.status(200).send( await wrapper(total, mongoResult));
+    res.status(200).send( await wrapper(req, total, mongoResult));
     next();
   }
 
 };
 
-var wrapper = async(total, data) =>{
+var wrapper = async(req, total, data) =>{
   let _return = {total:0, response:[]};
 
   if(data && data.length){
+    const userId = req.headers._id;
     const allTopicIDs = data.map(topic=>topic._id.toString());
     const reactionsCount = await reactionMongo.instance.getReactionsCount('topic',allTopicIDs);
-
+    const myReactions = await reactionMongo.instance.checkIfUserReacted(allTopicIDs, userId, 'topic');
+    
     const allTopics = data.map(topic=>{
       const likes = reactionsCount.get(topic._id.toString());
-      return { ...topic, likes: likes || 0 }
+      const liked = myReactions.get(topic._id.toString());
+      return { ...topic, likes: likes || 0, liked: liked ? true : false }
     });
 
     _return = {

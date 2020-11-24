@@ -168,6 +168,15 @@ class Users extends MongoDB {
     });
   }
 
+  getUserIdFromMirrorfly(mirrorflyId){
+    return new Promise((resolve, reject) => {
+      this.collection.findOne({[FIELDS.MIRRORFLY_ID]: mirrorflyId}, (err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      });
+    });
+  }
+
   getFriendsAndFollowings(userId){
     return new Promise((resolve, reject) => {
       this.collection.findOne({
