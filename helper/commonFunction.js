@@ -16,9 +16,9 @@ AWS.config.update({
 });
 const sns = new AWS.SNS();
 cloudinary.config({
-  cloud_name: 'dl2d0v5hy',
-  api_key: '841684319665911',
-  api_secret: 'kG5j1sXJT3eeNAp5CtpZgIdfQzM'
+  cloud_name: 'dvbqexh6f',
+  api_key: '487732176284648',
+  api_secret: 'NlWYMJZA7AuCAILkNlHsETY5DhQ'
 });
 
 const fetch = require('node-fetch');
