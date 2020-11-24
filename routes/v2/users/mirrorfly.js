@@ -21,7 +21,17 @@ const mirrorfly = {
     await userRedis.linkMirrorflyId(userId, mirroflyId);
     res.status(200).send({response_message:'User linked successfully!',});
     next();
+  },
+
+  getDetail: async (req, res, next) => {
+    const {mirroflyId} = req.body;
+    
+    const userData = await userMongo.instance.getUserIdFromMirrorfly(mirroflyId);
+    res.status(200).send({user:userData});
+    next();
   }
+
+
   
 };
 
