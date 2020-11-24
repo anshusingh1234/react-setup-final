@@ -61,6 +61,7 @@ const _uploader = (files, callback) => {
 
 const _uploadImage = (image, callback) => {
   cloudinary.v2.uploader.upload(image, (error, result) => {
+    console.log("-------cloudinary -_uploadImage----------", error)
     if(result){
       return callback(null, {
         width: result.width,
@@ -78,6 +79,7 @@ const _uploadVideo = (video, callback) => {
   cloudinary.v2.uploader.upload(video, {
     resource_type: "video"
   }, (error, result) => {
+    console.log("-------cloudinary -_uploadImage----------", error)
     if(result){
       return callback(null, {
         width: result.width,
