@@ -24,7 +24,7 @@ const mirrorfly = {
   getDetail: async (req, res, next) => {
     const {mirroflyId} = req.body;
     const userData = await userMongo.instance.getUserIdFromMirrorfly(mirroflyId);
-    res.status(200).send({user:userData});
+    res.status(200).send({user:userData ? userData : {}});
     next();
   }
   
