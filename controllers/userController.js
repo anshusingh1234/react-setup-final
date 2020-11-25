@@ -2124,20 +2124,26 @@ module.exports = {
        *
        * @return response
      */
-    myBlockUserList: (req, res) => {
+    myBlockUserList: async (req, res) => {
         console.log("----------myBlockUserList-------------", req.headers._id)
         try {
-            userModel.findOne({ _id: req.headers._id, status: "ACTIVE", userType: "USER" }, (error, userData) => {
+            userModel.findOne({ _id: req.headers._id, status: "ACTIVE", userType: "USER" }, async(error, userData) => {
         console.log("----------myBlockUserList-------------", JSON.stringify(error, null, 2), JSON.stringify(userData, null, 2))
                 if (error) {
                     response(res, ErrorCode.SOMETHING_WRONG, [], ErrorMessage.INTERNAL_ERROR);
 
                 }
                 else {
-                    var result = {
-                        blockedUser: userData.blockedUser
-                    }
-                    response(res, SuccessCode.SUCCESS, result, SuccessMessage.DETAIL_GET)
+                  if(userData.blockedUser && userData.blockedUser.length){
+                    const allUserIDs = userData.blockedUser.map(userData=>userData.userId);
+                    const allUserProfiles = await user.getAllUsersProfile(allUserIDs);
+                    const blockedUsers = userData.blockedUser.map(userData=>{
+                      const userRedis = allUserProfiles.get(userData.userId);
+                      return {...userData.toObject(), mirrorFlyId: userRedis && userRedis.mirrorflyId ? userRedis.mirrorflyId : ''};
+                    })
+                    response(res, SuccessCode.SUCCESS, {blockedUser: blockedUsers}, SuccessMessage.DETAIL_GET)
+                  }
+                  else response(res, SuccessCode.SUCCESS, {blockedUser: []}, SuccessMessage.DETAIL_GET)
                 }
 
             })
