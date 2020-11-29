@@ -1,0 +1,48 @@
+body{
+  background: #635f5f;
+  .home-container{
+    max-width: 74rem;
+    margin: auto;
+    margin-top: 8rem;
+    background: #353333;
+    padding: 4rem;
+    box-shadow: rgba(0, 0, 0, 0.75) 10px 10px 45px 2px;
+    .attrib.first{
+      margin-top:3rem;
+    }
+    .attrib {
+      margin-bottom: 2rem;
+      .label {
+        color: #b7b2b2;
+      }
+      select{
+        width: 12rem;
+        height: 2rem;
+        margin-top: .4rem;
+        background: #e8e1e1;
+        border: none;
+        border-radius: 5px;
+      }
+    }
+    .time-filter{
+     
+    }
+    .predict-btn {
+      width: 12rem;
+      border: none;
+      color: #fff;
+      background: #efa423;
+      border-radius: 5px;
+      padding: .5rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-top: 3rem;
+    }
+    .home-graph {
+      margin-top: 2rem;
+    }
+    .input-group-text img {
+      width: 24px;
+    }
+  }
+}

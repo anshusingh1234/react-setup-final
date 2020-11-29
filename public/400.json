@@ -1,0 +1,9 @@
+{
+    "code": "404",
+    "message": "Not Found",
+    "data": 
+        {
+            "records": [ ] 
+        }, 
+    "critical": 0 
+}

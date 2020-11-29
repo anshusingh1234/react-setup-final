@@ -1,0 +1,32 @@
+[
+	{
+		"id":1,
+		"name":"English",
+		"locale_label":"en"
+	},
+	{
+		"id":2,
+		"name":"Hindi",
+		"locale_label":"hi"
+	},
+	{
+		"id":3,
+		"name":"Punjabi",
+		"locale_label":"pa"
+	},
+	{
+		"id":4,
+		"name":"Bengali",
+		"locale_label":"bn"
+	},
+	{
+		"id":8,
+		"name":"Marathi",
+		"locale_label":"mr"
+	},
+	{
+		"id":9,
+		"name":"Gujarati",
+		"locale_label":"gu"
+	}
+]

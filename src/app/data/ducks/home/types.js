@@ -1,0 +1,4 @@
+const FETCH_HOME_BIG_STORY = "home/FETCH_HOME_BIG_STORY";
+export default {
+	FETCH_HOME_BIG_STORY
+};
