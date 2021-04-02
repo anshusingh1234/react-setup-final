@@ -42,7 +42,7 @@ export default (request, res, store, storeData, context, routematch, setStatus, 
         }
         const { helmet } = helmetContext;
         let reactDom = '';
-        reactDom = getHeader(extractor, lang, helmet, isMobile, articleData, request) + html + getFooter(extractor, lang, reduxState, extraprops, isMobile, request);
+        reactDom = getHeader(extractor, lang, helmet, isMobile, request) + html + getFooter(extractor, lang, reduxState, extraprops, isMobile, request);
         res.status(status).end(reactDom);
     }catch(ex){
         logger(isMobile, request.originalUrl, ex)
@@ -55,12 +55,12 @@ function logger(isMobile, pathname, ex){
     console.error(date.toString(), ' ', pathname, ' env:'+isMobile ? 'Mobile' : 'Desktop',' ' , ex);
 }
 
-function getHeader(extractor, lang, helmet, isMobile, articleData, request){
+function getHeader(extractor, lang, helmet, isMobile, request){
     const cssText = getCSSText(isMobile, lang)
     const linkTags = extractor.getLinkTags()
-    return `<!doctype html><html lang="${lang}"><head>${helmet.title.toString()}${helmet.meta.toString()}${helmet.link.toString()}<meta name="google-site-verification" content="ZgFICIedNvVZl5pV9EfAUeenwta9vBY0Za_GgmV4zuw" />${getAPPIconHTML(lang)}${getPreConnect()}${linkTags}${(process.env.NODE_APP != 'production') ? '<meta name="robots" content="noindex, nofollow" />' :''}<style type="text/css">${cssText}#closeDiv { top: 102px !important; left: auto !important; right: 0 !important;} .skinner-ad #closeDiv{ top: 0px !important; }</style>
+    return `<!doctype html><html lang="${lang}"><head>${helmet.title.toString()}${helmet.meta.toString()}${helmet.link.toString()}${getAPPIconHTML(lang)}${getPreConnect()}${linkTags}${(process.env.NODE_APP != 'production') ? '<meta name="robots" content="noindex, nofollow" />' :''}<style type="text/css">${cssText}#closeDiv { top: 102px !important; left: auto !important; right: 0 !important;} .skinner-ad #closeDiv{ top: 0px !important; }</style>
     ${helmet.script.toString()}
-    ${thirdPartyAnalytics(request, lang, isMobile, articleData)}
+    ${thirdPartyAnalytics(request, lang, isMobile)}
     </head>
     <body>
     ${noscriptTag(lang)}
@@ -71,7 +71,7 @@ function getHeader(extractor, lang, helmet, isMobile, articleData, request){
 
 function getFooter(extractor, lang, reduxState, extraprops, isMobile, request){
     reduxState = JSON.stringify(reduxState).replace(/</g, '\\u003c');
-    return `</div><script type="text/javascript">window.is_production=${process.env.NODE_APP=='production' ? true: false}; window.INITIAL_STATE=${ reduxState };window.extraprops=${JSON.stringify(extraprops)};window.isMobile=${isMobile};var contentInPage=new Set([${[...contentInPage].join(',')}]);</script>
+    return `</div><script type="text/javascript">window.is_production=${process.env.NODE_APP=='production' ? true: false}; window.INITIAL_STATE=${ reduxState };window.extraprops=${JSON.stringify(extraprops)};window.isMobile=${isMobile};</script>
     ${serviceWorker(extractor, lang, isMobile, request)}  
     </body>
     </html>`;

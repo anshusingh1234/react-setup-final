@@ -68,7 +68,7 @@ export function getMobile(req){
 
 
 export function getCSSText(isMobile, lang){
-	let stylesOriginalFiles = 'web_english.css';
+	let stylesOriginalFiles = 'web.css';
   let style_css = path.resolve(__dirname, "../../public", "dist", stylesOriginalFiles);
   return fs.readFileSync(style_css, 'utf8');
 }

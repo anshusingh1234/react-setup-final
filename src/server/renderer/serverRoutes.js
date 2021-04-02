@@ -65,9 +65,7 @@ server.get('/dist/*.js', (req, res) => {
 			}
 		}
 	}
-	
-	res.status(404).end('Not Found');
-});
+	});
 
 
 server.get('/dist/*.css', (req, res) => {

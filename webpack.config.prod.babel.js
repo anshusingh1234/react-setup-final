@@ -21,7 +21,7 @@ module.exports = {
     mode: 'production',
     entry: {
         main: './client/index.js',
-        web_english: './scss/styles.scss'
+        web: './scss/styles.scss'
     },
     devtool: false,
     //devtool: 'source-map',
@@ -149,7 +149,7 @@ module.exports = {
         }),
         new PurgecssPlugin({
             paths: glob.sync(`${PATHS.src}/**/*`,  { nodir: true }),
-            whitelistPatterns: [/^slick-/, /^bgImg/, /^new-video/, /^picCaption/, /^text-center/, /^source_link/],
+            whitelistPatterns: [/^slick-/],
         }),
         new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
@@ -162,7 +162,7 @@ module.exports = {
             swDest: '../sw.js',
             precacheManifestFilename: 'wb-manifest.[manifestHash].js',
             include: [/\.html$/, /\.js$/, /\.css$/, /\.png$/, /\.jpg$/, /\.gif$/],
-            exclude:[/^dist\/web\.css$/, /^dist\/mobile\.css$/, /^dist\/web\.js$/, /^dist\/mobile\.js$/, /^server\.js$/]
+            exclude:[/^dist\/web\.css$/, /^dist\/web\.js$/, /^server\.js$/]
         }),
         //new BundleAnalyzerPlugin()
     ]

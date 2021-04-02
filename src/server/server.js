@@ -3,7 +3,6 @@ import path from 'path';
 import compression from "compression";
 import { configureStore } from "../app/data/store";
 import { matchRoutes } from 'react-router-config';
-
 import config from "../config/index"
 import Routes from '../routes/routes';
 import serverRoutes from './renderer/serverRoutes'
@@ -13,7 +12,7 @@ import render from './renderer/render';
 const server = express();
 
 const PUBLIC_DIR = path.resolve(__dirname, "../../public");
-server.use(express.static(PUBLIC_DIR, { maxAge: 86400000*7, lastModified: true })); // oneWeek = 86400000*7;
+server.use(express.static(PUBLIC_DIR, { maxAge: 86400000*30, lastModified: true })); // oneWeek = 86400000*7;
 server.use(compression());
 server.disable('x-powered-by');
 server.use('/', serverRoutes);
@@ -85,19 +84,13 @@ server.get('*', async (req, res) => {
 	}
 
 	let matcharr = matchUrlStructure(routeMatch, req.path, storeData);
-	if(!matcharr.isMatch){
-		//Extract Query Parameters and join them
-		let queryString = Object.keys(req.query).map(key => key + '=' + req.query[key]).join('&');
-		let articleUrl = matcharr.articleData.content.guid;
-		return res.redirect(301, articleUrl+(queryString?'?'+queryString:''));
-	}else{
 		const context = { };
 		render(req, res, store, storeData, context, routeMatch, setStatus, isMobile, matcharr);
 		var endDate = new Date();
 		var endtime = endDate.getTime();
 		var timeDiff = endtime - starttime;
 		console.log(req.url," (",timeDiff,"ms)"); 
-	}
+	
 });
 
 server.listen(config.PORT, () => {
