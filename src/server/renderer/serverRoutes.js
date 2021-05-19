@@ -6,7 +6,6 @@ import fs from "fs";
 
 var url = require('url');
 var http = require('http');
-//import requestImageSize from 'request-image-size';
 
 const PUBLIC_DIR = path.resolve(__dirname, "../../../public");
 

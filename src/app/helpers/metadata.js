@@ -6,7 +6,6 @@ import { createUrl } from './helpers';
 const Metadata = (props) => {
 	if(typeof props.seo !== 'undefined' && typeof props.seo !== 'undefined'){
 		let seodata = props.seo;
-		//console.log(seodata);
 		let seometa = [];
 		let linkUrl = [];
 
@@ -54,7 +53,6 @@ const Metadata = (props) => {
 			}
 			if(typeof seodata.url !== 'undefined' && seodata.url != ''){
 				seometa.push(<meta property="og:url" content={createUrl(seodata.url)} key={12}/>);
-				//linkUrl.push(<link rel="alternate" href={createUrl(seodata.url, 'canonical')} hreflang={"en-"+seodata.locale.locale_label} key={1}/>);
 			}
 				
 			if(typeof seodata.is_amp !== 'undefined' && seodata.is_amp == 1){

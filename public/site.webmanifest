@@ -1,6 +1,6 @@
 {
-    "name": "IndiaTimes",
-    "short_name": "IndiaTimes",
+    "name": "app",
+    "short_name": "app",
     "scope": "/",
     "icons": [
         {
@@ -19,5 +19,5 @@
     "display": "standalone",
     "start_url": "/?mode=standalone&utm_source=pwa",
     "orientation": "portrait",
-    "gcm_sender_id": "277724106736"
+    "gcm_sender_id": ""
 }

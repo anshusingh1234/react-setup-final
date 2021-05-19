@@ -61,7 +61,6 @@ module.exports = {
             'react-router',
             'react-router-dom',
             'react-helmet-async',
-            'react-intl'
         ]
     },
     devtool: 'inline-source-map',

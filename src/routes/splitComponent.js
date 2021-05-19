@@ -5,3 +5,7 @@ import Loader from "../app/components/Common/Loader";
 export const Home = loadable(() => import( /* webpackChunkName: "Home" */ '../app/containers/Home'), {
 	fallback: <div className="lazy-loader"><Loader style={{padding: '15% 40%'}}/></div>
 });
+
+// export const Home = loadable(() => import( /* webpackChunkName: "Home" */ '../app/containers/Home'), {
+// 	fallback: <div className="lazy-loader"><Loader style={{padding: '15% 40%'}}/></div>
+// });

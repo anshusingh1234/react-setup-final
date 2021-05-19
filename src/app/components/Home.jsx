@@ -6,7 +6,7 @@ const Home = React.memo(function Home(props) {
 
 	return (
 		<div className="home-container">
-     
+     Home
 		</div>
 	)
 })

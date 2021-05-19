@@ -7,7 +7,6 @@ import Routes from '../routes/routes';
 import { renderRoutes } from 'react-router-config';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { IntlProvider } from "react-intl";
 import custom from "./custom";
 //import pwa from "./pwa";
 

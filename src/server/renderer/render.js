@@ -7,7 +7,6 @@ import { renderRoutes } from 'react-router-config';
 import path from 'path';
 import fs from 'fs';
 import Routes from '../../routes/routes';
-import {IntlProvider } from "react-intl";
 import config from '../../config/index';
 import { HelmetProvider } from 'react-helmet-async';
 import { getCSSText, getAPPIconHTML, getPreConnect, thirdPartyAnalytics, noscriptTag, serviceWorker } from "../Utils"
@@ -25,13 +24,11 @@ export default (request, res, store, storeData, context, routematch, setStatus, 
         const helmetContext = {};
 
         const html = renderToString(extractor.collectChunks(<Provider store={ store }>
-            {/* <IntlProvider locale={lang} messages={locale[lang]}> */}
-                <HelmetProvider context={helmetContext}>
-                    <StaticRouter location={request.originalUrl} context={context}>
-                        <div className="wrap">{renderRoutes(Routes, extraprops)}</div>
-                    </StaticRouter>
-                </HelmetProvider>
-            {/* </IntlProvider> */}
+            <HelmetProvider context={helmetContext}>
+                <StaticRouter location={request.originalUrl} context={context}>
+                    <div className="wrap">{renderRoutes(Routes, extraprops)}</div>
+                </StaticRouter>
+            </HelmetProvider>
         </Provider>));
         
         res.setHeader('content-type', 'text/html; charset=utf-8');

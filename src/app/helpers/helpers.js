@@ -1,6 +1,5 @@
 import React, {Fragment} from 'react';
 import config from '../../config'
-import {FormattedMessage} from 'react-intl';
 
 export function agoFormat(inputDate){
     if(typeof inputDate!="undefined" && inputDate.length>0){

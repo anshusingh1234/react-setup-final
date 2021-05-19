@@ -1,5 +1,4 @@
 import config from '../config'
-import copy from 'copy-to-clipboard';
 
 
 window.Util = {
@@ -103,11 +102,6 @@ window.Util = {
         document.getElementsByTagName('head')[0].appendChild(script);
     },
     
-    copyToClipboard: function(text=''){
-        copy(text);
-        alert('Link Copied');
-    },
-   
     replaceState: function(title, url){
         history.replaceState(null, null, url);
         if(title)
